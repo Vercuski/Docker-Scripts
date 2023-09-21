@@ -1,28 +1,29 @@
-version: '3.7'
+version: "3.8"
 services:
   postgres:
     image: postgres:latest
-    restart: always
+    container_name: posgresql
     environment:
-      - POSTGRES_USER=scott.vercuski@gmail.com
-      - POSTGRES_PASSWORD=Password123
+      POSTGRES_USER: scott.vercuski@gmail.com
+      POSTGRES_PASSWORD: Password123
     logging:
       options:
         max-size: 10m
         max-file: "3"
     ports:
-      - '5438:5432'
+      - "5438:5432"
     volumes: 
       - C:\docker\volumes\PostgreSQL\Data:/var/lib/postgresql/data
       # copy the sql script to create tables
       # - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
   pgadmin4:
     image: dpage/pgadmin4
+    container_name: pgadmin4
     environment:
-      - PGADMIN_DEFAULT_EMAIL=scott.vercuski@gmail.com
-      - PGADMIN_DEFAULT_PASSWORD=Password123
-      - PGADMIN_DEFAULT_PASSWORD_FILE=docker secret
+      PGADMIN_DEFAULT_EMAIL: scott.vercuski@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: Password123
+      PGADMIN_DEFAULT_PASSWORD_FILE: docker secret
     ports:
-      - '5050:80'
+      - "5050:80"
     volumes:
       - C:\docker\volumes\PostgreSQL\pgadmin4data:/var/lib/pgadmin

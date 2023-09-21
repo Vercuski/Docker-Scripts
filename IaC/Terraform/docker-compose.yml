@@ -1,27 +1,30 @@
-version: '3'
-
+version: "3.8"
 services:
   terraform:
     image: hashicorp/terraform:latest
+    container_name: terraform
     volumes:
       - .:/infra
     working_dir: /infra
     environment:
-      TZ: 'America/Eastern'
+      TZ: "America/Eastern"
   gaia:
-    image: "gaiaapp/gaia"
+    image: gaiaapp/gaia:latest
+    container_name: gaia
     ports: 
       - "8080:8080"
     environment:
-      - "GAIA_MONGODB_URI=mongodb://mongo/gaia"
-      - "GAIA_RUNNER_API_PASSWORD=123456"
-      - "GAIA_EXTERNAL_URL=http://gaia:8080"
+      GAIA_MONGODB_URI: mongodb://mongo/gaia
+      GAIA_RUNNER_API_PASSWORD: 123456
+      GAIA_EXTERNAL_URL: http://gaia:8080
   runner:
     image: "gaiaapp/runner"
+    container_name: runner
     environment:
-      - "GAIA_URL=http://gaia:8080"
-      - "GAIA_RUNNER_API_PASSWORD=123456"
+      GAIA_URL: http://gaia:8080
+      GAIA_RUNNER_API_PASSWORD: 123456
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
   mongo:
-    image: "mongo:4.4"
+    image: mongo:latest
+    container_name: mongo

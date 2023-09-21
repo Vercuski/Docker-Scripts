@@ -1,21 +1,19 @@
-version: "3.2"
+version: "3.8"
 services:
   neo4j:
     image: neo4j:latest
-    container_name: 'devneo4j'
+    container_name: neo4j
     volumes:
-      - 'C:\docker\volumes\Neo4J\data:/data'
-      - 'C:\docker\volumes\Neo4J\conf\:/conf/'
+      - C:\docker\volumes\Neo4J\data:/data
+      - C:\docker\volumes\Neo4J\conf\:/conf/
     ports:
       - 7474:7474
       - 7687:7687
     networks:
         - neo4j_go_net
     command: neo4j
-
 networks:
   neo4j_go_net:
     driver: bridge
-
 volumes:
   dgraph:

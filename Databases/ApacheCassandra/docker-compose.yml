@@ -1,11 +1,11 @@
-version: '3.9'
-
+version: "3.8"
 services:
   cassandra:
     image: cassandra:latest
+    container_name: cassandra
     ports:
       - 9042:9042
     volumes:
       - C:\docker\volumes\ApacheCassandra:/var/lib/cassandra
     environment:
-      - CASSANDRA_CLUSTER_NAME=DockerCluster
+      CASSANDRA_CLUSTER_NAME: DockerCluster

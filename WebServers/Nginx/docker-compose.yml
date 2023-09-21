@@ -1,14 +1,15 @@
-version: "3"
-
+version: "3.8"
 services:
   client:
     image: nginx:latest
+    container_name: nginx
     ports:
       - 80:80
     volumes:
       - ./src:/usr/share/nginx/html
   ui:
     image: uozi/nginx-ui:latest
+    container_name: nginx-ui
     ports:
       - 8080:80
       - 8443:443
