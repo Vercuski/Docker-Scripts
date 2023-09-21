@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  grafana:
+    image: grafana/grafana-enterprise:latest
+    container_name: grafana
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 3000:3000
+    volumes:
+      - C:\docker\volumes\Grafana\storage:/var/lib/grafana

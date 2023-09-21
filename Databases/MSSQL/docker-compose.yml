@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:latest
+    environment:
+      - MSSQL_SA_PASSWORD=Password123
+      - ACCEPT_EULA=Y
+    ports:
+      - "14333:1433"
+    volumes:
+      - sqlsystem:/var/opt/mssql/
+      - C:\docker\volumes\MSSQL\data:/var/opt/mssql/data
+      - C:\docker\volumes\MSSQL\log:/var/opt/mssql/log
+      - C:\docker\volumes\MSSQL\secrets:/var/opt/mssql/secrets
+volumes:
+  sqlsystem:
+  sqldata:
+  sqllog:
+  sqlbackup:

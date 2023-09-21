@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  client:
+    image: nginx:latest
+    ports:
+      - 80:80
+    volumes:
+      - ./src:/usr/share/nginx/html
+  ui:
+    image: uozi/nginx-ui:latest
+    ports:
+      - 8080:80
+      - 8443:443
+      - 5200-5300:5200-5300
+    volumes:
+      - /mnt/user/appdata/nginx:/etc/nginx
+      - /mnt/user/appdata/nginx-ui:/etc/nginx-ui
+      - /var/www:/var/www

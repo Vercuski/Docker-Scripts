@@ -1,0 +1,29 @@
+version: "3.9"
+ 
+########################### NETWORKS
+networks:
+  default:
+    driver: bridge
+ 
+########################### SERVICES
+services:
+  # InfluxDB - Database for sensor data
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    networks:
+      - default
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=svercuski
+      - DOCKER_INFLUXDB_INIT_PASSWORD=Password123
+      - DOCKER_INFLUXDB_INIT_ORG=TheSoftwareDispensary
+      - DOCKER_INFLUXDB_INIT_BUCKET=TSD
+      - DOCKER_INFLUXDB_INIT_RETENTION=1w
+    volumes:
+      - C:\docker\volumes\InfluxDb\config:/etc/influxdb2
+      - C:\docker\volumes\InfluxDb\db:/var/lib/influxdb2
