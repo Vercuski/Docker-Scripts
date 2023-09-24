@@ -1,0 +1,23 @@
+https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md
+
+Creating a Service Account
+  - kubectl apply -f dashboard-adminuser.yaml
+
+Getting a Bearer Token for ServiceAccount
+  - kubectl -n kubernetes-dashboard create token admin-user
+
+Getting a long-lived Bearer Token for ServiceAccount
+  - kubectl get secret admin-user -n kubernetes-dashboard -o jsonpath={".data.token"} | base64 -d
+
+Clean up
+  - kubectl -n kubernetes-dashboard delete serviceaccount admin-user
+  - kubectl -n kubernetes-dashboard delete clusterrolebinding admin-user
+
+Proxy
+  - kubectl Proxy
+  URL: http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+
+Current Token:
+
+eyJhbGciOiJSUzI1NiIsImtpZCI6IjFaenBSMEpDYmNHVkRqUzdrSmhCazZpSFBwV25zalFFMERGUVpvYlprRjAifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiXSwiZXhwIjoxNjk1NDc1MTcwLCJpYXQiOjE2OTU0NzE1NzAsImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsIiwia3ViZXJuZXRlcy5pbyI6eyJuYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsInNlcnZpY2VhY2NvdW50Ijp7Im5hbWUiOiJhZG1pbi11c2VyIiwidWlkIjoiZmY1OTE2N2ItY2NjZi00MDg0LWI4YTMtNzJiYTdmMjA3ZjYyIn19LCJuYmYiOjE2OTU0NzE1NzAsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlcm5ldGVzLWRhc2hib2FyZDphZG1pbi11c2VyIn0.JaUm3P5DP_LcoYicvC6zhQG6nHxoz6CKRVDRE_z0On7Pq_yJX9y7HAGbluvfvM03HuX9skML7Tvwdxpwbe52-w8LKZA8vVYhVHCSr-PUJ7B-r6G4tBHE7-nWo7zpGDYYhOGRWpRLTxquVi2lzM1toAIEH5g2kb2ndiiIDOtUsGrD0qTZbwCTa4U3Ml0v636SVLHALmlEfkPlF_GoTKtOc2RieUxu6vba0Nuo1tDRn2dfnV_CVUeNA83tdn5baj8HNgrBKvl-4zkVzmcSPTe__fq8XTmMuVc_TtrHQpwTqE1o2kO4EGDAroEJ1tj-W4Cnagvrzeyqd9KjQ3FlbN-XNQ
+
