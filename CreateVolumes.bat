@@ -16,3 +16,4 @@ mkdir C:\docker\volumes\Grafana\storage
 mkdir C:\docker\volumes\Rancher\data
 mkdir C:\docker\volumes\RabbitMQ\data
 mkdir C:\docker\volumes\RabbitMQ\log
+mkdir C:\docker\volumes\CockroachDB\data

@@ -16,3 +16,4 @@ md $HOME/docker/volumes/Grafana/storage
 md $HOME/docker/volumes/Rancher/data
 md $HOME/docker/volumes/RabbitMQ/data
 md $HOME/docker/volumes/RabbitMQ/log
+md $HOME/docker/volumes/CockroachDB/data
