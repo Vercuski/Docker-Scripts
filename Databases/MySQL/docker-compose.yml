@@ -12,6 +12,11 @@ services:
       - "33066:3306"
     expose:
       - "3306"
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.15
+        aliases:
+          - mysqldb
     volumes:
       - MySQL_Data:/var/lib/mysql
 volumes:
@@ -22,3 +27,7 @@ volumes:
       type: none
       o: bind
       device: C:\docker\volumes\MySQL
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

@@ -7,7 +7,10 @@ services:
       POSTGRES_USER:  user@user.com
       POSTGRES_PASSWORD: Password123
     networks:
-      - default
+      GroupNetwork:
+        ipv4_address: 192.168.16.17
+        aliases:
+          - postgresql
     logging:
       options:
         max-size: 10m
@@ -25,7 +28,10 @@ services:
       PGADMIN_DEFAULT_EMAIL: user@user.com
       PGADMIN_DEFAULT_PASSWORD: Password123
     networks:
-      - default
+      GroupNetwork:
+        ipv4_address: 192.168.16.18
+        aliases:
+          - pgadmin4
     ports:
       - 5050:80
     volumes:
@@ -45,3 +51,7 @@ volumes:
       type: none
       o: bind
       device: C:\docker\volumes\PostgreSQL\pgadmin4data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

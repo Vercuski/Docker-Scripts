@@ -1,1 +1,1 @@
-npx @backstage/create-app
+npx @backstage/create-app@latest

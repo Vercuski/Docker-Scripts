@@ -3,8 +3,6 @@ services:
   influxdb:
     image: influxdb:latest
     container_name: influxdb
-    networks:
-      - default
     security_opt:
       - no-new-privileges:true
     ports:
@@ -16,6 +14,11 @@ services:
       DOCKER_INFLUXDB_INIT_ORG: TheSoftwareDispensary
       DOCKER_INFLUXDB_INIT_BUCKET: TSD
       DOCKER_INFLUXDB_INIT_RETENTION: 1w
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.12
+        aliases:
+          - influxdb
     volumes:
       - InfluxDB_Config:/etc/influxdb2
       - InfluxDB_Data:/var/lib/influxdb2
@@ -33,7 +36,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\InfluxDb\db
 networks:
-  default:
+  GroupNetwork:
     driver: bridge
+    external: true

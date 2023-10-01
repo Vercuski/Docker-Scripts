@@ -9,7 +9,10 @@ services:
     ports:
       - 2181:2181
     networks:
-      - kafka-net
+      GroupNetwork:
+        ipv4_address: 192.168.16.70
+        aliases:
+          - kafka
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: kafka
@@ -24,7 +27,11 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
     networks:
-      - kafka-net
+      GroupNetwork:
+        ipv4_address: 192.168.16.71
+        aliases:
+          - zookeeper
 networks:
-  kafka-net:
+  GroupNetwork:
     driver: bridge
+    external: true

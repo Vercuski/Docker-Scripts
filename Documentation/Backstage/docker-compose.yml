@@ -2,15 +2,18 @@ version: "3.8"
 services:
   backstage:
     image: backstage
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.30
+        aliases:
+          - backstage
     environment:
       # This value must match the name of the postgres configuration block.
-      POSTGRES_HOST: db
-      POSTGRES_USER: postgres
+      POSTGRES_HOST: postgresql
+      POSTGRES_USER: user@user.com
     ports:
-      - '7000:7000'
-  db:
-    image: postgres
-    restart: always
-    environment:
-      # NOT RECOMMENDED for a production environment. Trusts all incomming connections.
-      POSTGRES_HOST_AUTH_METHOD: trust
+      - 7007:7007
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

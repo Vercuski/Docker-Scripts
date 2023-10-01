@@ -3,6 +3,11 @@ services:
   client:
     image: nginx:latest
     container_name: nginx
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.130
+        aliases:
+          - nginx
     ports:
       - 80:80
     volumes:
@@ -10,6 +15,11 @@ services:
   ui:
     image: uozi/nginx-ui:latest
     container_name: nginx-ui
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.131
+        aliases:
+          - nginxui
     ports:
       - 8080:80
       - 8443:443
@@ -40,3 +50,7 @@ volumes:
       type: none
       o: bind
       device: C:\docker\volumes\Nginx\www
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

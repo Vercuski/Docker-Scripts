@@ -1,5 +1,2 @@
 # Backstage
-Steps:
-npx @backstage/create-app --version
-npx @backstage/create-app
-yarn workspace backend build-image
+https://backstage.io/docs/deployment/docker/

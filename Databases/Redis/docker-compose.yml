@@ -6,6 +6,11 @@ services:
     ports:
       - "6379:6379"
     command: redis-server --save 20 1 --requirepass Password123
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.19
+        aliases:
+          - redis
     volumes: 
       - redis_cache:/data
 volumes:
@@ -16,3 +21,7 @@ volumes:
       type: none
       o: bind
       device: C:\docker\volumes\Redis\cache
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

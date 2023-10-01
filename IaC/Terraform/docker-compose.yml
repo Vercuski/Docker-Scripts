@@ -3,6 +3,11 @@ services:
   terraform:
     image: hashicorp/terraform:latest
     container_name: terraform
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.50
+        aliases:
+          - terraform
     volumes:
       - .:/infra
     working_dir: /infra
@@ -11,6 +16,11 @@ services:
   gaia:
     image: gaiaapp/gaia:latest
     container_name: gaia
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.51
+        aliases:
+          - gaia
     ports: 
       - "8080:8080"
     environment:
@@ -23,6 +33,11 @@ services:
     environment:
       GAIA_URL: http://gaia:8080
       GAIA_RUNNER_API_PASSWORD: 123456
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.52
+        aliases:
+          - gaiarunner
     volumes:
       - terraform_data:/var/run/docker.sock
   mongo:
@@ -36,3 +51,7 @@ volumes:
       type: none
       o: bind
       device: C:\docker\volumes\Terraform\data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

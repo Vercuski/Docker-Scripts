@@ -10,11 +10,15 @@ services:
       - 7474:7474
       - 7687:7687
     networks:
-        - neo4j_go_net
+      GroupNetwork:
+        ipv4_address: 192.168.16.16
+        aliases:
+          - neo4j
     command: neo4j
 networks:
-  neo4j_go_net:
+  GroupNetwork:
     driver: bridge
+    external: true
 volumes:
   Neo4J_data:
     name: Neo4J_data

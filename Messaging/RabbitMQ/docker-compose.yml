@@ -10,7 +10,10 @@ services:
         - rabbitmq_data:/var/lib/rabbitmq/
         - rabbitmq_log:/var/log/rabbitmq
     networks:
-        - rabbitmq_go_net
+        GroupNetwork:
+          ipv4_address: 192.168.16.72
+          aliases:
+            - rabbitmq
 volumes:
   rabbitmq_data:
     name: rabbitmq_data
@@ -27,5 +30,6 @@ volumes:
       o: bind
       device: C:\docker\volumes\RabbitMQ\log\
 networks:
-  rabbitmq_go_net:
+  GroupNetwork:
     driver: bridge
+    external: true

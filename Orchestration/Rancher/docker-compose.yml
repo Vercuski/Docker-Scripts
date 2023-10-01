@@ -7,6 +7,11 @@ services:
     ports:
     - "80:80/tcp"
     - "443:443/tcp"
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.91
+        aliases:
+          - rancher
     volumes:
     - rancher_data:/var/lib/rancher
     privileged: true
@@ -18,3 +23,7 @@ volumes:
       type: none
       o: bind
       device: C:\docker\volumes\Rancher\data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

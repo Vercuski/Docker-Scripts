@@ -8,6 +8,11 @@ services:
       ACCEPT_EULA: Y
     ports:
       - "14333:1433"
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.14
+        aliases:
+          - mssqldb
     volumes:
       - sqlsystem:/var/opt/mssql/
       - C:\docker\volumes\MSSQL\data:/var/opt/mssql/data
@@ -15,3 +20,7 @@ services:
       - C:\docker\volumes\MSSQL\secrets:/var/opt/mssql/secrets
 volumes:
   sqlsystem:
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true
