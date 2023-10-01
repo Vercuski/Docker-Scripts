@@ -6,24 +6,42 @@ services:
     environment:
       POSTGRES_USER:  user@user.com
       POSTGRES_PASSWORD: Password123
+    networks:
+      - default
     logging:
       options:
         max-size: 10m
         max-file: 3
     ports:
-      - 5438:5432
+      - 5432:5432
     volumes: 
-      - C:\docker\volumes\PostgreSQL\Data:/var/lib/postgresql/data
+      - postgresql_data:/var/lib/postgresql/data
       # copy the sql script to create tables
       # - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
   pgadmin4:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:latest
     container_name: pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: user@user.com
       PGADMIN_DEFAULT_PASSWORD: Password123
-      PGADMIN_DEFAULT_PASSWORD_FILE: docker secret
+    networks:
+      - default
     ports:
       - 5050:80
     volumes:
-      - C:\docker\volumes\PostgreSQL\pgadmin4data:/var/lib/pgadmin
+      - pgadmin4_data:/var/lib/pgadmin
+volumes:
+  postgresql_data:
+    name: postgresql_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\PostgreSQL\Data
+  pgadmin4_data:
+    name: pgadmin4_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\PostgreSQL\pgadmin4data

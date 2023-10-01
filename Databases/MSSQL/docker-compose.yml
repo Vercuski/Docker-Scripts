@@ -15,6 +15,3 @@ services:
       - C:\docker\volumes\MSSQL\secrets:/var/opt/mssql/secrets
 volumes:
   sqlsystem:
-  sqldata:
-  sqllog:
-  sqlbackup:

@@ -17,8 +17,23 @@ services:
       DOCKER_INFLUXDB_INIT_BUCKET: TSD
       DOCKER_INFLUXDB_INIT_RETENTION: 1w
     volumes:
-      - C:\docker\volumes\InfluxDb\config:/etc/influxdb2
-      - C:\docker\volumes\InfluxDb\db:/var/lib/influxdb2
+      - InfluxDB_Config:/etc/influxdb2
+      - InfluxDB_Data:/var/lib/influxdb2
+volumes:
+  InfluxDB_Config:
+    name: InfluxDB_Config
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\InfluxDb\config\
+  InfluxDB_Data:
+    name: InfluxDB_Data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\InfluxDb\db
 networks:
   default:
     driver: bridge

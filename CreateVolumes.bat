@@ -17,3 +17,7 @@ mkdir C:\docker\volumes\Rancher\data
 mkdir C:\docker\volumes\RabbitMQ\data
 mkdir C:\docker\volumes\RabbitMQ\log
 mkdir C:\docker\volumes\CockroachDB\data
+mkdir C:\docker\volumes\Terraform\data
+mkdir C:\docker\volumes\Nginx\www
+mkdir C:\docker\volumes\Nginx\Nginx
+mkdir C:\docker\volumes\Nginx-UI

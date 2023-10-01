@@ -24,7 +24,15 @@ services:
       GAIA_URL: http://gaia:8080
       GAIA_RUNNER_API_PASSWORD: 123456
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - terraform_data:/var/run/docker.sock
   mongo:
     image: mongo:latest
     container_name: mongo
+volumes:
+  terraform_data:
+    name: terraform_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Terraform\data

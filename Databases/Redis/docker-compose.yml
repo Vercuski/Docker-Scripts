@@ -7,7 +7,12 @@ services:
       - "6379:6379"
     command: redis-server --save 20 1 --requirepass Password123
     volumes: 
-      - C:\docker\volumes\Redis\cache:/data
+      - redis_cache:/data
 volumes:
-  cache:
+  redis_cache:
+    name: redis_cache
     driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Redis\cache

@@ -9,4 +9,12 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - C:\docker\volumes\Grafana\storage:/var/lib/grafana
+      - grafana_storage:/var/lib/grafana
+volumes:
+  grafana_storage:
+    name: grafana_storage
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Grafana\storage

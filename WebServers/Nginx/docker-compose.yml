@@ -15,6 +15,28 @@ services:
       - 8443:443
       - 5200-5300:5200-5300
     volumes:
-      - /mnt/user/appdata/nginx:/etc/nginx
-      - /mnt/user/appdata/nginx-ui:/etc/nginx-ui
-      - /var/www:/var/www
+      - nginx:/etc/nginx
+      - rabbinginx_ui:/etc/nginx-ui
+      - nginix_www:/var/www
+volumes:
+  rabbinginx_ui:
+    name: rabbinginx_ui
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Nginx-UI
+  nginx:
+    name: nginx
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Nginx\Nginx
+  nginix_www:
+    name: nginix_www
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Nginx\www

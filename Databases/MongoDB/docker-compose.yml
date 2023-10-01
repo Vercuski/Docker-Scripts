@@ -9,7 +9,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: user
       MONGO_INITDB_ROOT_PASSWORD: Password123
     volumes:
-      - C:\docker\volumes\MongoDb\data:/data/db
+      - MongoDb_Data:/data/db
   mongo-express:
     image: mongo-express:latest
     container_name: mongo-express
@@ -17,3 +17,11 @@ services:
       - "8081:8081"
     environment:
       ME_CONFIG_MONGODB_URL: mongodb://user:Password123@localhost:27017/db?ssl=false
+volumes:
+  MongoDb_Data:
+    name: MongoDb_Data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\MongoDb\data

@@ -6,6 +6,14 @@ services:
     ports:
       - 9042:9042
     volumes:
-      - C:\docker\volumes\ApacheCassandra:/var/lib/cassandra
+      - apache_cassandra:/var/lib/cassandra
     environment:
       CASSANDRA_CLUSTER_NAME: DockerCluster
+volumes:
+  apache_cassandra:
+    name: apache_cassandra
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\ApacheCassandra

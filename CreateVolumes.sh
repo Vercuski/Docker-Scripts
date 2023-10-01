@@ -17,3 +17,7 @@ md $HOME/docker/volumes/Rancher/data
 md $HOME/docker/volumes/RabbitMQ/data
 md $HOME/docker/volumes/RabbitMQ/log
 md $HOME/docker/volumes/CockroachDB/data
+md $HOME/docker/volumes/Terraform/data
+md $HOME/docker/volumes/Nginx/www
+md $HOME/docker/volumes/Nginx/Nginx
+md $HOME/docker/volumes/Nginx-UI

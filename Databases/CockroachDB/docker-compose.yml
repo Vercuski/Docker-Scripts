@@ -8,4 +8,12 @@ services:
    command:
     start-single-node --insecure
    volumes:
-    - C:\docker\volumes\CockroachDB\data:/cockroach/cockroach-data
+    - CockroachDB:/cockroach/cockroach-data
+volumes:
+  CockroachDB:
+    name: CockroachDB
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\CockroachDB\data

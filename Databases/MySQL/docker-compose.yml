@@ -13,6 +13,12 @@ services:
     expose:
       - "3306"
     volumes:
-      - C:\docker\volumes\MySQL:/var/lib/mysql
+      - MySQL_Data:/var/lib/mysql
 volumes:
-  my-db:
+  MySQL_Data:
+    name: MySQL_Data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\MySQL
