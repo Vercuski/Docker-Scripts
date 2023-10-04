@@ -21,3 +21,8 @@ mkdir C:\docker\volumes\Terraform\data
 mkdir C:\docker\volumes\Nginx\www
 mkdir C:\docker\volumes\Nginx\Nginx
 mkdir C:\docker\volumes\Nginx-UI
+mkdir C:\docker\volumes\Kafka\Kafka\data\
+mkdir C:\docker\volumes\Kafka\Kafka\secrets\
+mkdir C:\docker\volumes\Kafka\Zookeeper\data\
+mkdir C:\docker\volumes\Kafka\Zookeeper\log\
+mkdir C:\docker\volumes\Kafka\Zookeeper\secrets\

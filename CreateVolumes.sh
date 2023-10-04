@@ -21,3 +21,8 @@ md $HOME/docker/volumes/Terraform/data
 md $HOME/docker/volumes/Nginx/www
 md $HOME/docker/volumes/Nginx/Nginx
 md $HOME/docker/volumes/Nginx-UI
+md $HOME/docker/volumes/Kafka/Kafka/data
+md $HOME/docker/volumes/Kafka/Kafka/secrets
+md $HOME/docker/volumes/Kafka/Zookeeper/data
+md $HOME/docker/volumes/Kafka/Zookeeper/log
+md $HOME/docker/volumes/Kafka/Zookeeper/secrets

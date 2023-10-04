@@ -8,6 +8,10 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - 2181:2181
+    volumes:
+      - zookeeper_log:/var/lib/zookeeper/log
+      - zookeeper_secrets:/etc/zookeeper/secrets
+      - zookeeper_data:/var/lib/zookeeper/data
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.70
@@ -26,11 +30,53 @@ services:
       KAFKA_ADVERTISED_LISTENERS: INSIDE://localhost:9092,OUTSIDE://localhost:9093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_CONFLUENT_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS.TOPIC.REPLICATION.FACTOR: 1
+    volumes:
+        - kafka_data:/var/lib/kafka/data
+        - kafka_secrets:/etc/kafka/secrets
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.71
         aliases:
           - zookeeper
+volumes:
+  kafka_data:
+    name: kafka_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Kafka\Kafka\data\
+  kafka_secrets:
+    name: kafka_secrets
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Kafka\Kafka\secrets\
+  zookeeper_data:
+    name: zookeeper_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Kafka\Zookeeper\data\
+  zookeeper_log:
+    name: zookeeper_log
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Kafka\Zookeeper\log\
+  zookeeper_secrets:
+    name: zookeeper_secrets
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Kafka\Zookeeper\secrets\
+      
 networks:
   GroupNetwork:
     driver: bridge
