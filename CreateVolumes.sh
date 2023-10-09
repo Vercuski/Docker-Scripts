@@ -26,3 +26,14 @@ md $HOME/docker/volumes/Kafka/Kafka/secrets
 md $HOME/docker/volumes/Kafka/Zookeeper/data
 md $HOME/docker/volumes/Kafka/Zookeeper/log
 md $HOME/docker/volumes/Kafka/Zookeeper/secrets
+md $HOME/docker/volumes/ElasticSearch/certs
+md $HOME/docker/volumes/ElasticSearch/data01
+md $HOME/docker/volumes/ElasticSearch/data02
+md $HOME/docker/volumes/ElasticSearch/data03
+md $HOME/docker/volumes/ElasticSearch/logs01
+md $HOME/docker/volumes/ElasticSearch/logs02
+md $HOME/docker/volumes/ElasticSearch/logs03
+md $HOME/docker/volumes/ElasticSearch/kibanadatadata03
+md $HOME/docker/volumes/SonarQube/data
+md $HOME/docker/volumes/SonarQube/extensions
+md $HOME/docker/volumes/SonarQube/logs

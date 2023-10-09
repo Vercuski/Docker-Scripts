@@ -26,3 +26,14 @@ mkdir C:\docker\volumes\Kafka\Kafka\secrets\
 mkdir C:\docker\volumes\Kafka\Zookeeper\data\
 mkdir C:\docker\volumes\Kafka\Zookeeper\log\
 mkdir C:\docker\volumes\Kafka\Zookeeper\secrets\
+mkdir C:\docker\volumes\ElasticSearch\certs
+mkdir C:\docker\volumes\ElasticSearch\data01
+mkdir C:\docker\volumes\ElasticSearch\data02
+mkdir C:\docker\volumes\ElasticSearch\data03
+mkdir C:\docker\volumes\ElasticSearch\logs01
+mkdir C:\docker\volumes\ElasticSearch\logs02
+mkdir C:\docker\volumes\ElasticSearch\logs03
+mkdir C:\docker\volumes\ElasticSearch\kibanadatadata03
+mkdir C:\docker\volumes\SonarQube\data
+mkdir C:\docker\volumes\SonarQube\extensions
+mkdir C:\docker\volumes\SonarQube\logs

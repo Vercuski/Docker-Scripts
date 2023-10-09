@@ -56,3 +56,16 @@ Collection of Docker and Docker Compose scripts
 |:----------|:----------|
 |Nginx| 192.168.16.130|
 |NginxUI| 192.168.16.131|
+
+## Search
+|Name|IP Address|
+|:----------|:----------|
+|ElasticSearch01| 192.168.16.150|
+|ElasticSearch02| 192.168.16.151|
+|ElasticSearch03| 192.168.16.152|
+|Kibana| 192.168.16.153|
+
+## CodeAnalysis
+|Name|IP Address|
+|:----------|:----------|
+|Sonarqube| 192.168.16.170|
