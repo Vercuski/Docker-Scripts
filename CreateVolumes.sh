@@ -39,3 +39,5 @@ md $HOME/docker/volumes/SonarQube/extensions
 md $HOME/docker/volumes/SonarQube/logs
 md $HOME/docker/volumes/Mediawiki/html
 md $HOME/docker/volumes/Registry/data
+md $HOME/docker/volumes/Serarch/OpenSearch/node1/
+md $HOME/docker/volumes/Serarch/OpenSearch/node2/

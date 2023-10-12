@@ -39,3 +39,5 @@ mkdir C:\docker\volumes\SonarQube\extensions
 mkdir C:\docker\volumes\SonarQube\logs
 mkdir C:\docker\volumes\Mediawiki\html
 mkdir C:\docker\volumes\Registry\data
+mkdir C:\docker\volumes\Serarch\OpenSearch\node1\
+mkdir C:\docker\volumes\Serarch\OpenSearch\node2\
