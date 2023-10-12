@@ -38,3 +38,4 @@ mkdir C:\docker\volumes\SonarQube\data
 mkdir C:\docker\volumes\SonarQube\extensions
 mkdir C:\docker\volumes\SonarQube\logs
 mkdir C:\docker\volumes\Mediawiki\html
+mkdir C:\docker\volumes\Registry\data

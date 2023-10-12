@@ -38,3 +38,4 @@ md $HOME/docker/volumes/SonarQube/data
 md $HOME/docker/volumes/SonarQube/extensions
 md $HOME/docker/volumes/SonarQube/logs
 md $HOME/docker/volumes/Mediawiki/html
+md $HOME/docker/volumes/Registry/data

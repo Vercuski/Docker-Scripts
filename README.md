@@ -7,6 +7,16 @@ Collection of Docker and Docker Compose scripts
 |:----------|:----------|
 |Gateway    | 192.168.16.1|
 
+## CodeAnalysis
+|Name|IP Address|
+|:----------|:----------|
+|Sonarqube| 192.168.16.170|
+
+## Containerization
+|Name|IP Address|
+|:----------|:----------|
+|Docker Registry| 192.168.16.180|
+
 ## Databases
 |Name|IP Address|
 |:----------|:----------|
@@ -47,6 +57,14 @@ Collection of Docker and Docker Compose scripts
 |Kubernetes| 192.168.16.90|
 |Rancher| 192.168.16.91|
 
+## Search
+|Name|IP Address|
+|:----------|:----------|
+|ElasticSearch01| 192.168.16.150|
+|ElasticSearch02| 192.168.16.151|
+|ElasticSearch03| 192.168.16.152|
+|Kibana| 192.168.16.153|
+
 ## Visulation
 |Name|IP Address|
 |:----------|:----------|
@@ -57,16 +75,3 @@ Collection of Docker and Docker Compose scripts
 |:----------|:----------|
 |Nginx| 192.168.16.130|
 |NginxUI| 192.168.16.131|
-
-## Search
-|Name|IP Address|
-|:----------|:----------|
-|ElasticSearch01| 192.168.16.150|
-|ElasticSearch02| 192.168.16.151|
-|ElasticSearch03| 192.168.16.152|
-|Kibana| 192.168.16.153|
-
-## CodeAnalysis
-|Name|IP Address|
-|:----------|:----------|
-|Sonarqube| 192.168.16.170|
