@@ -37,3 +37,4 @@ mkdir C:\docker\volumes\ElasticSearch\kibanadatadata03
 mkdir C:\docker\volumes\SonarQube\data
 mkdir C:\docker\volumes\SonarQube\extensions
 mkdir C:\docker\volumes\SonarQube\logs
+mkdir C:\docker\volumes\Mediawiki\html

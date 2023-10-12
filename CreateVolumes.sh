@@ -37,3 +37,4 @@ md $HOME/docker/volumes/ElasticSearch/kibanadatadata03
 md $HOME/docker/volumes/SonarQube/data
 md $HOME/docker/volumes/SonarQube/extensions
 md $HOME/docker/volumes/SonarQube/logs
+md $HOME/docker/volumes/Mediawiki/html

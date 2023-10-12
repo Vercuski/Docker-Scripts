@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  mediawiki:
+    image: mediawiki:latest
+    ports:
+      - 8081:80
+    volumes:
+      - mediawiki_data:/var/www/html/
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.31
+        aliases:
+          - mediawiki
+volumes:
+  mediawiki_data:
+    name: mediawiki_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Mediawiki\html\
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

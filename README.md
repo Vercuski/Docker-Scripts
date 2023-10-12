@@ -25,6 +25,7 @@ Collection of Docker and Docker Compose scripts
 |Name|IP Address|
 |:----------|:----------|
 |Backstage| 192.168.16.30|
+|Mediawiki| 192.168.16.31|
 
 ## IaC
 |Name|IP Address|
