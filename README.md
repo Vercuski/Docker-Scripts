@@ -7,6 +7,12 @@ Collection of Docker and Docker Compose scripts
 |:----------|:----------|
 |Gateway    | 192.168.16.1|
 
+## Analytics
+|Name|IP Address|
+|:----------|:----------|
+|Apache Spark| 192.168.16.190|
+
+
 ## CodeAnalysis
 |Name|IP Address|
 |:----------|:----------|
@@ -64,6 +70,9 @@ Collection of Docker and Docker Compose scripts
 |ElasticSearch02| 192.168.16.151|
 |ElasticSearch03| 192.168.16.152|
 |Kibana| 192.168.16.153|
+|OpenSearchNode1| 192.168.16.154|
+|OpenSearchNode2| 192.168.16.155|
+|OpenSearchDashboard| 192.168.16.156|
 
 ## Visulation
 |Name|IP Address|

@@ -1,3 +1,6 @@
+md $HOME/docker/volumes/Analytics/ApacheSpark/data
+md $HOME/docker/volumes/Analytics/ApacheSpark/app
+md $HOME/docker/volumes/Analytics/ApacheSpark/logs
 md $HOME/docker/volumes/ApacheCassandra
 md $HOME/docker/volumes/InfluxDb/config
 md $HOME/docker/volumes/InfluxDb/db

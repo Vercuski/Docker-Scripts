@@ -1,3 +1,6 @@
+mkdir C:\docker\volumes\Analytics\ApacheSpark\data
+mkdir C:\docker\volumes\Analytics\ApacheSpark\apps
+mkdir C:\docker\volumes\Analytics\ApacheSpark\logs
 mkdir C:\docker\volumes\ApacheCassandra
 mkdir C:\docker\volumes\InfluxDb\config
 mkdir C:\docker\volumes\InfluxDb\db
