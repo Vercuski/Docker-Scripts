@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  eventstore.db:
+    image: eventstore/eventstore:20.10.2-buster-slim
+    environment:
+      - EVENTSTORE_CLUSTER_SIZE=1
+      - EVENTSTORE_RUN_PROJECTIONS=All
+      - EVENTSTORE_START_STANDARD_PROJECTIONS=true
+      - EVENTSTORE_EXT_TCP_PORT=1113
+      - EVENTSTORE_HTTP_PORT=2113
+      - EVENTSTORE_INSECURE=true
+      - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
+      - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
+    ports:
+      - "1113:1113"
+      - "2113:2113"
+    volumes:
+      - type: volume
+        source: eventstore-volume-data
+        target: /var/lib/eventstore
+      - type: volume
+        source: eventstore-volume-logs
+        target: /var/log/eventstore
+    networks:
+        GroupNetwork:
+          ipv4_address: 192.168.16.20
+          aliases:
+            - eventstoredb
+volumes:
+  eventstore-volume-data:
+    name: eventstore-volume-data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Databases\EventStoreDb\data\
+  eventstore-volume-logs:
+    name: eventstore-volume-logs
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Databases\EventStoreDb\logs\
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

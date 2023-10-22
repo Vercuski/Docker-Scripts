@@ -26,11 +26,11 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Neo4J\data
+      device: C:\docker\volumes\Databases\Neo4J\data
   Neo4J_conf:
     name: Neo4J_conf
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Neo4J\conf\
+      device: C:\docker\volumes\Databases\Neo4J\conf\

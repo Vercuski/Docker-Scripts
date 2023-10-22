@@ -21,7 +21,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\ApacheCassandra
+      device: C:\docker\volumes\Databases\ApacheCassandra
 networks:
   GroupNetwork:
     driver: bridge

@@ -28,6 +28,7 @@ Collection of Docker and Docker Compose scripts
 |:----------|:----------|
 |Apache Cassandra| 192.168.16.10|
 |Cockroach DB| 192.168.16.11|
+|EventStore DB| 192.168.16.20|
 |Influx DB| 192.168.16.12|
 |Mongo DB| 192.168.16.13|
 |MSSQL| 192.168.16.14|

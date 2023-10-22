@@ -15,11 +15,31 @@ services:
           - mssqldb
     volumes:
       - sqlsystem:/var/opt/mssql/
-      - C:\docker\volumes\MSSQL\data:/var/opt/mssql/data
-      - C:\docker\volumes\MSSQL\log:/var/opt/mssql/log
-      - C:\docker\volumes\MSSQL\secrets:/var/opt/mssql/secrets
+      - MSSQL_Data:/var/opt/mssql/data
+      - MSSQL_Log:/var/opt/mssql/log
+      - MSSQL_Secrets:/var/opt/mssql/secrets
 volumes:
-  sqlsystem:
+  MSSQL_Data:
+    name: MSSQL_Data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Databases\MSSQL\data
+  MSSQL_Log:
+    name: MSSQL_Log
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Databases\MSSQL\log
+  MSSQL_Secrets:
+    name: MSSQL_Secrets
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Databases\MSSQL\secrets
 networks:
   GroupNetwork:
     driver: bridge

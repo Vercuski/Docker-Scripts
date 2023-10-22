@@ -45,7 +45,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Registry\data\
+      device: C:\docker\volumes\Containerization\Registry\data\
 networks:
   GroupNetwork:
     driver: bridge

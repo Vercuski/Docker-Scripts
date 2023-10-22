@@ -73,14 +73,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Serarch\OpenSearch\node1\
+      device: C:\docker\volumes\Search\OpenSearch\node1\
   opensearch-data2:
     name: opensearch-data2
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Serarch\OpenSearch\node2\
+      device: C:\docker\volumes\Search\OpenSearch\node2\
 
 networks:
   GroupNetwork:

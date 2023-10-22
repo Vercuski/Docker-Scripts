@@ -43,14 +43,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\PostgreSQL\Data
+      device: C:\docker\volumes\Databases\PostgreSQL\Data
   pgadmin4_data:
     name: pgadmin4_data
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\PostgreSQL\pgadmin4data
+      device: C:\docker\volumes\Databases\PostgreSQL\pgadmin4data
 networks:
   GroupNetwork:
     driver: bridge

@@ -19,7 +19,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Grafana\storage
+      device: C:\docker\volumes\Visualiztion\Grafana\storage
 networks:
   GroupNetwork:
     driver: bridge

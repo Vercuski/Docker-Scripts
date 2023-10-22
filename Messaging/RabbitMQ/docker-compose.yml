@@ -21,14 +21,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\RabbitMQ\data\
+      device: C:\docker\volumes\Messaging\RabbitMQ\data\
   rabbitmq_log:
     name: rabbitmq_log
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\RabbitMQ\log\
+      device: C:\docker\volumes\Messaging\RabbitMQ\log\
 networks:
   GroupNetwork:
     driver: bridge

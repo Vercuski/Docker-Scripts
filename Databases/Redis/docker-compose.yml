@@ -20,7 +20,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Redis\cache
+      device: C:\docker\volumes\Databases\Redis\cache
 networks:
   GroupNetwork:
     driver: bridge

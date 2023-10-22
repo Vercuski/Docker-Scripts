@@ -1,46 +1,57 @@
 md $HOME/docker/volumes/Analytics/ApacheSpark/data
-md $HOME/docker/volumes/Analytics/ApacheSpark/app
+md $HOME/docker/volumes/Analytics/ApacheSpark/apps
 md $HOME/docker/volumes/Analytics/ApacheSpark/logs
-md $HOME/docker/volumes/ApacheCassandra
-md $HOME/docker/volumes/InfluxDb/config
-md $HOME/docker/volumes/InfluxDb/db
-md $HOME/docker/volumes/MongoDb/data
-md $HOME/docker/volumes/MSSQL/data
-md $HOME/docker/volumes/MSSQL/log
-md $HOME/docker/volumes/MSSQL/secrets
-md $HOME/docker/volumes/MySQL
-md $HOME/docker/volumes/Neo4J/data
-md $HOME/docker/volumes/Neo4J/conf
-md $HOME/docker/volumes/PostgreSQL/Data
-md $HOME/docker/volumes/PostgreSQL/pgadmin4data
-md $HOME/docker/volumes/Redis/cache
-md $HOME/docker/volumes/Grafana/storage
-md $HOME/docker/volumes/Grafana/storage
-md $HOME/docker/volumes/Rancher/data
-md $HOME/docker/volumes/RabbitMQ/data
-md $HOME/docker/volumes/RabbitMQ/log
-md $HOME/docker/volumes/CockroachDB/data
-md $HOME/docker/volumes/Terraform/data
-md $HOME/docker/volumes/Nginx/www
-md $HOME/docker/volumes/Nginx/Nginx
-md $HOME/docker/volumes/Nginx-UI
-md $HOME/docker/volumes/Kafka/Kafka/data
-md $HOME/docker/volumes/Kafka/Kafka/secrets
-md $HOME/docker/volumes/Kafka/Zookeeper/data
-md $HOME/docker/volumes/Kafka/Zookeeper/log
-md $HOME/docker/volumes/Kafka/Zookeeper/secrets
-md $HOME/docker/volumes/ElasticSearch/certs
-md $HOME/docker/volumes/ElasticSearch/data01
-md $HOME/docker/volumes/ElasticSearch/data02
-md $HOME/docker/volumes/ElasticSearch/data03
-md $HOME/docker/volumes/ElasticSearch/logs01
-md $HOME/docker/volumes/ElasticSearch/logs02
-md $HOME/docker/volumes/ElasticSearch/logs03
-md $HOME/docker/volumes/ElasticSearch/kibanadatadata03
-md $HOME/docker/volumes/SonarQube/data
-md $HOME/docker/volumes/SonarQube/extensions
-md $HOME/docker/volumes/SonarQube/logs
-md $HOME/docker/volumes/Mediawiki/html
-md $HOME/docker/volumes/Registry/data
-md $HOME/docker/volumes/Serarch/OpenSearch/node1/
-md $HOME/docker/volumes/Serarch/OpenSearch/node2/
+
+md $HOME/docker/volumes/CodeAnalysis/SonarQube/data
+md $HOME/docker/volumes/CodeAnalysis/SonarQube/extensions
+md $HOME/docker/volumes/CodeAnalysis/SonarQube/logs
+
+md $HOME/docker/volumes/Containerization/DockerRegistry/data
+
+md $HOME/docker/volumes/Databases/ApacheCassandra
+md $HOME/docker/volumes/Databases/CockroachDB/data
+md $HOME/docker/volumes/Databases/EventStoreDb/data
+md $HOME/docker/volumes/Databases/EventStoreDb/logs
+md $HOME/docker/volumes/Databases/InfluxDb/config
+md $HOME/docker/volumes/Databases/InfluxDb/db
+md $HOME/docker/volumes/Databases/MongoDb/data
+md $HOME/docker/volumes/Databases/MSSQL/data
+md $HOME/docker/volumes/Databases/MSSQL/log
+md $HOME/docker/volumes/Databases/MSSQL/secrets
+md $HOME/docker/volumes/Databases/MySQL
+md $HOME/docker/volumes/Databases/Neo4J/data
+md $HOME/docker/volumes/Databases/Neo4J/conf
+md $HOME/docker/volumes/Databases/PostgreSQL/Data
+md $HOME/docker/volumes/Databases/PostgreSQL/pgadmin4data
+md $HOME/docker/volumes/Databases/Redis/cache
+
+md $HOME/docker/volumes/Documentation/Mediawiki/html
+
+md $HOME/docker/volumes/IaC/Terraform/data
+
+md $HOME/docker/volumes/Messaging/Kafka/Kafka/data/
+md $HOME/docker/volumes/Messaging/Kafka/Kafka/secrets/
+md $HOME/docker/volumes/Messaging/Kafka/Zookeeper/data/
+md $HOME/docker/volumes/Messaging/Kafka/Zookeeper/log/
+md $HOME/docker/volumes/Messaging/Kafka/Zookeeper/secrets/
+md $HOME/docker/volumes/Messaging/RabbitMQ/data
+md $HOME/docker/volumes/Messaging/RabbitMQ/log
+
+md $HOME/docker/volumes/Orchestration/Rancher/data
+
+md $HOME/docker/volumes/Search/OpenSearch/node1/
+md $HOME/docker/volumes/Search/OpenSearch/node2/
+md $HOME/docker/volumes/Search/ElasticSearch/certs
+md $HOME/docker/volumes/Search/ElasticSearch/data01
+md $HOME/docker/volumes/Search/ElasticSearch/data02
+md $HOME/docker/volumes/Search/ElasticSearch/data03
+md $HOME/docker/volumes/Search/ElasticSearch/logs01
+md $HOME/docker/volumes/Search/ElasticSearch/logs02
+md $HOME/docker/volumes/Search/ElasticSearch/logs03
+md $HOME/docker/volumes/Search/ElasticSearch/kibanadatadata03
+
+md $HOME/docker/volumes/Visualization/Grafana/storage
+
+md $HOME/docker/volumes/WebServers/Nginx/www
+md $HOME/docker/volumes/WebServers/Nginx/Nginx
+md $HOME/docker/volumes/WebServers/Nginx-UI

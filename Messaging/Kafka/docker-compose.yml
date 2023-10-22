@@ -47,36 +47,35 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Kafka\Kafka\data\
+      device: C:\docker\volumes\Messaging\Kafka\Kafka\data\
   kafka_secrets:
     name: kafka_secrets
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Kafka\Kafka\secrets\
+      device: C:\docker\volumes\Messaging\Kafka\Kafka\secrets\
   zookeeper_data:
     name: zookeeper_data
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Kafka\Zookeeper\data\
+      device: C:\docker\volumes\Messaging\Kafka\Zookeeper\data\
   zookeeper_log:
     name: zookeeper_log
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Kafka\Zookeeper\log\
+      device: C:\docker\volumes\Messaging\Kafka\Zookeeper\log\
   zookeeper_secrets:
     name: zookeeper_secrets
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Kafka\Zookeeper\secrets\
-      
+      device: C:\docker\volumes\Messaging\Kafka\Zookeeper\secrets\
 networks:
   GroupNetwork:
     driver: bridge
