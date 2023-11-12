@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  spark-master:
+    container_name: apache-spark-master
+    build: .
+    image: spark:latest
+    volumes:
+      - spark_data:/opt/spark/data
+      - spark_apps:/opt/spark/apps
+      - spark_logs:/opt/spark/spark-events
+    networks:
+        GroupNetwork:
+          ipv4_address: 192.168.16.190
+          aliases:
+            - apachespark
+    environment:
+      SPARK_DRIVER_BIND_ADDRESS: apachespark
+    ports:
+      - 9090:8080
+      - 7077:7077
+volumes:
+  spark_logs:
+    name: spark_logs
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Analytics\ApacheSpark\logs
+  spark_apps:
+    name: spark_apps
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Analytics\ApacheSpark\apps
+  spark_data:
+    name: spark_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Analytics\ApacheSpark\data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

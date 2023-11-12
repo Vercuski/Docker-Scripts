@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  db:
+  mysql:
     image: mysql:latest
     container_name: mysql
     environment:
@@ -9,7 +9,7 @@ services:
       MYSQL_PASSWORD: "Password123"
       MYSQL_ROOT_PASSWORD: "Password123"
     ports:
-      - "33066:3306"
+      - "3306:3306"
     expose:
       - "3306"
     networks:
@@ -19,6 +19,19 @@ services:
           - mysqldb
     volumes:
       - MySQL_Data:/var/lib/mysql
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mysqldb
+      PMA_PORT: 3306
+    ports:
+      - 8082:80
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.20
+        aliases:
+          - phpmyadmin
 volumes:
   MySQL_Data:
     name: MySQL_Data

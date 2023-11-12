@@ -18,10 +18,15 @@ services:
   mongo-express:
     image: mongo-express:latest
     container_name: mongo-express
+    depends_on:
+      - mongodb
     ports:
       - "8081:8081"
     environment:
-      ME_CONFIG_MONGODB_URL: mongodb://user:Password123@localhost:27017/db?ssl=false
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: true
+      ME_CONFIG_MONGODB_AUTH_USERNAME: user
+      ME_CONFIG_MONGODB_AUTH_PASSWORD: Password123
+      ME_CONFIG_MONGODB_URL: mongodb://localhost:27017
 volumes:
   MongoDb_Data:
     name: MongoDb_Data

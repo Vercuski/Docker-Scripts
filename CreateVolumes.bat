@@ -42,13 +42,11 @@ mkdir C:\docker\volumes\Orchestration\Rancher\data
 mkdir C:\docker\volumes\Search\OpenSearch\node1\
 mkdir C:\docker\volumes\Search\OpenSearch\node2\
 mkdir C:\docker\volumes\Search\ElasticSearch\certs
-mkdir C:\docker\volumes\Search\ElasticSearch\data01
-mkdir C:\docker\volumes\Search\ElasticSearch\data02
-mkdir C:\docker\volumes\Search\ElasticSearch\data03
-mkdir C:\docker\volumes\Search\ElasticSearch\logs01
-mkdir C:\docker\volumes\Search\ElasticSearch\logs02
-mkdir C:\docker\volumes\Search\ElasticSearch\logs03
-mkdir C:\docker\volumes\Search\ElasticSearch\kibanadatadata03
+mkdir C:\docker\volumes\Search\ElasticSearch\esdata01
+mkdir C:\docker\volumes\Search\ElasticSearch\kibanadata
+mkdir C:\docker\volumes\Search\ElasticSearch\metricbeatdata01
+mkdir C:\docker\volumes\Search\ElasticSearch\filebeatdata01
+mkdir C:\docker\volumes\Search\ElasticSearch\logstashdata01
 
 mkdir C:\docker\volumes\Visualization\Grafana\storage
 

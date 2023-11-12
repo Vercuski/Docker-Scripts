@@ -40,6 +40,13 @@ services:
         ipv4_address: 192.168.16.71
         aliases:
           - zookeeper
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    depends_on:
+      - kafka
+    ports:
+      - 8083:8080
 volumes:
   kafka_data:
     name: kafka_data

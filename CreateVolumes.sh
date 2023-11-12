@@ -42,13 +42,11 @@ md $HOME/docker/volumes/Orchestration/Rancher/data
 md $HOME/docker/volumes/Search/OpenSearch/node1/
 md $HOME/docker/volumes/Search/OpenSearch/node2/
 md $HOME/docker/volumes/Search/ElasticSearch/certs
-md $HOME/docker/volumes/Search/ElasticSearch/data01
-md $HOME/docker/volumes/Search/ElasticSearch/data02
-md $HOME/docker/volumes/Search/ElasticSearch/data03
-md $HOME/docker/volumes/Search/ElasticSearch/logs01
-md $HOME/docker/volumes/Search/ElasticSearch/logs02
-md $HOME/docker/volumes/Search/ElasticSearch/logs03
-md $HOME/docker/volumes/Search/ElasticSearch/kibanadatadata03
+md $HOME/docker/volumes/Search/ElasticSearch/esdata01
+md $HOME/docker/volumes/Search/ElasticSearch/kibanadata
+md $HOME/docker/volumes/Search/ElasticSearch/metricbeatdata01
+md $HOME/docker/volumes/Search/ElasticSearch/filebeatdata01
+md $HOME/docker/volumes/Search/ElasticSearch/logstashdata01
 
 md $HOME/docker/volumes/Visualization/Grafana/storage
 

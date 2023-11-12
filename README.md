@@ -33,6 +33,7 @@ Collection of Docker and Docker Compose scripts
 |Mongo DB| 192.168.16.13|
 |MSSQL| 192.168.16.14|
 |MySQL| 192.168.16.15|
+|myphpadmin| 192.168.16.20|
 |Neo4J| 192.168.16.16|
 |PostgreSQL| 192.168.16.17|
 |pgAdmin4| 192.168.16.18|
@@ -67,10 +68,12 @@ Collection of Docker and Docker Compose scripts
 ## Search
 |Name|IP Address|
 |:----------|:----------|
-|ElasticSearch01| 192.168.16.150|
-|ElasticSearch02| 192.168.16.151|
-|ElasticSearch03| 192.168.16.152|
-|Kibana| 192.168.16.153|
+|ElastichSearchMain| 192.168.16.150|
+|es01| 192.168.16.151|
+|Kibana| 192.168.16.152|
+|Metricbeat| 192.168.16.153|
+|Filebeat| 192.168.16.154|
+|Logstash| 192.168.16.155|
 |OpenSearchNode1| 192.168.16.154|
 |OpenSearchNode2| 192.168.16.155|
 |OpenSearchDashboard| 192.168.16.156|

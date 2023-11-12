@@ -7,14 +7,13 @@ services:
       MSSQL_SA_PASSWORD: Password123
       ACCEPT_EULA: Y
     ports:
-      - "14333:1433"
+      - 1433:1433
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.14
         aliases:
           - mssqldb
     volumes:
-      - sqlsystem:/var/opt/mssql/
       - MSSQL_Data:/var/opt/mssql/data
       - MSSQL_Log:/var/opt/mssql/log
       - MSSQL_Secrets:/var/opt/mssql/secrets
