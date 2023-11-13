@@ -1,7 +1,2 @@
-https://x-team.com/blog/set-up-rabbitmq-with-docker-compose/
-
-docker compose up
-
-docker compose down
-
-http://localhost:15672
+wsl -d docker-desktop
+sysctl -w vm.max_map_count=262144

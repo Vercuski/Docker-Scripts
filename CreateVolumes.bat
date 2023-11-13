@@ -14,6 +14,8 @@ mkdir C:\docker\volumes\Databases\EventStoreDb\data
 mkdir C:\docker\volumes\Databases\EventStoreDb\logs
 mkdir C:\docker\volumes\Databases\InfluxDb\config
 mkdir C:\docker\volumes\Databases\InfluxDb\db
+mkdir C:\docker\volumes\Databases\MariaDB\Backup
+mkdir C:\docker\volumes\Databases\MariaDB\Data
 mkdir C:\docker\volumes\Databases\MongoDb\data
 mkdir C:\docker\volumes\Databases\MSSQL\data
 mkdir C:\docker\volumes\Databases\MSSQL\log

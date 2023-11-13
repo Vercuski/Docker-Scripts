@@ -26,10 +26,12 @@ Collection of Docker and Docker Compose scripts
 ## Databases
 |Name|IP Address|
 |:----------|:----------|
+|Adminer| 192.168.16.23|
 |Apache Cassandra| 192.168.16.10|
 |Cockroach DB| 192.168.16.11|
-|EventStore DB| 192.168.16.20|
+|EventStore DB| 192.168.16.21|
 |Influx DB| 192.168.16.12|
+|Maria DB| 192.168.16.22|
 |Mongo DB| 192.168.16.13|
 |MSSQL| 192.168.16.14|
 |MySQL| 192.168.16.15|

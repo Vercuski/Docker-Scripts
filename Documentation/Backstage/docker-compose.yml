@@ -11,6 +11,7 @@ services:
       # This value must match the name of the postgres configuration block.
       POSTGRES_HOST: postgresql
       POSTGRES_USER: user@user.com
+      POSTGRES_PASSWORD: Password123
     ports:
       - 7007:7007
 networks:

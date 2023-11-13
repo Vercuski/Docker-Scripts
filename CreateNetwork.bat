@@ -1,0 +1,1 @@
+docker network create -d bridge GroupNetwork --subnet=192.168.16.0/24 --gateway=192.168.16.1

@@ -14,6 +14,8 @@ md $HOME/docker/volumes/Databases/EventStoreDb/data
 md $HOME/docker/volumes/Databases/EventStoreDb/logs
 md $HOME/docker/volumes/Databases/InfluxDb/config
 md $HOME/docker/volumes/Databases/InfluxDb/db
+md $HOME/docker/volumes/Databases/MariaDB/Backup
+md $HOME/docker/volumes/Databases/MariaDB/Data
 md $HOME/docker/volumes/Databases/MongoDb/data
 md $HOME/docker/volumes/Databases/MSSQL/data
 md $HOME/docker/volumes/Databases/MSSQL/log
