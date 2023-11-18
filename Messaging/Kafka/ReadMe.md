@@ -1,8 +1,6 @@
-https://developer.confluent.io/quickstart/kafka-docker/#3-create-a-topic
+https://developer.confluent.io/quickstart/kafka-docker/#3-create-a-topic<br>
+docker compose up -d<br>
+docker compose down<br>
 
-docker compose up
-
-docker compose down
-
-Use the "Offset Explorer" application to view the kafka queue properties
-https://www.kafkatool.com/
+Use the "Offset Explorer" application to view the kafka queue properties<br>
+https://www.kafkatool.com/<br>

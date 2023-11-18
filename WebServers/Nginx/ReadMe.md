@@ -1,7 +1,4 @@
-https://www.nginx.com/
-
-docker compose up
-
-docker compose down
-
+https://www.nginx.com/<br>
+docker compose up -d<br>
+docker compose down<br>
 http://localhost:8100
