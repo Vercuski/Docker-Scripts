@@ -41,6 +41,8 @@ md $HOME/docker/volumes/Messaging/RabbitMQ/log
 
 md $HOME/docker/volumes/Orchestration/Rancher/data
 
+md $HOME/docker/volumes/RP-LB/Haproxy
+
 md $HOME/docker/volumes/Search/OpenSearch/node1/
 md $HOME/docker/volumes/Search/OpenSearch/node2/
 md $HOME/docker/volumes/Search/ElasticSearch/certs
@@ -55,3 +57,4 @@ md $HOME/docker/volumes/Visualization/Grafana/storage
 md $HOME/docker/volumes/WebServers/Nginx/www
 md $HOME/docker/volumes/WebServers/Nginx/Nginx
 md $HOME/docker/volumes/WebServers/Nginx-UI
+md $HOME/docker/volumes/WebServers/Apache

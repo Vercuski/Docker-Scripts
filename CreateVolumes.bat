@@ -41,6 +41,8 @@ mkdir C:\docker\volumes\Messaging\RabbitMQ\log
 
 mkdir C:\docker\volumes\Orchestration\Rancher\data
 
+mkdir C:\docker\volumes\RP-LB\Haproxy
+
 mkdir C:\docker\volumes\Search\OpenSearch\node1\
 mkdir C:\docker\volumes\Search\OpenSearch\node2\
 mkdir C:\docker\volumes\Search\ElasticSearch\certs
@@ -55,3 +57,4 @@ mkdir C:\docker\volumes\Visualization\Grafana\storage
 mkdir C:\docker\volumes\WebServers\Nginx\www
 mkdir C:\docker\volumes\WebServers\Nginx\Nginx
 mkdir C:\docker\volumes\WebServers\Nginx-UI
+mkdir C:\docker\volumes\WebServers\Apache

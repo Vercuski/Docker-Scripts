@@ -21,12 +21,20 @@ services:
     depends_on:
       - mongodb
     ports:
-      - "8081:8081"
+      - "8088:8081"
     environment:
-      ME_CONFIG_MONGODB_ENABLE_ADMIN: true
-      ME_CONFIG_MONGODB_AUTH_USERNAME: user
-      ME_CONFIG_MONGODB_AUTH_PASSWORD: Password123
-      ME_CONFIG_MONGODB_URL: mongodb://localhost:27017
+      ME_CONFIG_BASICAUTH_USERNAME: "user"
+      ME_CONFIG_BASICAUTH_PASSWORD: "Password123"
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+      ME_CONFIG_MONGODB_AUTH_USERNAME: "user"
+      ME_CONFIG_MONGODB_AUTH_PASSWORD: "Password123"
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_SERVER: "mongodb"
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.24
+        aliases:
+          - mongoexpress
 volumes:
   MongoDb_Data:
     name: MongoDb_Data

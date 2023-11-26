@@ -33,6 +33,7 @@ Collection of Docker and Docker Compose scripts
 |Influx DB| 192.168.16.12|
 |Maria DB| 192.168.16.22|
 |Mongo DB| 192.168.16.13|
+|Mongo Express| 192.168.16.24|
 |MSSQL| 192.168.16.14|
 |MySQL| 192.168.16.15|
 |myphpadmin| 192.168.16.20|
@@ -67,6 +68,11 @@ Collection of Docker and Docker Compose scripts
 |Kubernetes| 192.168.16.90|
 |Rancher| 192.168.16.91|
 
+## Reverse Proxy / Load Balancing
+|Name|IP Address|
+|:----------|:----------|
+|HAProxy| 192.168.16.160|
+
 ## Search
 |Name|IP Address|
 |:----------|:----------|
@@ -90,3 +96,4 @@ Collection of Docker and Docker Compose scripts
 |:----------|:----------|
 |Nginx| 192.168.16.130|
 |NginxUI| 192.168.16.131|
+|Apache| 192.168.16.132|
