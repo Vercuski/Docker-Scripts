@@ -8,7 +8,8 @@ CREATE DATABASE [sonar]
 ( NAME = N'sonar', FILENAME = N'/var/opt/mssql/data/sonar.mdf' , SIZE = 73728KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
  LOG ON 
 ( NAME = N'sonar_log', FILENAME = N'/var/opt/mssql/data/sonar_log.ldf' , SIZE = 73728KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
- WITH CATALOG_COLLATION = 'SQL_Latin1_General_CP1_CS_AS', LEDGER = OFF
+ COLLATE SQL_Latin1_General_CP1_CS_AS
+ WITH LEDGER = OFF
 GO
 
 IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
