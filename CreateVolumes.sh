@@ -1,6 +1,7 @@
 md $HOME/docker/volumes/Analytics/ApacheSpark/data
 md $HOME/docker/volumes/Analytics/ApacheSpark/apps
 md $HOME/docker/volumes/Analytics/ApacheSpark/logs
+md $HOME/docker/volumes/Analytics/Seq/data
 
 md $HOME/docker/volumes/CodeAnalysis/SonarQube/data
 md $HOME/docker/volumes/CodeAnalysis/SonarQube/extensions
@@ -23,6 +24,8 @@ md $HOME/docker/volumes/Databases/MSSQL/secrets
 md $HOME/docker/volumes/Databases/MySQL
 md $HOME/docker/volumes/Databases/Neo4J/data
 md $HOME/docker/volumes/Databases/Neo4J/conf
+md $HOME/docker/volumes/Databases/Oracle/Data
+md $HOME/docker/volumes/Databases/Oracle/Backup
 md $HOME/docker/volumes/Databases/PostgreSQL/Data
 md $HOME/docker/volumes/Databases/PostgreSQL/pgadmin4data
 md $HOME/docker/volumes/Databases/Redis/cache

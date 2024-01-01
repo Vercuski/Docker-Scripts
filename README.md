@@ -11,6 +11,7 @@ Collection of Docker and Docker Compose scripts
 |Name|IP Address|
 |:----------|:----------|
 |Apache Spark| 192.168.16.190|
+|Seq| 192.168.16.191|
 
 
 ## CodeAnalysis
@@ -38,6 +39,7 @@ Collection of Docker and Docker Compose scripts
 |MySQL| 192.168.16.15|
 |myphpadmin| 192.168.16.20|
 |Neo4J| 192.168.16.16|
+|Oracle| 192.168.16.25|
 |PostgreSQL| 192.168.16.17|
 |pgAdmin4| 192.168.16.18|
 |Redis| 192.168.16.19|

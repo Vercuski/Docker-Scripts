@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+  client:
+    image: haproxy:latest
+    container_name: haproxy
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.160
+        aliases:
+          - haproxy
+    ports:
+      - 8100:8100
+    volumes:
+      - haproxy:/usr/local/etc/haproxy
+volumes:
+  haproxy:
+    name: haproxy
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\RP-LB\Haproxy
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

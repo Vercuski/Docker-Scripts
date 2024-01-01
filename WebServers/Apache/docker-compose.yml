@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+  apache:
+    image: httpd:latest
+    container_name: apache
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.132
+        aliases:
+          - apache
+    ports:
+    - '8083:80'
+    volumes:
+    - apache_websites:/usr/local/apache2/htdocs
+volumes:
+  apache_websites:
+    name: apache_websites
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\WebServers\Apache
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

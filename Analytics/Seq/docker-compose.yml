@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  seq:
+    container_name: seq
+    build: .
+    image: datalust/seq
+    volumes:
+      - seq_data:/data
+    networks:
+        GroupNetwork:
+          ipv4_address: 192.168.16.191
+          aliases:
+            - seq
+    environment:
+      ACCEPT_EULA: Y
+      SEQ_FIRSTRUN_ADMIN_PASSWORD: "Password123"
+    ports:
+      - 8089:80
+      - 5341:5341
+volumes:
+  seq_data:
+    name: seq_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Analytics\Seq\data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

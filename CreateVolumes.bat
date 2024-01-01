@@ -1,6 +1,7 @@
 mkdir C:\docker\volumes\Analytics\ApacheSpark\data
 mkdir C:\docker\volumes\Analytics\ApacheSpark\apps
 mkdir C:\docker\volumes\Analytics\ApacheSpark\logs
+mkdir C:\docker\volumes\Analytics\Seq\data
 
 mkdir C:\docker\volumes\CodeAnalysis\SonarQube\data
 mkdir C:\docker\volumes\CodeAnalysis\SonarQube\extensions
@@ -23,6 +24,8 @@ mkdir C:\docker\volumes\Databases\MSSQL\secrets
 mkdir C:\docker\volumes\Databases\MySQL
 mkdir C:\docker\volumes\Databases\Neo4J\data
 mkdir C:\docker\volumes\Databases\Neo4J\conf
+mkdir C:\docker\volumes\Databases\Oracle\Data
+mkdir C:\docker\volumes\Databases\Oracle\Backup
 mkdir C:\docker\volumes\Databases\PostgreSQL\Data
 mkdir C:\docker\volumes\Databases\PostgreSQL\pgadmin4data
 mkdir C:\docker\volumes\Databases\Redis\cache
