@@ -73,10 +73,10 @@ Collection of Docker and Docker Compose scripts
 |Kubernetes| 192.168.16.90|
 |Rancher| 192.168.16.91|
 
-## PersonalSites
+## Packages
 |Name|IP Address|
 |:----------|:----------|
-|Pantry Inventory| 192.168.16.200|
+|ProGet| 192.168.16.200|
 
 ## Reverse Proxy / Load Balancing
 |Name|IP Address|
