@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - C:\docker\volumes\Databases\Prometheus\prometheus.yml:/etc/prometheus/prometheus.yml
+      - C:\docker\volumes\Databases\Prometheus\rules.yml:/etc/prometheus/rules.yml
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.26
+    ports:
+      - 9090:9090
+  node-exporter:
+    image: prom/node-exporter
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.27
+    ports:
+      - 9100:9100
+  alert-manager:
+    image: prom/alertmanager
+    volumes:
+      - C:\docker\volumes\Databases\Prometheus\alertmanager.yml:/alertmanager/alertmanager.yml
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.28
+    ports:
+      - 9093:9093
+volumes:
+  prometheus:
+    name: prometheus
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Databases\Prometheus\
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

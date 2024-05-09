@@ -41,6 +41,9 @@ Collection of Docker and Docker Compose scripts
 |Neo4J| 192.168.16.16|
 |Oracle| 192.168.16.25|
 |PostgreSQL| 192.168.16.17|
+|Prometheus| 192.168.16.26|
+|Prometheus Node Explorer| 192.168.16.27|
+|Prometheus Alert Manager| 192.168.16.28|
 |pgAdmin4| 192.168.16.18|
 |Redis| 192.168.16.19|
 
@@ -69,6 +72,11 @@ Collection of Docker and Docker Compose scripts
 |:----------|:----------|
 |Kubernetes| 192.168.16.90|
 |Rancher| 192.168.16.91|
+
+## PersonalSites
+|Name|IP Address|
+|:----------|:----------|
+|Pantry Inventory| 192.168.16.200|
 
 ## Reverse Proxy / Load Balancing
 |Name|IP Address|

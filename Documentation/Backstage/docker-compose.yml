@@ -12,6 +12,7 @@ services:
       POSTGRES_HOST: postgresql
       POSTGRES_USER: user@user.com
       POSTGRES_PASSWORD: Password123
+      # NODE_OPTIONS: --no-node-snapshot # uncomment for NODE 20+
     ports:
       - 7007:7007
 networks:

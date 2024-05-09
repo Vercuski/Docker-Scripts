@@ -28,6 +28,7 @@ mkdir C:\docker\volumes\Databases\Oracle\Data
 mkdir C:\docker\volumes\Databases\Oracle\Backup
 mkdir C:\docker\volumes\Databases\PostgreSQL\Data
 mkdir C:\docker\volumes\Databases\PostgreSQL\pgadmin4data
+mkdir C:\docker\volumes\Databases\Prometheus\
 mkdir C:\docker\volumes\Databases\Redis\cache
 
 mkdir C:\docker\volumes\Documentation\Mediawiki\html

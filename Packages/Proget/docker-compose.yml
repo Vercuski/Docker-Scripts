@@ -1,0 +1,30 @@
+version: "3.8"
+services:
+  pg:
+    image: proget.inedo.com/productimages/inedo/proget:latest
+    container_name: proget
+    restart: unless-stopped
+    environment:
+      PROGET_SQL_CONNECTION_STRING: Data Source=192.168.16.14; Initial Catalog=ProGet; User ID=sa; Password=Password123
+    ports:
+      - "8090:80"
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.200
+        aliases:
+          - proget
+    volumes:
+      - Proget_Data:/var/proget/packages
+# Update this path to persist your ProGet packages storage
+volumes:
+  Proget_Data:
+    name: Proget_Data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker\volumes\Packages\ProGet\packages
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true
