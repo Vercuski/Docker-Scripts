@@ -3,6 +3,7 @@ version: "3.8"
 services:
   spark-master:
     container_name: apache-spark-master
+    restart: unless-stopped
     build: .
     image: spark:latest
     volumes:

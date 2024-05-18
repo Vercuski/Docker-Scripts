@@ -2,6 +2,8 @@ version: "3.8"
 services:
   backstage:
     image: backstage
+    container_name: backstage
+    restart: unless-stopped
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.30

@@ -2,6 +2,8 @@ version: "3.8"
 services:
   cockroachDb:
    image: cockroachdb/cockroach:latest
+   container_name: cockroachdb
+   restart: unless-stopped
    ports:
      - 26257:26257
      - 8080:8080

@@ -2,7 +2,8 @@ version: "3.8"
 services:
   mysql:
     image: mariadb:latest
-    container_name: mariadb
+    container_name: MariaDb
+    restart: unless-stopped
     environment:
       MARIADB_ROOT_PASSWORD: "Password123"
       MARIADB_USER: "user"

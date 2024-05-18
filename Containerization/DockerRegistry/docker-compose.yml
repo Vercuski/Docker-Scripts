@@ -3,6 +3,8 @@ version: "3.8"
 services:
   registry:
     image: registry:latest
+    container_name: docker_registry
+    restart: unless-stopped
     ports:
     - 5000:5000
     environment:

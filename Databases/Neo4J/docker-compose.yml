@@ -3,6 +3,7 @@ services:
   neo4j:
     image: neo4j:latest
     container_name: neo4j
+    restart: unless-stopped
     volumes:
       - Neo4J_data:/data
       - Neo4J_conf:/conf/

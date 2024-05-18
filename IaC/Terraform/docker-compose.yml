@@ -3,6 +3,7 @@ services:
   terraform:
     image: hashicorp/terraform:latest
     container_name: terraform
+    restart: unless-stopped
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.50

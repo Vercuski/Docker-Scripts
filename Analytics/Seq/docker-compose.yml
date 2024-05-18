@@ -3,6 +3,7 @@ version: "3.8"
 services:
   seq:
     container_name: seq
+    restart: unless-stopped
     build: .
     image: datalust/seq
     volumes:

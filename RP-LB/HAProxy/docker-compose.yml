@@ -3,6 +3,7 @@ services:
   client:
     image: haproxy:latest
     container_name: haproxy
+    restart: unless-stopped
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.160

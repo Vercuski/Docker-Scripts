@@ -3,6 +3,7 @@ services:
   postgres:
     image: postgres:latest
     container_name: posgresql
+    restart: unless-stopped
     environment:
       POSTGRES_USER:  user@user.com
       POSTGRES_PASSWORD: Password123

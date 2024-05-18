@@ -3,6 +3,7 @@ services:
   apache:
     image: httpd:latest
     container_name: apache
+    restart: unless-stopped
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.132

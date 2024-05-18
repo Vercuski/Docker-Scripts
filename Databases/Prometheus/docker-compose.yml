@@ -2,6 +2,8 @@ version: "3.8"
 services:
   prometheus:
     image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
     volumes:
       - C:\docker\volumes\Databases\Prometheus\prometheus.yml:/etc/prometheus/prometheus.yml
       - C:\docker\volumes\Databases\Prometheus\rules.yml:/alertmanager/rules.yml"

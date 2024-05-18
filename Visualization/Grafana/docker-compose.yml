@@ -3,6 +3,7 @@ services:
   grafana:
     image: grafana/grafana-enterprise:latest
     container_name: grafana
+    restart: unless-stopped
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.110

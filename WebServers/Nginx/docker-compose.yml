@@ -3,6 +3,7 @@ services:
   client:
     image: nginx:latest
     container_name: nginx
+    restart: unless-stopped
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.130

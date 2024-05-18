@@ -3,7 +3,7 @@ services:
   rancher:
     image: rancher/rancher:latest
     container_name: rancher
-    restart: always
+    restart: unless-stopped
     ports:
     - "80:80/tcp"
     - "443:443/tcp"
