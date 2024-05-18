@@ -1,26 +1,26 @@
 version: "3.8"
 services:
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:latest
     volumes:
       - C:\docker\volumes\Databases\Prometheus\prometheus.yml:/etc/prometheus/prometheus.yml
-      - C:\docker\volumes\Databases\Prometheus\rules.yml:/etc/prometheus/rules.yml
+      - C:\docker\volumes\Databases\Prometheus\rules.yml:/alertmanager/rules.yml"
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.26
     ports:
       - 9090:9090
   node-exporter:
-    image: prom/node-exporter
+    image: prom/node-exporter:latest
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.27
     ports:
       - 9100:9100
   alert-manager:
-    image: prom/alertmanager
+    image: prom/alertmanager:latest
     volumes:
-      - C:\docker\volumes\Databases\Prometheus\alertmanager.yml:/alertmanager/alertmanager.yml
+      - C:\docker\volumes\Databases\Prometheus\alertmanager.yml:/alertmanager/alertmanager.yml"
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.28
