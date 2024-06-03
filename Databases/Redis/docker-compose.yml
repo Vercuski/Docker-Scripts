@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   cache:
     image: redis:latest
@@ -12,7 +11,7 @@ services:
         ipv4_address: 192.168.16.19
         aliases:
           - redis
-    volumes: 
+    volumes:
       - redis_cache:/data
 volumes:
   redis_cache:
@@ -21,7 +20,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Databases\Redis\cache
+      device: $HOME/docker/volumes/Databases/Redis/cache
 networks:
   GroupNetwork:
     driver: bridge

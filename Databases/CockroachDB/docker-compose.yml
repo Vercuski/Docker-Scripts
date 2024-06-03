@@ -1,21 +1,19 @@
-version: "3.8"
 services:
   cockroachDb:
-   image: cockroachdb/cockroach:latest
-   container_name: cockroachdb
-   restart: unless-stopped
-   ports:
-     - 26257:26257
-     - 8080:8080
-   command:
-    start-single-node --insecure
-   networks:
+    image: cockroachdb/cockroach:latest
+    container_name: cockroachdb
+    restart: unless-stopped
+    ports:
+      - 26257:26257
+      - 8080:8080
+    command: start-single-node --insecure
+    networks:
       GroupNetwork:
         ipv4_address: 192.168.16.11
         aliases:
           - cockroachdb
-   volumes:
-    - CockroachDB:/cockroach/cockroach-data
+    volumes:
+      - CockroachDB:/cockroach/cockroach-data
 volumes:
   CockroachDB:
     name: CockroachDB
@@ -23,7 +21,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Databases\CockroachDB\data
+      device: $HOME/docker/volumes/Databases/CockroachDB/data
 networks:
   GroupNetwork:
     driver: bridge

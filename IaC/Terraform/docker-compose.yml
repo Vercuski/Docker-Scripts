@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   terraform:
     image: hashicorp/terraform:latest
@@ -22,7 +21,7 @@ services:
         ipv4_address: 192.168.16.51
         aliases:
           - gaia
-    ports: 
+    ports:
       - "8080:8080"
     environment:
       GAIA_MONGODB_URI: mongodb://mongo/gaia
@@ -51,7 +50,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\IaC\Terraform\data
+      device: $HOME/docker/volumes/IaC/Terraform/data
 networks:
   GroupNetwork:
     driver: bridge

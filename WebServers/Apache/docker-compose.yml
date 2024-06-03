@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   apache:
     image: httpd:latest
@@ -10,9 +9,9 @@ services:
         aliases:
           - apache
     ports:
-    - '8083:80'
+      - "8083:80"
     volumes:
-    - apache_websites:/usr/local/apache2/htdocs
+      - apache_websites:/usr/local/apache2/htdocs
 volumes:
   apache_websites:
     name: apache_websites
@@ -20,7 +19,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\WebServers\Apache
+      device: $HOME/docker/volumes/WebServers/Apache
 networks:
   GroupNetwork:
     driver: bridge

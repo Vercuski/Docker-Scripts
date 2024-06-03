@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   opensearch-node1:
     image: opensearchproject/opensearch:latest
@@ -76,14 +75,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Search\OpenSearch\node1\
+      device: $HOME/docker/volumes/Search/OpenSearch/node1/
   opensearch-data2:
     name: opensearch-data2
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Search\OpenSearch\node2\
+      device: $HOME/docker/volumes/Search/OpenSearch/node2/
 
 networks:
   GroupNetwork:

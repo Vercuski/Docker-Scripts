@@ -1,11 +1,10 @@
-version: "3.8"
 services:
   postgres:
     image: postgres:latest
     container_name: posgresql
     restart: unless-stopped
     environment:
-      POSTGRES_USER:  user@user.com
+      POSTGRES_USER: user@user.com
       POSTGRES_PASSWORD: Password123
     networks:
       GroupNetwork:
@@ -18,7 +17,7 @@ services:
         max-file: 3
     ports:
       - 5432:5432
-    volumes: 
+    volumes:
       - postgresql_data:/var/lib/postgresql/data
       # copy the sql script to create tables
       # - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
@@ -44,14 +43,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Databases\PostgreSQL\Data
+      device: $HOME/docker/volumes/Databases/PostgreSQL/Data
   pgadmin4_data:
     name: pgadmin4_data
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Databases\PostgreSQL\pgadmin4data
+      device: $HOME/docker/volumes/Databases/PostgreSQL/pgadmin4data
 networks:
   GroupNetwork:
     driver: bridge

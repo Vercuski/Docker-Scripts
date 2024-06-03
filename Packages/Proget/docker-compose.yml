@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   pg:
     image: proget.inedo.com/productimages/inedo/proget:24.0.2
@@ -27,14 +26,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Packages\ProGet\packages
+      device: $HOME/docker/volumes/Packages/ProGet/packages
   Proget_SSL:
     name: Proget_SSL
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: C:\docker\volumes\Packages\ProGet\ssl
+      device: $HOME/docker/volumes/Packages/ProGet/ssl
 networks:
   GroupNetwork:
     driver: bridge
