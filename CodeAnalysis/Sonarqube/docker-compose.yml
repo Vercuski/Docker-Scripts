@@ -26,21 +26,21 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/CodeAnalysis/SonarQube/data/
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/CodeAnalysis/SonarQube/data/
   sonarqube_extensions:
     name: sonarqube_extensions
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/CodeAnalysis/SonarQube/extensions/
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/CodeAnalysis/SonarQube/extensions/
   sonarqube_logs:
     name: sonarqube_logs
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/CodeAnalysis/SonarQube/logs/
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/CodeAnalysis/SonarQube/logs/
 networks:
   GroupNetwork:
     driver: bridge

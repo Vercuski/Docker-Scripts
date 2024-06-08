@@ -75,14 +75,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Search/OpenSearch/node1/
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Search/OpenSearch/node1/
   opensearch-data2:
     name: opensearch-data2
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Search/OpenSearch/node2/
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Search/OpenSearch/node2/
 
 networks:
   GroupNetwork:

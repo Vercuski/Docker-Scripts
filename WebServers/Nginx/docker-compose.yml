@@ -35,21 +35,21 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Nginx-UI
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Nginx-UI
   nginx:
     name: nginx
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Nginx/Nginx
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Nginx/Nginx
   nginix_www:
     name: nginix_www
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Nginx/www
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Nginx/www
 networks:
   GroupNetwork:
     driver: bridge

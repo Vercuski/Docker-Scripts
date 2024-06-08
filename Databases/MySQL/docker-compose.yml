@@ -39,7 +39,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Databases/MySQL
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/MySQL
 networks:
   GroupNetwork:
     driver: bridge

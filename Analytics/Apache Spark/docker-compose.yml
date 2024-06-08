@@ -25,21 +25,21 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Analytics/ApacheSpark/logs
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Analytics/ApacheSpark/logs
   spark_apps:
     name: spark_apps
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Analytics/ApacheSpark/apps
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Analytics/ApacheSpark/apps
   spark_data:
     name: spark_data
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Analytics/ApacheSpark/data
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Analytics/ApacheSpark/data
 networks:
   GroupNetwork:
     driver: bridge

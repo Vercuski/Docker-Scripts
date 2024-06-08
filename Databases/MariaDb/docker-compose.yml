@@ -32,14 +32,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Databases/MariaDB/Backup
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/MariaDB/Backup
   MariaDB_data:
     name: MariaDB_data
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Databases/MariaDB/Data
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/MariaDB/Data
 networks:
   GroupNetwork:
     driver: bridge

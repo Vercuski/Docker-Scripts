@@ -21,7 +21,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Orchestration/Rancher/data
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Orchestration/Rancher/data
 networks:
   GroupNetwork:
     driver: bridge

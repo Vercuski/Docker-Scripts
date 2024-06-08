@@ -229,42 +229,42 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Search/ElasticSearch/certs
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Search/ElasticSearch/certs
   esdata01:
     name: esdata01
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Search/ElasticSearch/esdata01
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Search/ElasticSearch/esdata01
   kibanadata:
     name: kibanadata
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Search/ElasticSearch/kibanadata
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Search/ElasticSearch/kibanadata
   metricbeatdata01:
     name: metricbeatdata01
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Search/ElasticSearch/metricbeatdata01
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Search/ElasticSearch/metricbeatdata01
   filebeatdata01:
     name: filebeatdata01
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Search/ElasticSearch/filebeatdata01
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Search/ElasticSearch/filebeatdata01
   logstashdata01:
     name: logstashdata01
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Search/ElasticSearch/logstashdata01
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Search/ElasticSearch/logstashdata01
 networks:
   GroupNetwork:
     driver: bridge

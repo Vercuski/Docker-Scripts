@@ -4,8 +4,8 @@ services:
     container_name: prometheus
     restart: unless-stopped
     volumes:
-      - $HOME/docker/volumes/Databases/Prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - $HOME/docker/volumes/Databases/Prometheus/rules.yml:/alertmanager/rules.yml"
+      - ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/rules.yml:/alertmanager/rules.yml"
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.26
@@ -21,7 +21,7 @@ services:
   alert-manager:
     image: prom/alertmanager:latest
     volumes:
-      - $HOME/docker/volumes/Databases/Prometheus/alertmanager.yml:/alertmanager/alertmanager.yml"
+      - ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/alertmanager.yml:/alertmanager/alertmanager.yml"
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.28
@@ -34,7 +34,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Databases/Prometheus/
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/
 networks:
   GroupNetwork:
     driver: bridge

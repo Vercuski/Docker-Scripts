@@ -19,7 +19,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/RP-LB/Haproxy
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/RP-LB/Haproxy
 networks:
   GroupNetwork:
     driver: bridge

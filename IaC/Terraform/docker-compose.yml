@@ -50,7 +50,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/IaC/Terraform/data
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/IaC/Terraform/data
 networks:
   GroupNetwork:
     driver: bridge

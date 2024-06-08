@@ -26,14 +26,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Packages/ProGet/packages
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Packages/ProGet/packages
   Proget_SSL:
     name: Proget_SSL
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Packages/ProGet/ssl
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Packages/ProGet/ssl
 networks:
   GroupNetwork:
     driver: bridge

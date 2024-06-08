@@ -19,7 +19,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Documentation/Mediawiki/html/
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Documentation/Mediawiki/html/
 networks:
   GroupNetwork:
     driver: bridge

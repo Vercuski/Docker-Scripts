@@ -25,21 +25,21 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Databases/MSSQL/data
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/MSSQL/data
   MSSQL_Log:
     name: MSSQL_Log
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Databases/MSSQL/log
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/MSSQL/log
   MSSQL_Secrets:
     name: MSSQL_Secrets
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Databases/MSSQL/secrets
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/MSSQL/secrets
 networks:
   GroupNetwork:
     driver: bridge

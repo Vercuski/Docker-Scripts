@@ -34,14 +34,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Databases/EventStoreDb/data/
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/EventStoreDb/data/
   eventstore-volume-logs:
     name: eventstore-volume-logs
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/Databases/EventStoreDb/logs/
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/EventStoreDb/logs/
 networks:
   GroupNetwork:
     driver: bridge

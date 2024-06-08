@@ -19,7 +19,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: $HOME/docker/volumes/WebServers/Apache
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/WebServers/Apache
 networks:
   GroupNetwork:
     driver: bridge
