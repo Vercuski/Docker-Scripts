@@ -1,6 +1,12 @@
 USE [master]
 GO
 
+IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = 'sonarqube')
+BEGIN
+    CREATE LOGIN [sonarqube] WITH PASSWORD = N'Password123', DEFAULT_DATABASE=[master], CHECK_EXPIRATION=OFF, CHECK_POLICY=ON;
+END
+GO
+
 /****** Object:  Database [sonar]    Script Date: 11/12/2023 12:41:11 PM ******/
 CREATE DATABASE [sonar]
  CONTAINMENT = NONE
@@ -117,4 +123,11 @@ GO
 ALTER DATABASE [sonar] SET  READ_WRITE 
 GO
 
+USE [sonar];
+GO
 
+CREATE USER [sonarqube] FOR LOGIN [sonarqube];
+GO
+
+EXEC sp_addrolemember N'db_owner', N'sonarqube';
+GO

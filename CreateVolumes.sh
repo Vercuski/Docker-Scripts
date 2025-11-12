@@ -28,6 +28,7 @@ mkdir -p $HOME/docker/volumes/Databases/Oracle/Data
 mkdir -p $HOME/docker/volumes/Databases/Oracle/Backup
 mkdir -p $HOME/docker/volumes/Databases/PostgreSQL/Data
 mkdir -p $HOME/docker/volumes/Databases/PostgreSQL/pgadmin4data
+mkdir -p $HOME/docker/volumes/Databases/Prometheus/
 mkdir -p $HOME/docker/volumes/Databases/Redis/cache
 
 mkdir -p $HOME/docker/volumes/Documentation/Mediawiki/html
