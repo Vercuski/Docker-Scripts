@@ -44,6 +44,7 @@ mkdir -p $HOME/docker/volumes/Messaging/RabbitMQ/data
 mkdir -p $HOME/docker/volumes/Messaging/RabbitMQ/log
 
 mkdir -p $HOME/docker/volumes/Orchestration/Rancher/data
+mkdir -p $HOME/docker/volumes/Orchestration/Portainer/data
 
 mkdir -p $HOME/docker/volumes/Packages/ProGet/packages
 mkdir -p $HOME/docker/volumes/Packages/ProGet/ssl

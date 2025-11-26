@@ -44,6 +44,7 @@ mkdir C:\docker\volumes\Messaging\RabbitMQ\data
 mkdir C:\docker\volumes\Messaging\RabbitMQ\log
 
 mkdir C:\docker\volumes\Orchestration\Rancher\data
+mkdir C:\docker\volumes\Orchestration\Portainer\data
 
 mkdir C:\docker\volumes\Packages\ProGet\packages
 mkdir C:\docker\volumes\Packages\ProGet\ssl

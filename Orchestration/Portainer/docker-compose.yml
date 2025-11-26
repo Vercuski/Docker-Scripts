@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.91
+        aliases:
+          - portainer
+    ports:
+      - "9100:9000" # Web UI
+      - "9443:9443" # Secure port (optional, with SSL)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+volumes:
+  portainer_data:
+    name: portainer_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Orchestration/Portainer/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true
