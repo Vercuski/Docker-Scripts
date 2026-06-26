@@ -6,6 +6,10 @@ services:
     ports:
       - 26257:26257
       - 8080:8080
+    environment:
+      - COCKROACH_DATABASE=myapp_dev
+      - COCKROACH_USER=developer
+      - COCKROACH_PASSWORD=Password123
     command: start-single-node --insecure
     networks:
       GroupNetwork:

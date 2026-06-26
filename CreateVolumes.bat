@@ -10,6 +10,8 @@ mkdir C:\docker\volumes\CodeAnalysis\SonarQube\logs
 mkdir C:\docker\volumes\Containerization\DockerRegistry\data
 
 mkdir C:\docker\volumes\Databases\ApacheCassandra
+mkdir C:\docker\volumes\Databases\ClickHouse\data
+mkdir C:\docker\volumes\Databases\ClickHouse\logs
 mkdir C:\docker\volumes\Databases\CockroachDB\data
 mkdir C:\docker\volumes\Databases\EventStoreDb\data
 mkdir C:\docker\volumes\Databases\EventStoreDb\logs
@@ -17,13 +19,18 @@ mkdir C:\docker\volumes\Databases\InfluxDb\config
 mkdir C:\docker\volumes\Databases\InfluxDb\db
 mkdir C:\docker\volumes\Databases\MariaDB\Backup
 mkdir C:\docker\volumes\Databases\MariaDB\Data
+mkdir C:\docker\volumes\Databases\Milvus\milvus
+mkdir C:\docker\volumes\Databases\Milvus\etcd
+mkdir C:\docker\volumes\Databases\Milvus\minio
 mkdir C:\docker\volumes\Databases\MongoDb\data
 mkdir C:\docker\volumes\Databases\MSSQL\data
 mkdir C:\docker\volumes\Databases\MSSQL\log
 mkdir C:\docker\volumes\Databases\MSSQL\secrets
 mkdir C:\docker\volumes\Databases\MySQL
 mkdir C:\docker\volumes\Databases\Neo4J\data
-mkdir C:\docker\volumes\Databases\Neo4J\conf
+mkdir C:\docker\volumes\Databases\Neo4J\logs
+mkdir C:\docker\volumes\Databases\Neo4J\import
+mkdir C:\docker\volumes\Databases\Neo4J\plugins
 mkdir C:\docker\volumes\Databases\Oracle\Data
 mkdir C:\docker\volumes\Databases\Oracle\Backup
 mkdir C:\docker\volumes\Databases\PostgreSQL\Data

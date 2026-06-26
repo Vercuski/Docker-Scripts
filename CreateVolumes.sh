@@ -10,6 +10,8 @@ mkdir -p $HOME/docker/volumes/CodeAnalysis/SonarQube/logs
 mkdir -p $HOME/docker/volumes/Containerization/DockerRegistry/data
 
 mkdir -p $HOME/docker/volumes/Databases/ApacheCassandra
+mkdir -p $HOME/docker/volumes/Databases/ClickHouse/data
+mkdir -p $HOME/docker/volumes/Databases/ClickHouse/logs
 mkdir -p $HOME/docker/volumes/Databases/CockroachDB/data
 mkdir -p $HOME/docker/volumes/Databases/EventStoreDb/data
 mkdir -p $HOME/docker/volumes/Databases/EventStoreDb/logs
@@ -17,13 +19,18 @@ mkdir -p $HOME/docker/volumes/Databases/InfluxDb/config
 mkdir -p $HOME/docker/volumes/Databases/InfluxDb/db
 mkdir -p $HOME/docker/volumes/Databases/MariaDB/Backup
 mkdir -p $HOME/docker/volumes/Databases/MariaDB/Data
+mkdir -p $HOME/docker/volumes/Databases/Milvus/milvus
+mkdir -p $HOME/docker/volumes/Databases/Milvus/etcd
+mkdir -p $HOME/docker/volumes/Databases/Milvus/minio
 mkdir -p $HOME/docker/volumes/Databases/MongoDb/data
 mkdir -p $HOME/docker/volumes/Databases/MSSQL/data
 mkdir -p $HOME/docker/volumes/Databases/MSSQL/log
 mkdir -p $HOME/docker/volumes/Databases/MSSQL/secrets
 mkdir -p $HOME/docker/volumes/Databases/MySQL
 mkdir -p $HOME/docker/volumes/Databases/Neo4J/data
-mkdir -p $HOME/docker/volumes/Databases/Neo4J/conf
+mkdir -p $HOME/docker/volumes/Databases/Neo4J/logs
+mkdir -p $HOME/docker/volumes/Databases/Neo4J/import
+mkdir -p $HOME/docker/volumes/Databases/Neo4J/plugins
 mkdir -p $HOME/docker/volumes/Databases/Oracle/Data
 mkdir -p $HOME/docker/volumes/Databases/Oracle/Backup
 mkdir -p $HOME/docker/volumes/Databases/PostgreSQL/Data

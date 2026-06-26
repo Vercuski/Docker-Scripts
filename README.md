@@ -29,10 +29,14 @@ Collection of Docker and Docker Compose scripts
 |:----------|:----------|
 |Adminer| 192.168.16.23|
 |Apache Cassandra| 192.168.16.10|
+|ClickHouse| 192.168.16.29|
 |Cockroach DB| 192.168.16.11|
 |EventStore DB| 192.168.16.21|
 |Influx DB| 192.168.16.12|
 |Maria DB| 192.168.16.22|
+|Milvus etcd| 192.168.16.40|
+|Milvus minio| 192.168.16.41|
+|Milvus milvus| 192.168.16.42|
 |Mongo DB| 192.168.16.13|
 |Mongo Express| 192.168.16.24|
 |MSSQL| 192.168.16.14|

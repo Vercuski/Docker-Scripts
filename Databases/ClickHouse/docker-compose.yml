@@ -1,0 +1,43 @@
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse-server
+    restart: unless-stopped
+    ports:
+      - "8123:8123" # HTTP interface
+      - "9000:9000" # Native native client
+    environment:
+      - CLICKHOUSE_USER=admin
+      - CLICKHOUSE_PASSWORD=Password123
+      - CLICKHOUSE_DB=default_db
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - clickhouse_logs:/var/lib/clickhouse-server
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.29
+        aliases:
+          - clickhouse
+volumes:
+  clickhouse_data:
+    name: clickhouse_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/ClickHouse/data
+  clickhouse_logs:
+    name: clickhouse_logs
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/ClickHouse/logs
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true
