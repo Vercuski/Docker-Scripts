@@ -82,6 +82,12 @@ Collection of Docker and Docker Compose scripts
 |Name|IP Address|
 |:----------|:----------|
 |HAProxy| 192.168.16.160|
+|Nginx Proxy Manager| 192.168.16.161|
+
+## Scheduling
+|Name|IP Address|
+|:----------|:----------|
+|Hangfire| 192.168.16.210|
 
 ## Search
 |Name|IP Address|

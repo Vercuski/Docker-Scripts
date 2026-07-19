@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  hangfire-server:
+    image: mcr.microsoft.com/dotnet/aspnet:8.0
+    container_name: hangfire-server
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__HangfireConnection=Server=localhost;Database=hangfire;User Id=sa;Password=Password123;MultipleActiveResultSets=true;Encrypt=True;TrustServerCertificate=True;
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./hangfire-app:/app
+    working_dir: /app
+    command: dotnet HangfireServer.dll
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.210
+        aliases:
+          - hangfire
+
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

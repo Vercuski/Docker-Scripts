@@ -1,68 +1,70 @@
-mkdir C:\docker\volumes\Analytics\ApacheSpark\data
-mkdir C:\docker\volumes\Analytics\ApacheSpark\apps
-mkdir C:\docker\volumes\Analytics\ApacheSpark\logs
-mkdir C:\docker\volumes\Analytics\Seq\data
+mkdir D:\docker\volumes\Analytics\ApacheSpark\data
+mkdir D:\docker\volumes\Analytics\ApacheSpark\apps
+mkdir D:\docker\volumes\Analytics\ApacheSpark\logs
+mkdir D:\docker\volumes\Analytics\Seq\data
 
-mkdir C:\docker\volumes\CodeAnalysis\SonarQube\data
-mkdir C:\docker\volumes\CodeAnalysis\SonarQube\extensions
-mkdir C:\docker\volumes\CodeAnalysis\SonarQube\logs
+mkdir D:\docker\volumes\CodeAnalysis\SonarQube\data
+mkdir D:\docker\volumes\CodeAnalysis\SonarQube\extensions
+mkdir D:\docker\volumes\CodeAnalysis\SonarQube\logs
 
-mkdir C:\docker\volumes\Containerization\DockerRegistry\data
+mkdir D:\docker\volumes\Containerization\DockerRegistry\data
 
-mkdir C:\docker\volumes\Databases\ApacheCassandra
-mkdir C:\docker\volumes\Databases\CockroachDB\data
-mkdir C:\docker\volumes\Databases\EventStoreDb\data
-mkdir C:\docker\volumes\Databases\EventStoreDb\logs
-mkdir C:\docker\volumes\Databases\InfluxDb\config
-mkdir C:\docker\volumes\Databases\InfluxDb\db
-mkdir C:\docker\volumes\Databases\MariaDB\Backup
-mkdir C:\docker\volumes\Databases\MariaDB\Data
-mkdir C:\docker\volumes\Databases\MongoDb\data
-mkdir C:\docker\volumes\Databases\MSSQL\data
-mkdir C:\docker\volumes\Databases\MSSQL\log
-mkdir C:\docker\volumes\Databases\MSSQL\secrets
-mkdir C:\docker\volumes\Databases\MySQL
-mkdir C:\docker\volumes\Databases\Neo4J\data
-mkdir C:\docker\volumes\Databases\Neo4J\conf
-mkdir C:\docker\volumes\Databases\Oracle\Data
-mkdir C:\docker\volumes\Databases\Oracle\Backup
-mkdir C:\docker\volumes\Databases\PostgreSQL\Data
-mkdir C:\docker\volumes\Databases\PostgreSQL\pgadmin4data
-mkdir C:\docker\volumes\Databases\Prometheus\
-mkdir C:\docker\volumes\Databases\Redis\cache
+mkdir D:\docker\volumes\Databases\ApacheCassandra
+mkdir D:\docker\volumes\Databases\CockroachDB\data
+mkdir D:\docker\volumes\Databases\EventStoreDb\data
+mkdir D:\docker\volumes\Databases\EventStoreDb\logs
+mkdir D:\docker\volumes\Databases\InfluxDb\config
+mkdir D:\docker\volumes\Databases\InfluxDb\db
+mkdir D:\docker\volumes\Databases\MariaDB\Backup
+mkdir D:\docker\volumes\Databases\MariaDB\Data
+mkdir D:\docker\volumes\Databases\MongoDb\data
+mkdir D:\docker\volumes\Databases\MSSQL\data
+mkdir D:\docker\volumes\Databases\MSSQL\log
+mkdir D:\docker\volumes\Databases\MSSQL\secrets
+mkdir D:\docker\volumes\Databases\MySQL
+mkdir D:\docker\volumes\Databases\Neo4J\data
+mkdir D:\docker\volumes\Databases\Neo4J\conf
+mkdir D:\docker\volumes\Databases\Oracle\Data
+mkdir D:\docker\volumes\Databases\Oracle\Backup
+mkdir D:\docker\volumes\Databases\PostgreSQL\Data
+mkdir D:\docker\volumes\Databases\PostgreSQL\pgadmin4data
+mkdir D:\docker\volumes\Databases\Prometheus\
+mkdir D:\docker\volumes\Databases\Redis\cache
 
-mkdir C:\docker\volumes\Documentation\Mediawiki\html
+mkdir D:\docker\volumes\Documentation\Mediawiki\html
 
-mkdir C:\docker\volumes\IaC\Terraform\data
+mkdir D:\docker\volumes\IaC\Terraform\data
 
-mkdir C:\docker\volumes\Messaging\Kafka\Kafka\data\
-mkdir C:\docker\volumes\Messaging\Kafka\Kafka\secrets\
-mkdir C:\docker\volumes\Messaging\Kafka\Zookeeper\data\
-mkdir C:\docker\volumes\Messaging\Kafka\Zookeeper\log\
-mkdir C:\docker\volumes\Messaging\Kafka\Zookeeper\secrets\
-mkdir C:\docker\volumes\Messaging\RabbitMQ\data
-mkdir C:\docker\volumes\Messaging\RabbitMQ\log
+mkdir D:\docker\volumes\Messaging\Kafka\Kafka\data\
+mkdir D:\docker\volumes\Messaging\Kafka\Kafka\secrets\
+mkdir D:\docker\volumes\Messaging\Kafka\Zookeeper\data\
+mkdir D:\docker\volumes\Messaging\Kafka\Zookeeper\log\
+mkdir D:\docker\volumes\Messaging\Kafka\Zookeeper\secrets\
+mkdir D:\docker\volumes\Messaging\RabbitMQ\data
+mkdir D:\docker\volumes\Messaging\RabbitMQ\log
 
-mkdir C:\docker\volumes\Orchestration\Rancher\data
-mkdir C:\docker\volumes\Orchestration\Portainer\data
+mkdir D:\docker\volumes\Orchestration\Rancher\data
+mkdir D:\docker\volumes\Orchestration\Portainer\data
 
-mkdir C:\docker\volumes\Packages\ProGet\packages
-mkdir C:\docker\volumes\Packages\ProGet\ssl
+mkdir D:\docker\volumes\Packages\ProGet\packages
+mkdir D:\docker\volumes\Packages\ProGet\ssl
 
-mkdir C:\docker\volumes\RP-LB\Haproxy
+mkdir D:\docker\volumes\RP-LB\Haproxy
+mkdir D:\docker\volumes\RP-LB\NginxProxyManager\data
+mkdir D:\docker\volumes\RP-LB\NginxProxyManager\letsencrypt
 
-mkdir C:\docker\volumes\Search\OpenSearch\node1\
-mkdir C:\docker\volumes\Search\OpenSearch\node2\
-mkdir C:\docker\volumes\Search\ElasticSearch\certs
-mkdir C:\docker\volumes\Search\ElasticSearch\esdata01
-mkdir C:\docker\volumes\Search\ElasticSearch\kibanadata
-mkdir C:\docker\volumes\Search\ElasticSearch\metricbeatdata01
-mkdir C:\docker\volumes\Search\ElasticSearch\filebeatdata01
-mkdir C:\docker\volumes\Search\ElasticSearch\logstashdata01
+mkdir D:\docker\volumes\Search\OpenSearch\node1\
+mkdir D:\docker\volumes\Search\OpenSearch\node2\
+mkdir D:\docker\volumes\Search\ElasticSearch\certs
+mkdir D:\docker\volumes\Search\ElasticSearch\esdata01
+mkdir D:\docker\volumes\Search\ElasticSearch\kibanadata
+mkdir D:\docker\volumes\Search\ElasticSearch\metricbeatdata01
+mkdir D:\docker\volumes\Search\ElasticSearch\filebeatdata01
+mkdir D:\docker\volumes\Search\ElasticSearch\logstashdata01
 
-mkdir C:\docker\volumes\Visualization\Grafana\storage
+mkdir D:\docker\volumes\Visualization\Grafana\storage
 
-mkdir C:\docker\volumes\WebServers\Nginx\www
-mkdir C:\docker\volumes\WebServers\Nginx\Nginx
-mkdir C:\docker\volumes\WebServers\Nginx-UI
-mkdir C:\docker\volumes\WebServers\Apache
+mkdir D:\docker\volumes\WebServers\Nginx\www
+mkdir D:\docker\volumes\WebServers\Nginx\Nginx
+mkdir D:\docker\volumes\WebServers\Nginx-UI
+mkdir D:\docker\volumes\WebServers\Apache

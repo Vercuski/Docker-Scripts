@@ -50,6 +50,8 @@ mkdir -p $HOME/docker/volumes/Packages/ProGet/packages
 mkdir -p $HOME/docker/volumes/Packages/ProGet/ssl
 
 mkdir -p $HOME/docker/volumes/RP-LB/Haproxy
+mkdir -p $HOME/docker/volumes/RP-LB/NginxProxyManager/data
+mkdir -p $HOME/docker/volumes/RP-LB/NginxProxyManager/letsencrypt
 
 mkdir -p $HOME/docker/volumes/Search/OpenSearch/node1/
 mkdir -p $HOME/docker/volumes/Search/OpenSearch/node2/
