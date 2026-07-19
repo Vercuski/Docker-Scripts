@@ -4,8 +4,8 @@ services:
     container_name: prometheus
     restart: unless-stopped
     volumes:
-      - ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/prometheus
-      - ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/prometheus_data:/prometheus
+      - ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -20,9 +20,9 @@ services:
   node-exporter:
     image: prom/node-exporter:latest
     volumes:
-      - ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/proc:/host/proc:ro
-      - ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/sys:/host/sys:ro
-      - ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/:/rootfs:ro    
+      - node_exporter_proc:/host/proc:ro
+      - node_exporter_sys:/host/sys:ro
+      - node_exporter_root:/rootfs:ro    
     command:
       - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
@@ -35,13 +35,15 @@ services:
   alertmanager:
     image: prom/alertmanager:latest
     volumes:
-      - ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/alertmanager:/etc/alertmanager
+      - alertmanager:/etc/alertmanager
     command:
       - '--config.file=/etc/alertmanager/config.yml'
       - '--storage.path=/alertmanager'
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.28
+        aliases:
+          - prometheus
     ports:
       - 9093:9093
 volumes:
@@ -52,6 +54,41 @@ volumes:
       type: none
       o: bind
       device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/
+  alertmanager:
+    name: alertmanager
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/alertmanager
+  node_exporter_proc:
+    name: node_exporter_proc
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/proc
+  node_exporter_sys:
+    name: node_exporter_sys
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/sys
+  node_exporter_root:
+    name: node_exporter_root
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/
+  prometheus_data:
+    name: prometheus_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/prometheus_data
 networks:
   GroupNetwork:
     driver: bridge

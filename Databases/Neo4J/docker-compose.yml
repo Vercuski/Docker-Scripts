@@ -1,36 +1,69 @@
 services:
   neo4j:
     image: neo4j:latest
-    container_name: neo4j
+    container_name: neo4j_server
     restart: unless-stopped
-    volumes:
-      - Neo4J_data:/data
-      - Neo4J_conf:/conf/
-    ports:
-      - 7474:7474
-      - 7687:7687
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.16
         aliases:
           - neo4j
     command: neo4j
+    ports:
+      - "7474:7474" # HTTP (Neo4j Browser UI)
+      - "7473:7473" # HTTPS
+      - "7687:7687" # Bolt protocol (Application Connections)
+    environment:
+      # Set your initial password (Format: username/password)
+      - NEO4J_AUTH=neo4j/Password123
+
+      # Required if you want to use Neo4j Enterprise Edition
+      # - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
+
+      # Automatically download and install APOC plugins
+      - NEO4JLABS_PLUGINS=["apoc"]
+
+      # Unrestrict APOC functions so they have proper security clearance
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*
+
+      # Allow importing and exporting local CSV/JSON/GraphML data
+      - NEO4J_apoc_import_file_enabled=true
+      - NEO4J_apoc_export_file_enabled=true
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_import:/import
+      - neo4j_plugins:/plugins
 networks:
   GroupNetwork:
     driver: bridge
     external: true
 volumes:
-  Neo4J_data:
-    name: Neo4J_data
+  neo4j_data:
+    name: neo4j_data
     driver: local
     driver_opts:
       type: none
       o: bind
       device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Neo4J/data
-  Neo4J_conf:
-    name: Neo4J_conf
+  neo4j_logs:
+    name: neo4j_logs
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Neo4J/conf/
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Neo4J/logs
+  neo4j_import:
+    name: neo4j_import
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Neo4J/import
+  neo4j_plugins:
+    name: neo4j_plugins
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Neo4J/plugins
