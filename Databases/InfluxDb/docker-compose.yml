@@ -11,9 +11,10 @@ services:
       DOCKER_INFLUXDB_INIT_MODE: setup
       DOCKER_INFLUXDB_INIT_USERNAME: user
       DOCKER_INFLUXDB_INIT_PASSWORD: Password123
-      DOCKER_INFLUXDB_INIT_ORG: TheSoftwareDispensary
-      DOCKER_INFLUXDB_INIT_BUCKET: TSD
+      DOCKER_INFLUXDB_INIT_ORG: HomeServer
+      DOCKER_INFLUXDB_INIT_BUCKET: Home
       DOCKER_INFLUXDB_INIT_RETENTION: 1w
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: API_TOKEN
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.12
@@ -36,6 +37,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/InfluxDb/data/
 networks:
   GroupNetwork:
     driver: bridge

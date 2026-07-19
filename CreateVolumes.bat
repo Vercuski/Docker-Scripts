@@ -16,7 +16,7 @@ mkdir C:\docker\volumes\Databases\CockroachDB\data
 mkdir C:\docker\volumes\Databases\EventStoreDb\data
 mkdir C:\docker\volumes\Databases\EventStoreDb\logs
 mkdir C:\docker\volumes\Databases\InfluxDb\config
-mkdir C:\docker\volumes\Databases\InfluxDb\db
+mkdir C:\docker\volumes\Databases\InfluxDb\data
 mkdir C:\docker\volumes\Databases\MariaDB\Backup
 mkdir C:\docker\volumes\Databases\MariaDB\Data
 mkdir C:\docker\volumes\Databases\Milvus\milvus
@@ -36,6 +36,10 @@ mkdir C:\docker\volumes\Databases\Oracle\Backup
 mkdir C:\docker\volumes\Databases\PostgreSQL\Data
 mkdir C:\docker\volumes\Databases\PostgreSQL\pgadmin4data
 mkdir C:\docker\volumes\Databases\Prometheus\
+mkdir C:\docker\volumes\Databases\Prometheus\prometheus_data
+mkdir C:\docker\volumes\Databases\Prometheus\alertmanager
+mkdir C:\docker\volumes\Databases\Prometheus\proc
+mkdir C:\docker\volumes\Databases\Prometheus\sys
 mkdir C:\docker\volumes\Databases\Redis\cache
 
 mkdir C:\docker\volumes\Documentation\Mediawiki\html
