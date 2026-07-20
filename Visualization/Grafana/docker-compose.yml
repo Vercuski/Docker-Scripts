@@ -8,6 +8,9 @@ services:
         ipv4_address: 192.168.16.110
         aliases:
           - grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=Password123
     ports:
       - 3000:3000
     volumes:
