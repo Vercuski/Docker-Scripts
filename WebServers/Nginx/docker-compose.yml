@@ -1,5 +1,5 @@
 services:
-  client:
+  nginx:
     image: nginx:latest
     container_name: nginx
     restart: unless-stopped
@@ -9,47 +9,50 @@ services:
         aliases:
           - nginx
     ports:
-      - 80:80
+      - 8180:80 # 80/443 belong to Nginx Proxy Manager
     volumes:
-      - ./src:/usr/share/nginx/html
+      - ./src:/usr/share/nginx/html:ro
   ui:
+    # Nginx UI ships its own nginx instance; it manages the config in the nginx_conf volume, not the "nginx" service above
     image: uozi/nginx-ui:latest
     container_name: nginx-ui
+    restart: unless-stopped
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.131
         aliases:
           - nginxui
     ports:
-      - 8080:80
+      - 8181:80 # 8080 is used by CockroachDB
       - 8443:443
-      - 5200-5300:5200-5300
+    environment:
+      TZ: "America/New_York"
     volumes:
-      - nginx:/etc/nginx
-      - rabbinginx_ui:/etc/nginx-ui
-      - nginix_www:/var/www
+      - nginx_conf:/etc/nginx
+      - nginx_ui:/etc/nginx-ui
+      - nginx_www:/var/www
 volumes:
-  rabbinginx_ui:
-    name: rabbinginx_ui
+  nginx_ui:
+    name: nginx_ui
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Nginx-UI
-  nginx:
-    name: nginx
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/WebServers/Nginx-UI
+  nginx_conf:
+    name: nginx_conf
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Nginx/Nginx
-  nginix_www:
-    name: nginix_www
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/WebServers/Nginx/Nginx
+  nginx_www:
+    name: nginx_www
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Nginx/www
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/WebServers/Nginx/www
 networks:
   GroupNetwork:
     driver: bridge

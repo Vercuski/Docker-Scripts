@@ -1,4 +1,5 @@
-https://www.nginx.com/<br>
+https://nginx.org/<br>
 docker compose up -d<br>
 docker compose down<br>
-http://localhost:8100
+Nginx: http://localhost:8180 (serves ./src)<br>
+Nginx UI: http://localhost:8181<br>

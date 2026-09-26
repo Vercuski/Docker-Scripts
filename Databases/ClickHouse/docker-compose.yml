@@ -5,14 +5,15 @@ services:
     restart: unless-stopped
     ports:
       - "8123:8123" # HTTP interface
-      - "9000:9000" # Native native client
+      - "19000:9000" # Native client (host 9000 is used by SonarQube)
     environment:
       - CLICKHOUSE_USER=admin
       - CLICKHOUSE_PASSWORD=Password123
       - CLICKHOUSE_DB=default_db
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
     volumes:
       - clickhouse_data:/var/lib/clickhouse
-      - clickhouse_logs:/var/lib/clickhouse-server
+      - clickhouse_logs:/var/log/clickhouse-server
     ulimits:
       nofile:
         soft: 262144

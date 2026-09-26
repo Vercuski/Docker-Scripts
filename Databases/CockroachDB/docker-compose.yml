@@ -9,7 +9,7 @@ services:
     environment:
       - COCKROACH_DATABASE=myapp_dev
       - COCKROACH_USER=developer
-      - COCKROACH_PASSWORD=Password123
+      # COCKROACH_PASSWORD is ignored in --insecure mode (passwords require a secure cluster)
     command: start-single-node --insecure
     networks:
       GroupNetwork:

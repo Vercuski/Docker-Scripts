@@ -1,6 +1,7 @@
 services:
   influxdb:
-    image: influxdb:latest
+    # Pinned to v2: influxdb:latest now resolves to InfluxDB 3 Core, which ignores DOCKER_INFLUXDB_INIT_*
+    image: influxdb:2
     container_name: influxdb
     restart: unless-stopped
     security_opt:

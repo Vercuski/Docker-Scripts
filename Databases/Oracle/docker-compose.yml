@@ -13,17 +13,12 @@ services:
       - oracle-data:/opt/oracle/oradata
       - oracle-backup:/opt/oracle/backup
     healthcheck:
-      test:
-        [
-          "CMD",
-          "sqlplus",
-          "-L",
-          "sys/Oracle_123@//localhost:1521/ORCLCDB as sysdba",
-          "@healthcheck.sql",
-        ]
+      # Script shipped in Oracle's image (the previous sqlplus check used the wrong password and a missing .sql file)
+      test: ["CMD", "/opt/oracle/checkDBStatus.sh"]
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 10m
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.25
@@ -38,7 +33,7 @@ volumes:
       o: bind
       device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Oracle/Data
   oracle-backup:
-    name: oracle-data
+    name: oracle-backup
     driver: local
     driver_opts:
       type: none

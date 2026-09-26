@@ -20,8 +20,8 @@ services:
       # Required if you want to use Neo4j Enterprise Edition
       # - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
 
-      # Automatically download and install APOC plugins
-      - NEO4JLABS_PLUGINS=["apoc"]
+      # Automatically download and install APOC plugins (NEO4JLABS_PLUGINS was removed in Neo4j 5)
+      - NEO4J_PLUGINS=["apoc"]
 
       # Unrestrict APOC functions so they have proper security clearance
       - NEO4J_dbms_security_procedures_unrestricted=apoc.*

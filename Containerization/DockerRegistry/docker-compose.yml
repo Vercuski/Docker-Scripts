@@ -1,28 +1,27 @@
 services:
   registry:
-    image: registry:latest
-    container_name: docker_registry
+    image: registry:3
+    container_name: registry-server
     restart: unless-stopped
     ports:
-    - 5000:5000
+      - 5000:5000
     environment:
-      REGISTRY_HTTP_HEADERS_Access-Control-Origin: "[http://localhost]"
-      REGISTRY_HTTP_HEADERS_Access-Control-Allow-Methods: "[HEAD,GET,OPTIONS,DELETE]"
-      REGISTRY_HTTP_HEADERS_Access-Control-Credentials: "[true]"
-      REGISTRY_HTTP_HEADERS_Access-Control-Allow-Headers: "[Authorization,Accept,Cache-Control]"
-      REGISTRY_HTTP_HEADERS_Access-Control-Expose-Headers: "[Docker-Content-Digest]"
       REGISTRY_STORAGE_DELETE_ENABLED: "true"
       REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
-    container_name: registry-server
+      # CORS headers are not needed: the UI proxies registry calls through its own nginx (NGINX_PROXY_PASS_URL)
     volumes:
       - registry_data:/data
     networks:
-        GroupNetwork:
-          ipv4_address: 192.168.16.180
-          aliases:
-            - dockerregistry
+      GroupNetwork:
+        ipv4_address: 192.168.16.180
+        aliases:
+          - dockerregistry
   registry-ui:
     image: joxit/docker-registry-ui:latest
+    container_name: registry-ui
+    restart: unless-stopped
+    depends_on:
+      - registry
     ports:
       - 5001:80
     environment:
@@ -30,14 +29,19 @@ services:
       - REGISTRY_TITLE=Docker Registry UI
       - DELETE_IMAGES=true
       - SHOW_CONTENT_DIGEST=true
-      - NGINX_PROXY_PASS_URL=http://localhost:5000
+      # Must be reachable from inside the UI container - "localhost" would point at the UI itself
+      - NGINX_PROXY_PASS_URL=http://dockerregistry:5000
       - SHOW_CATALOG_NB_TAGS=true
       - CATALOG_MIN_BRANCHES=1
       - CATALOG_MAX_BRANCHES=1
       - TAGLIST_PAGE_SIZE=100
       - REGISTRY_SECURED=false
       - CATALOG_ELEMENTS_LIMIT=1000
-    container_name: registry-ui
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.181
+        aliases:
+          - dockerregistryui
 volumes:
   registry_data:
     name: registry_data
@@ -45,7 +49,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Containerization/Registry/data/
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Containerization/DockerRegistry/data/
 networks:
   GroupNetwork:
     driver: bridge

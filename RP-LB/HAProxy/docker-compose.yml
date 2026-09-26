@@ -1,6 +1,6 @@
 services:
-  client:
-    image: haproxy:latest
+  haproxy:
+    image: haproxy:lts
     container_name: haproxy
     restart: unless-stopped
     networks:
@@ -9,17 +9,11 @@ services:
         aliases:
           - haproxy
     ports:
-      - 8100:8100
+      - 8100:8100 # Load-balanced frontend
+      - 8404:8404 # Stats page
     volumes:
-      - haproxy:/usr/local/etc/haproxy
-volumes:
-  haproxy:
-    name: haproxy
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/RP-LB/Haproxy
+      # Config lives in this repo - an empty bind folder has no haproxy.cfg and the container would exit
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
 networks:
   GroupNetwork:
     driver: bridge

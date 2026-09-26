@@ -10,8 +10,6 @@ services:
       MYSQL_ROOT_PASSWORD: "Password123"
     ports:
       - "3306:3306"
-    expose:
-      - "3306"
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.15
@@ -22,6 +20,9 @@ services:
   phpmyadmin:
     image: phpmyadmin:latest
     container_name: phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - mysql
     environment:
       PMA_HOST: mysqldb
       PMA_PORT: 3306

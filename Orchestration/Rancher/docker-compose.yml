@@ -4,8 +4,9 @@ services:
     container_name: rancher
     restart: unless-stopped
     ports:
-      - "80:80/tcp"
-      - "443:443/tcp"
+      # 80/443 belong to Nginx Proxy Manager
+      - "8480:80/tcp"
+      - "8444:443/tcp"
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.91

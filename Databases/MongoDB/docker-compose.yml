@@ -18,6 +18,7 @@ services:
   mongo-express:
     image: mongo-express:latest
     container_name: mongo-express
+    restart: unless-stopped
     depends_on:
       - mongodb
     ports:
@@ -26,10 +27,8 @@ services:
       ME_CONFIG_BASICAUTH_USERNAME: "user"
       ME_CONFIG_BASICAUTH_PASSWORD: "Password123"
       ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
-      ME_CONFIG_MONGODB_AUTH_USERNAME: "user"
-      ME_CONFIG_MONGODB_AUTH_PASSWORD: "Password123"
-      ME_CONFIG_MONGODB_PORT: 27017
-      ME_CONFIG_MONGODB_SERVER: "mongodb"
+      # mongo-express 1.x connects via URL; the old *_AUTH_USERNAME/SERVER vars were not being used for the root login
+      ME_CONFIG_MONGODB_URL: "mongodb://user:Password123@mongodb:27017/?authSource=admin"
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.24

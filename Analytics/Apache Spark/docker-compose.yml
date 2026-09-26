@@ -1,9 +1,11 @@
 services:
   spark-master:
-    container_name: apache-spark-master
-    restart: unless-stopped
-    build: .
     image: spark:latest
+    container_name: apache-spark-master
+    hostname: apachespark
+    restart: unless-stopped
+    # The official image has no default server process - start the standalone master explicitly
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
     volumes:
       - spark_data:/opt/spark/data
       - spark_apps:/opt/spark/apps
@@ -14,10 +16,29 @@ services:
         aliases:
           - apachespark
     environment:
-      SPARK_DRIVER_BIND_ADDRESS: apachespark
+      SPARK_MASTER_HOST: apachespark
+      SPARK_NO_DAEMONIZE: "true"
     ports:
-      - 9090:8080
-      - 7077:7077
+      - 8090:8080 # Master web UI (9090 is used by Prometheus)
+      - 7077:7077 # Master RPC
+  spark-worker:
+    image: spark:latest
+    container_name: apache-spark-worker
+    restart: unless-stopped
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://apachespark:7077
+    depends_on:
+      - spark-master
+    environment:
+      SPARK_WORKER_CORES: 2
+      SPARK_WORKER_MEMORY: 2g
+    volumes:
+      - spark_data:/opt/spark/data
+      - spark_apps:/opt/spark/apps
+    networks:
+      GroupNetwork:
+        ipv4_address: 192.168.16.192
+        aliases:
+          - apachespark-worker
 volumes:
   spark_logs:
     name: spark_logs

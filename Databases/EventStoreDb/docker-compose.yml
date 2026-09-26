@@ -24,7 +24,7 @@ services:
         target: /var/log/eventstore
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.20
+        ipv4_address: 192.168.16.21 # .20 is phpMyAdmin
         aliases:
           - eventstoredb
 volumes:

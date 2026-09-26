@@ -4,84 +4,66 @@ services:
     container_name: prometheus
     restart: unless-stopped
     volumes:
-      - ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      # Config lives in this repo (a missing host file would be created as a directory and Prometheus would not start)
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
       - '--web.enable-lifecycle'
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.26
+        aliases:
+          - prometheus
     ports:
       - 9090:9090
   node-exporter:
     image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    # Reads the Docker host (on Docker Desktop: the docker-desktop VM), not empty bind folders
     volumes:
-      - node_exporter_proc:/host/proc:ro
-      - node_exporter_sys:/host/sys:ro
-      - node_exporter_root:/rootfs:ro    
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
     command:
       - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($|/)'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.27
+        aliases:
+          - node-exporter
     ports:
       - 9100:9100
   alertmanager:
     image: prom/alertmanager:latest
+    container_name: alertmanager
+    restart: unless-stopped
     volumes:
-      - alertmanager:/etc/alertmanager
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager_data:/alertmanager
     command:
-      - '--config.file=/etc/alertmanager/config.yml'
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
       - '--storage.path=/alertmanager'
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.28
         aliases:
-          - prometheus
+          - alertmanager
     ports:
       - 9093:9093
 volumes:
-  prometheus:
-    name: prometheus
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/
-  alertmanager:
-    name: alertmanager
+  alertmanager_data:
+    name: alertmanager_data
     driver: local
     driver_opts:
       type: none
       o: bind
       device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/alertmanager
-  node_exporter_proc:
-    name: node_exporter_proc
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/proc
-  node_exporter_sys:
-    name: node_exporter_sys
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/sys
-  node_exporter_root:
-    name: node_exporter_root
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/
   prometheus_data:
     name: prometheus_data
     driver: local

@@ -3,6 +3,8 @@ services:
     image: mediawiki:latest
     container_name: mediawiki
     restart: unless-stopped
+    # First run: complete the web installer (SQLite is simplest - use /var/www/data), then place
+    # the generated LocalSettings.php into the html volume folder and restart.
     ports:
       - 8081:80
     volumes:

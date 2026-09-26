@@ -1,7 +1,9 @@
 services:
   postgres:
-    image: postgres:latest
-    container_name: posgresql
+    # Pin the major version: a floating tag would jump majors, which requires pg_upgrade on existing data.
+    # PostgreSQL 18+ keeps data under /var/lib/postgresql/<major>/docker, so mount /var/lib/postgresql.
+    image: postgres:18
+    container_name: postgresql
     restart: unless-stopped
     environment:
       POSTGRES_USER: user@user.com
@@ -24,6 +26,9 @@ services:
   pgadmin4:
     image: dpage/pgadmin4:latest
     container_name: pgadmin4
+    restart: unless-stopped
+    depends_on:
+      - postgres
     environment:
       PGADMIN_DEFAULT_EMAIL: user@user.com
       PGADMIN_DEFAULT_PASSWORD: Password123

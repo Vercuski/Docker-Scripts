@@ -1,8 +1,10 @@
 services:
   setup:
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-    container_name: ElasticSearch
-    restart: unless-stopped
+    container_name: es-setup
+    # One-shot job: creates certs and the kibana_system password, then exits.
+    # (unless-stopped made it restart forever after "All done!")
+    restart: "no"
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
     user: "0"
@@ -61,6 +63,8 @@ services:
         aliases:
           - elasticsearchmain
   es01:
+    container_name: es01
+    restart: unless-stopped
     depends_on:
       setup:
         condition: service_healthy
@@ -109,6 +113,8 @@ services:
         aliases:
           - es01
   kibana:
+    container_name: kibana
+    restart: unless-stopped
     depends_on:
       es01:
         condition: service_healthy
@@ -145,6 +151,8 @@ services:
         aliases:
           - kibana
   metricbeat01:
+    container_name: metricbeat
+    restart: unless-stopped
     depends_on:
       es01:
         condition: service_healthy
@@ -173,6 +181,8 @@ services:
         aliases:
           - metricbeat
   filebeat01:
+    container_name: filebeat
+    restart: unless-stopped
     depends_on:
       es01:
         condition: service_healthy
@@ -198,6 +208,8 @@ services:
         aliases:
           - filebeat
   logstash01:
+    container_name: logstash
+    restart: unless-stopped
     depends_on:
       es01:
         condition: service_healthy

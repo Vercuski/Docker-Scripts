@@ -4,7 +4,7 @@ services:
     container_name: proget
     restart: unless-stopped
     environment:
-      PROGET_SQL_CONNECTION_STRING: "Data Source=192.168.16.14;Initial Catalog=Proget;User ID=Proget;Password=Password123"
+      PROGET_SQL_CONNECTION_STRING: "Data Source=mssqldb;Initial Catalog=Proget;User ID=Proget;Password=Password123;TrustServerCertificate=True"
       ASPNETCORE_URLS: "http://*:80;https://*:443"
       SSL_CERT_FILE: "proget.cer"
     ports:
@@ -18,7 +18,6 @@ services:
     volumes:
       - Proget_Data:/var/proget/packages
       - Proget_SSL:/var/proget/ssl
-# Update this path to persist your ProGet packages storage
 volumes:
   Proget_Data:
     name: Proget_Data

@@ -1,6 +1,7 @@
 services:
   app:
     image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-proxy-manager
     restart: unless-stopped
 
     ports:
@@ -37,14 +38,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}\docker\volumes\RP-LB\NginxProxyManager\data
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/RP-LB/NginxProxyManager/data
   npmletsencrypt:
     name: npmletsencrypt
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}\docker\volumes\RP-LB\NginxProxyManager\letsencrypt
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/RP-LB/NginxProxyManager/letsencrypt
 
 networks:
   GroupNetwork:

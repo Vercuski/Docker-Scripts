@@ -1,22 +1,21 @@
-version: '3.8'
-
+# Hangfire is a library, not a standalone server: this runs YOUR published Hangfire host app.
+# Publish it into ./hangfire-app (dotnet publish -c Release -o ./hangfire-app) so HangfireServer.dll is there.
 services:
   hangfire-server:
-    image: mcr.microsoft.com/dotnet/aspnet:8.0
+    image: mcr.microsoft.com/dotnet/aspnet:${DOTNET_VERSION:-10.0}
     container_name: hangfire-server
-    depends_on:
-      sqlserver:
-        condition: service_healthy
+    restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:5000
-      - ConnectionStrings__HangfireConnection=Server=localhost;Database=hangfire;User Id=sa;Password=Password123;MultipleActiveResultSets=true;Encrypt=True;TrustServerCertificate=True;
+      # "localhost" is the app container itself - use the MSSQL container's network alias
+      - ConnectionStrings__HangfireConnection=Server=mssqldb;Database=hangfire;User Id=sa;Password=Password123;MultipleActiveResultSets=true;Encrypt=True;TrustServerCertificate=True;
     ports:
-      - "5000:5000"
+      - "5010:5000" # 5000 is used by the Docker Registry
     volumes:
       - ./hangfire-app:/app
     working_dir: /app
-    command: dotnet HangfireServer.dll
+    command: ["dotnet", "HangfireServer.dll"]
     networks:
       GroupNetwork:
         ipv4_address: 192.168.16.210

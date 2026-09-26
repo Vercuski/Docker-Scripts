@@ -1,6 +1,14 @@
 # Docker-Scripts
 Collection of Docker and Docker Compose scripts
 
+## Getting started
+1. `CreateNetwork.bat` / `CreateNetwork.sh` - creates the shared `GroupNetwork` (192.168.16.0/24) every stack attaches to.
+2. `CreateVolumes.bat` / `CreateVolumes.sh` - creates the host folders behind the bind-mounted volumes.
+3. `cd <Category>/<Tool>` then `docker compose up -d`.
+
+Each stack's `.env` sets `ROOT_VOLUME_DIR=D:`. On Linux/macOS export `ROOT_VOLUME_DIR=$HOME` in your shell - a shell variable overrides the `.env` value.
+Passwords in this repo (`Password123`, etc.) are local-development defaults only.
+
 # Networking
 ## Global
 |Name|IP Address|
@@ -11,8 +19,13 @@ Collection of Docker and Docker Compose scripts
 |Name|IP Address|
 |:----------|:----------|
 |Apache Spark| 192.168.16.190|
+|Apache Spark Worker| 192.168.16.192|
 |Seq| 192.168.16.191|
 
+## Authentication
+|Name|IP Address|
+|:----------|:----------|
+|SuperTokens| 192.168.16.211|
 
 ## CodeAnalysis
 |Name|IP Address|
@@ -23,6 +36,7 @@ Collection of Docker and Docker Compose scripts
 |Name|IP Address|
 |:----------|:----------|
 |Docker Registry| 192.168.16.180|
+|Docker Registry UI| 192.168.16.181|
 
 ## Databases
 |Name|IP Address|
@@ -46,7 +60,7 @@ Collection of Docker and Docker Compose scripts
 |Oracle| 192.168.16.25|
 |PostgreSQL| 192.168.16.17|
 |Prometheus| 192.168.16.26|
-|Prometheus Node Explorer| 192.168.16.27|
+|Prometheus Node Exporter| 192.168.16.27|
 |Prometheus Alert Manager| 192.168.16.28|
 |pgAdmin4| 192.168.16.18|
 |Redis| 192.168.16.19|
@@ -63,19 +77,21 @@ Collection of Docker and Docker Compose scripts
 |Terraform| 192.168.16.50|
 |gaia| 192.168.16.51|
 |gaiarunner| 192.168.16.52|
+|gaia-mongo| 192.168.16.53|
 
 ## Messaging
 |Name|IP Address|
 |:----------|:----------|
 |Kafka| 192.168.16.70|
-|Zookeeper| 192.168.16.71|
 |RabbitMQ| 192.168.16.72|
+|Kafka UI| 192.168.16.73|
 
 ## Orchestration
 |Name|IP Address|
 |:----------|:----------|
 |Kubernetes| 192.168.16.90|
 |Rancher| 192.168.16.91|
+|Portainer| 192.168.16.92|
 
 ## Packages
 |Name|IP Address|
@@ -96,17 +112,17 @@ Collection of Docker and Docker Compose scripts
 ## Search
 |Name|IP Address|
 |:----------|:----------|
-|ElastichSearchMain| 192.168.16.150|
+|Elasticsearch setup (one-shot)| 192.168.16.150|
 |es01| 192.168.16.151|
 |Kibana| 192.168.16.152|
 |Metricbeat| 192.168.16.153|
 |Filebeat| 192.168.16.154|
 |Logstash| 192.168.16.155|
-|OpenSearchNode1| 192.168.16.154|
-|OpenSearchNode2| 192.168.16.155|
-|OpenSearchDashboard| 192.168.16.156|
+|OpenSearchNode1| 192.168.16.156|
+|OpenSearchNode2| 192.168.16.157|
+|OpenSearchDashboard| 192.168.16.158|
 
-## Visulation
+## Visualization
 |Name|IP Address|
 |:----------|:----------|
 |Grafana| 192.168.16.110|

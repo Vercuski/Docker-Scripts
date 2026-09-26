@@ -1,9 +1,21 @@
 services:
   seq:
+    image: datalust/seq:${SEQ_VERSION:-latest}
     container_name: seq
     restart: unless-stopped
-    build: .
-    image: datalust/seq
+    environment:
+      ACCEPT_EULA: "Y"
+      # Only used the first time the container initializes /data.
+      # You'll be prompted to change it on first login.
+      SEQ_FIRSTRUN_ADMINUSERNAME: ${SEQ_ADMIN_USERNAME:-admin}
+      SEQ_FIRSTRUN_ADMINPASSWORD: ${SEQ_ADMIN_PASSWORD:?Set SEQ_ADMIN_PASSWORD in .env}
+      # Public URL used when Seq generates links (alerts, notifications, etc.)
+      SEQ_API_CANONICALURI: ${SEQ_CANONICAL_URI:-http://localhost:8089}
+    ports:
+      # UI + API (also accepts ingestion, including OTLP at /ingest/otlp)
+      - "${SEQ_UI_PORT:-8089}:80" # 8081 is used by MediaWiki
+      # Ingestion-only endpoint (safe to expose to apps without exposing the UI)
+      - "${SEQ_INGEST_PORT:-5341}:5341"
     volumes:
       - seq_data:/data
     networks:
@@ -11,12 +23,6 @@ services:
         ipv4_address: 192.168.16.191
         aliases:
           - seq
-    environment:
-      ACCEPT_EULA: Y
-      SEQ_FIRSTRUN_ADMIN_PASSWORD: "Password123"
-    ports:
-      - 8089:80
-      - 5341:5341
 volumes:
   seq_data:
     name: seq_data
