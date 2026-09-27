@@ -2,43 +2,43 @@ services:
   postgres:
     # Pin the major version: a floating tag would jump majors, which requires pg_upgrade on existing data.
     # PostgreSQL 18+ keeps data under /var/lib/postgresql/<major>/docker, so mount /var/lib/postgresql.
-    image: postgres:18
+    image: postgres:${POSTGRES_VERSION:-18}
     container_name: postgresql
     restart: unless-stopped
     environment:
-      POSTGRES_USER: user@user.com
-      POSTGRES_PASSWORD: Password123
+      POSTGRES_USER: "${POSTGRES_USER:-user@user.com}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-Password123}"
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.17
+        ipv4_address: ${POSTGRES_IP:-192.168.16.17}
         aliases:
           - postgresql
     logging:
       options:
-        max-size: 10m
-        max-file: 3
+        max-size: "${POSTGRES_LOG_MAX_SIZE:-10m}"
+        max-file: "${POSTGRES_LOG_MAX_FILE:-3}"
     ports:
-      - 5432:5432
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgresql_data:/var/lib/postgresql
       # copy the sql script to create tables
       # - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
   pgadmin4:
-    image: dpage/pgadmin4:latest
+    image: dpage/pgadmin4:${PGADMIN_VERSION:-latest}
     container_name: pgadmin4
     restart: unless-stopped
     depends_on:
       - postgres
     environment:
-      PGADMIN_DEFAULT_EMAIL: user@user.com
-      PGADMIN_DEFAULT_PASSWORD: Password123
+      PGADMIN_DEFAULT_EMAIL: "${PGADMIN_EMAIL:-user@user.com}"
+      PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_PASSWORD:-Password123}"
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.18
+        ipv4_address: ${PGADMIN_IP:-192.168.16.18}
         aliases:
           - pgadmin4
     ports:
-      - 5050:80
+      - "${PGADMIN_PORT:-5050}:80"
     volumes:
       - pgadmin4_data:/var/lib/pgadmin
 volumes:

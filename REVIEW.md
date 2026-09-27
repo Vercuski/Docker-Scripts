@@ -1,6 +1,6 @@
 # Docker-Scripts review — September 2026
 
-All 33 `docker-compose.yml` files now pass `docker compose config` (Compose v2.39.4). They also pass a repo-wide check for duplicate IPs, host ports, network aliases and container names, and for volume paths that are missing from `CreateVolumes`. Before these changes, 3 files failed to parse or validate. There were also 2 IP collisions, 7 host-port collisions, 1 alias collision and about a dozen volume/path mismatches.
+All 36 `docker-compose.yml` files now pass `docker compose config` (Compose v2.39.4). They also pass a repo-wide check for duplicate IPs, host ports, network aliases and container names, and for volume paths that are missing from `CreateVolumes`. Before these changes, 3 files failed to parse or validate. There were also 2 IP collisions, 7 host-port collisions, 1 alias collision and about a dozen volume/path mismatches.
 
 Your uncommitted work in progress (Seq, MSSQL, SuperTokens, README) was kept and built on.
 
@@ -88,3 +88,15 @@ These are ordered by how much they would help a .NET/ASP.NET Core developer.
 | 16 | **Atlantis** or **Terrakube** | IaC | Actively maintained alternatives to Gaia for running Terraform from a UI or PR workflow. |
 
 A useful repo-level addition would be a root `compose.yaml` that pulls each stack in with `include:`. With profiles on it (e.g. `docker compose --profile observability up`), you could bring up related stacks together.
+
+## Follow-up: settings moved to .env (2026-09-27)
+
+Every stack's `.env` now holds the settable values: image tags, host ports, static IPs, credentials/database names and tuning knobs (heap sizes, ulimits, log rotation, worker cores/memory, time zones). The compose files reference them as `${VAR:-default}`, and each default is exactly the previous hard-coded value.
+
+This was verified with `docker compose config` on all 36 stacks. The resolved output is byte-identical to the pre-refactor snapshot, both with the new `.env` files and with an `.env` containing only `ROOT_VOLUME_DIR`, so every default matches its `.env` value. The single intentional difference is that RabbitMQ now sets `RABBITMQ_DEFAULT_USER`/`RABBITMQ_DEFAULT_PASS` explicitly, defaulting to the image's own `guest/guest`.
+
+Notes:
+- `ROOT_VOLUME_DIR` keeps `:?error`: a missing root would bind volumes to the wrong place, so failing is safer than a default.
+- Kafka's advertised `EXTERNAL` listener follows `KAFKA_PORT`, so changing the host port keeps clients working.
+- The existing `.env` values for Seq, Elastic, OpenSearch and Hangfire were preserved under "Stack settings". The OpenSearch and Seq passwords switched from `:?` (required) to `:-` defaults, matching the rest of the repo.
+- Milvus: changing `MILVUS_MINIO_ACCESS_KEY/SECRET_KEY` also requires changing Milvus's `milvus.yaml`. Milvus expects `minioadmin` by default.

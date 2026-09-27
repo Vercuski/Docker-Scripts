@@ -1,34 +1,34 @@
 services:
   neo4j:
-    image: neo4j:latest
+    image: neo4j:${NEO4J_VERSION:-latest}
     container_name: neo4j_server
     restart: unless-stopped
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.16
+        ipv4_address: ${NEO4J_IP:-192.168.16.16}
         aliases:
           - neo4j
     command: neo4j
     ports:
-      - "7474:7474" # HTTP (Neo4j Browser UI)
-      - "7473:7473" # HTTPS
-      - "7687:7687" # Bolt protocol (Application Connections)
+      - "${NEO4J_HTTP_PORT:-7474}:7474" # HTTP (Neo4j Browser UI)
+      - "${NEO4J_HTTPS_PORT:-7473}:7473" # HTTPS
+      - "${NEO4J_BOLT_PORT:-7687}:7687" # Bolt protocol (Application Connections)
     environment:
       # Set your initial password (Format: username/password)
-      - NEO4J_AUTH=neo4j/Password123
+      - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD:-Password123}
 
       # Required if you want to use Neo4j Enterprise Edition
       # - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
 
       # Automatically download and install APOC plugins (NEO4JLABS_PLUGINS was removed in Neo4j 5)
-      - NEO4J_PLUGINS=["apoc"]
+      - NEO4J_PLUGINS=${NEO4J_PLUGINS:-["apoc"]}
 
       # Unrestrict APOC functions so they have proper security clearance
-      - NEO4J_dbms_security_procedures_unrestricted=apoc.*
+      - NEO4J_dbms_security_procedures_unrestricted=${NEO4J_PROCEDURES_UNRESTRICTED:-apoc.*}
 
       # Allow importing and exporting local CSV/JSON/GraphML data
-      - NEO4J_apoc_import_file_enabled=true
-      - NEO4J_apoc_export_file_enabled=true
+      - NEO4J_apoc_import_file_enabled=${NEO4J_APOC_IMPORT_FILE_ENABLED:-true}
+      - NEO4J_apoc_export_file_enabled=${NEO4J_APOC_EXPORT_FILE_ENABLED:-true}
     volumes:
       - neo4j_data:/data
       - neo4j_logs:/logs

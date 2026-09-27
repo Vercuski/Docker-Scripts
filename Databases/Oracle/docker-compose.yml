@@ -1,14 +1,14 @@
 services:
   oracle-db:
-    image: container-registry.oracle.com/database/enterprise:latest
+    image: container-registry.oracle.com/database/enterprise:${ORACLE_VERSION:-latest}
     container_name: OracleDb
     restart: unless-stopped
     environment:
-      - ORACLE_SID=ORCLCDB
-      - ORACLE_PDB=ORCLPDB1
-      - ORACLE_PWD=Password123
+      - ORACLE_SID=${ORACLE_SID:-ORCLCDB}
+      - ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
+      - ORACLE_PWD=${ORACLE_PWD:-Password123}
     ports:
-      - 1521:1521
+      - "${ORACLE_PORT:-1521}:1521"
     volumes:
       - oracle-data:/opt/oracle/oradata
       - oracle-backup:/opt/oracle/backup
@@ -21,7 +21,7 @@ services:
       start_period: 10m
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.25
+        ipv4_address: ${ORACLE_IP:-192.168.16.25}
         aliases:
           - oracle
 volumes:

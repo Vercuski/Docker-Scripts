@@ -1,6 +1,6 @@
 services:
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:${PROMETHEUS_VERSION:-latest}
     container_name: prometheus
     restart: unless-stopped
     volumes:
@@ -13,13 +13,13 @@ services:
       - '--web.enable-lifecycle'
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.26
+        ipv4_address: ${PROMETHEUS_IP:-192.168.16.26}
         aliases:
           - prometheus
     ports:
-      - 9090:9090
+      - "${PROMETHEUS_PORT:-9090}:9090"
   node-exporter:
-    image: prom/node-exporter:latest
+    image: prom/node-exporter:${NODE_EXPORTER_VERSION:-latest}
     container_name: node-exporter
     restart: unless-stopped
     # Reads the Docker host (on Docker Desktop: the docker-desktop VM), not empty bind folders
@@ -34,13 +34,13 @@ services:
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.27
+        ipv4_address: ${NODE_EXPORTER_IP:-192.168.16.27}
         aliases:
           - node-exporter
     ports:
-      - 9100:9100
+      - "${NODE_EXPORTER_PORT:-9100}:9100"
   alertmanager:
-    image: prom/alertmanager:latest
+    image: prom/alertmanager:${ALERTMANAGER_VERSION:-latest}
     container_name: alertmanager
     restart: unless-stopped
     volumes:
@@ -51,11 +51,11 @@ services:
       - '--storage.path=/alertmanager'
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.28
+        ipv4_address: ${ALERTMANAGER_IP:-192.168.16.28}
         aliases:
           - alertmanager
     ports:
-      - 9093:9093
+      - "${ALERTMANAGER_PORT:-9093}:9093"
 volumes:
   alertmanager_data:
     name: alertmanager_data

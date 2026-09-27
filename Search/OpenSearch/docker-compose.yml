@@ -1,24 +1,24 @@
 services:
   opensearch-node1:
-    image: opensearchproject/opensearch:latest
+    image: opensearchproject/opensearch:${OPENSEARCH_VERSION:-latest}
     container_name: opensearch-node1
     restart: unless-stopped
     environment:
-      - cluster.name=opensearch-cluster
+      - cluster.name=${OPENSEARCH_CLUSTER_NAME:-opensearch-cluster}
       - node.name=opensearch-node1
       - discovery.seed_hosts=opensearch-node1,opensearch-node2
       - cluster.initial_cluster_manager_nodes=opensearch-node1,opensearch-node2
       - bootstrap.memory_lock=true # along with the memlock settings below, disables swapping
-      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+      - "OPENSEARCH_JAVA_OPTS=-Xms${OPENSEARCH_HEAP:-512m} -Xmx${OPENSEARCH_HEAP:-512m}" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
       # Required since 2.12 - the demo security config refuses to start without a strong admin password
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD:?Set OPENSEARCH_INITIAL_ADMIN_PASSWORD in .env}
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD:-Dev!OpenSearch#2026}
     ulimits:
       memlock:
         soft: -1
         hard: -1
       nofile:
-        soft: 65536 # maximum number of open files for the OpenSearch user, set to at least 65536 on modern systems
-        hard: 65536
+        soft: ${OPENSEARCH_NOFILE_LIMIT:-65536} # maximum number of open files for the OpenSearch user, set to at least 65536 on modern systems
+        hard: ${OPENSEARCH_NOFILE_LIMIT:-65536}
     volumes:
       - opensearch-data1:/usr/share/opensearch/data
     ports:
@@ -26,37 +26,37 @@ services:
       - ${OPENSEARCH_PA_PORT:-9601}:9600 # Performance Analyzer
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.156 # .154/.155 are Filebeat/Logstash
+        ipv4_address: ${OPENSEARCH_NODE1_IP:-192.168.16.156} # .154/.155 are Filebeat/Logstash
         aliases:
           - opensearch-node1
   opensearch-node2:
-    image: opensearchproject/opensearch:latest
+    image: opensearchproject/opensearch:${OPENSEARCH_VERSION:-latest}
     container_name: opensearch-node2
     restart: unless-stopped
     environment:
-      - cluster.name=opensearch-cluster
+      - cluster.name=${OPENSEARCH_CLUSTER_NAME:-opensearch-cluster}
       - node.name=opensearch-node2
       - discovery.seed_hosts=opensearch-node1,opensearch-node2
       - cluster.initial_cluster_manager_nodes=opensearch-node1,opensearch-node2
       - bootstrap.memory_lock=true
-      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD:?Set OPENSEARCH_INITIAL_ADMIN_PASSWORD in .env}
+      - "OPENSEARCH_JAVA_OPTS=-Xms${OPENSEARCH_HEAP:-512m} -Xmx${OPENSEARCH_HEAP:-512m}"
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD:-Dev!OpenSearch#2026}
     ulimits:
       memlock:
         soft: -1
         hard: -1
       nofile:
-        soft: 65536
-        hard: 65536
+        soft: ${OPENSEARCH_NOFILE_LIMIT:-65536}
+        hard: ${OPENSEARCH_NOFILE_LIMIT:-65536}
     volumes:
       - opensearch-data2:/usr/share/opensearch/data
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.157
+        ipv4_address: ${OPENSEARCH_NODE2_IP:-192.168.16.157}
         aliases:
           - opensearch-node2
   opensearch-dashboards:
-    image: opensearchproject/opensearch-dashboards:latest
+    image: opensearchproject/opensearch-dashboards:${OPENSEARCH_DASHBOARDS_VERSION:-latest}
     container_name: opensearch-dashboards
     restart: unless-stopped
     depends_on:
@@ -69,7 +69,7 @@ services:
       OPENSEARCH_HOSTS: '["https://opensearch-node1:9200","https://opensearch-node2:9200"]'
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.158
+        ipv4_address: ${OPENSEARCH_DASHBOARDS_IP:-192.168.16.158}
         aliases:
           - opensearchdashboard
 

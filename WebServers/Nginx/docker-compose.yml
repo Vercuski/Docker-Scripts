@@ -1,32 +1,32 @@
 services:
   nginx:
-    image: nginx:latest
+    image: nginx:${NGINX_VERSION:-latest}
     container_name: nginx
     restart: unless-stopped
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.130
+        ipv4_address: ${NGINX_IP:-192.168.16.130}
         aliases:
           - nginx
     ports:
-      - 8180:80 # 80/443 belong to Nginx Proxy Manager
+      - "${NGINX_PORT:-8180}:80" # 80/443 belong to Nginx Proxy Manager
     volumes:
       - ./src:/usr/share/nginx/html:ro
   ui:
     # Nginx UI ships its own nginx instance; it manages the config in the nginx_conf volume, not the "nginx" service above
-    image: uozi/nginx-ui:latest
+    image: uozi/nginx-ui:${NGINX_UI_VERSION:-latest}
     container_name: nginx-ui
     restart: unless-stopped
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.131
+        ipv4_address: ${NGINX_UI_IP:-192.168.16.131}
         aliases:
           - nginxui
     ports:
-      - 8181:80 # 8080 is used by CockroachDB
-      - 8443:443
+      - "${NGINX_UI_PORT:-8181}:80" # 8080 is used by CockroachDB
+      - "${NGINX_UI_HTTPS_PORT:-8443}:443"
     environment:
-      TZ: "America/New_York"
+      TZ: "${NGINX_UI_TZ:-America/New_York}"
     volumes:
       - nginx_conf:/etc/nginx
       - nginx_ui:/etc/nginx-ui

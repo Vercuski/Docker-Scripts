@@ -1,33 +1,33 @@
 services:
   app:
-    image: 'jc21/nginx-proxy-manager:latest'
+    image: jc21/nginx-proxy-manager:${NPM_VERSION:-latest}
     container_name: nginx-proxy-manager
     restart: unless-stopped
 
     ports:
       # These ports are in format <host-port>:<container-port>
-      - '80:80' # Public HTTP Port
-      - '443:443' # Public HTTPS Port
-      - '81:81' # Admin Web Port
+      - "${NPM_HTTP_PORT:-80}:80" # Public HTTP Port
+      - "${NPM_HTTPS_PORT:-443}:443" # Public HTTPS Port
+      - "${NPM_ADMIN_PORT:-81}:81" # Admin Web Port
       # Add any other Stream port you want to expose
       # - '21:21' # FTP
 
     environment:
-      TZ: "America/New_York"
+      TZ: "${NPM_TZ:-America/New_York}"
 
       # Uncomment this if you want to change the location of
       # the SQLite DB file within the container
       # DB_SQLITE_FILE: "/data/database.sqlite"
 
       # Uncomment this if IPv6 is not enabled on your host
-      DISABLE_IPV6: 'true'
+      DISABLE_IPV6: "${NPM_DISABLE_IPV6:-true}"
 
     volumes:
       - npmdata:/data
       - npmletsencrypt:/etc/letsencrypt
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.161
+        ipv4_address: ${NPM_IP:-192.168.16.161}
         aliases:
           - nginxproxymanager
 

@@ -1,16 +1,16 @@
 services:
   haproxy:
-    image: haproxy:lts
+    image: haproxy:${HAPROXY_VERSION:-lts}
     container_name: haproxy
     restart: unless-stopped
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.160
+        ipv4_address: ${HAPROXY_IP:-192.168.16.160}
         aliases:
           - haproxy
     ports:
-      - 8100:8100 # Load-balanced frontend
-      - 8404:8404 # Stats page
+      - "${HAPROXY_PORT:-8100}:8100" # Load-balanced frontend
+      - "${HAPROXY_STATS_PORT:-8404}:8404" # Stats page
     volumes:
       # Config lives in this repo - an empty bind folder has no haproxy.cfg and the container would exit
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro

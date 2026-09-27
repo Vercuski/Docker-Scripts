@@ -1,22 +1,22 @@
 services:
   backstage:
-    image: backstage
+    image: ${BACKSTAGE_IMAGE:-backstage}
     container_name: backstage
     restart: unless-stopped
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.30
+        ipv4_address: ${BACKSTAGE_IP:-192.168.16.30}
         aliases:
           - backstage
     environment:
       # This value must match the name of the postgres configuration block.
-      POSTGRES_HOST: postgresql
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: user@user.com
-      POSTGRES_PASSWORD: Password123
+      POSTGRES_HOST: "${BACKSTAGE_POSTGRES_HOST:-postgresql}"
+      POSTGRES_PORT: "${BACKSTAGE_POSTGRES_PORT:-5432}"
+      POSTGRES_USER: "${BACKSTAGE_POSTGRES_USER:-user@user.com}"
+      POSTGRES_PASSWORD: "${BACKSTAGE_POSTGRES_PASSWORD:-Password123}"
       # NODE_OPTIONS: --no-node-snapshot # uncomment for NODE 20+
     ports:
-      - 7007:7007
+      - "${BACKSTAGE_PORT:-7007}:7007"
 networks:
   GroupNetwork:
     driver: bridge

@@ -1,45 +1,45 @@
 services:
   registry:
-    image: registry:3
+    image: registry:${REGISTRY_VERSION:-3}
     container_name: registry-server
     restart: unless-stopped
     ports:
-      - 5000:5000
+      - "${REGISTRY_PORT:-5000}:5000"
     environment:
-      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+      REGISTRY_STORAGE_DELETE_ENABLED: "${REGISTRY_DELETE_ENABLED:-true}"
       REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
       # CORS headers are not needed: the UI proxies registry calls through its own nginx (NGINX_PROXY_PASS_URL)
     volumes:
       - registry_data:/data
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.180
+        ipv4_address: ${REGISTRY_IP:-192.168.16.180}
         aliases:
           - dockerregistry
   registry-ui:
-    image: joxit/docker-registry-ui:latest
+    image: joxit/docker-registry-ui:${REGISTRY_UI_VERSION:-latest}
     container_name: registry-ui
     restart: unless-stopped
     depends_on:
       - registry
     ports:
-      - 5001:80
+      - "${REGISTRY_UI_PORT:-5001}:80"
     environment:
       - SINGLE_REGISTRY=true
-      - REGISTRY_TITLE=Docker Registry UI
-      - DELETE_IMAGES=true
+      - REGISTRY_TITLE=${REGISTRY_UI_TITLE:-Docker Registry UI}
+      - DELETE_IMAGES=${REGISTRY_UI_DELETE_IMAGES:-true}
       - SHOW_CONTENT_DIGEST=true
       # Must be reachable from inside the UI container - "localhost" would point at the UI itself
       - NGINX_PROXY_PASS_URL=http://dockerregistry:5000
       - SHOW_CATALOG_NB_TAGS=true
       - CATALOG_MIN_BRANCHES=1
       - CATALOG_MAX_BRANCHES=1
-      - TAGLIST_PAGE_SIZE=100
+      - TAGLIST_PAGE_SIZE=${REGISTRY_UI_TAGLIST_PAGE_SIZE:-100}
       - REGISTRY_SECURED=false
-      - CATALOG_ELEMENTS_LIMIT=1000
+      - CATALOG_ELEMENTS_LIMIT=${REGISTRY_UI_CATALOG_LIMIT:-1000}
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.181
+        ipv4_address: ${REGISTRY_UI_IP:-192.168.16.181}
         aliases:
           - dockerregistryui
 volumes:

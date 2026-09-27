@@ -1,18 +1,18 @@
 services:
   grafana:
-    image: grafana/grafana-enterprise:latest
+    image: grafana/grafana-enterprise:${GRAFANA_VERSION:-latest}
     container_name: grafana
     restart: unless-stopped
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.110
+        ipv4_address: ${GRAFANA_IP:-192.168.16.110}
         aliases:
           - grafana
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=Password123
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-Password123}
     ports:
-      - 3000:3000
+      - "${GRAFANA_PORT:-3000}:3000"
     volumes:
       - grafana_storage:/var/lib/grafana
 volumes:

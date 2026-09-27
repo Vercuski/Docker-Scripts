@@ -1,18 +1,18 @@
 services:
   pg:
-    image: proget.inedo.com/productimages/inedo/proget:24.0.2
+    image: proget.inedo.com/productimages/inedo/proget:${PROGET_VERSION:-24.0.2}
     container_name: proget
     restart: unless-stopped
     environment:
-      PROGET_SQL_CONNECTION_STRING: "Data Source=mssqldb;Initial Catalog=Proget;User ID=Proget;Password=Password123;TrustServerCertificate=True"
-      ASPNETCORE_URLS: "http://*:80;https://*:443"
-      SSL_CERT_FILE: "proget.cer"
+      PROGET_SQL_CONNECTION_STRING: "${PROGET_SQL_CONNECTION_STRING:-Data Source=mssqldb;Initial Catalog=Proget;User ID=Proget;Password=Password123;TrustServerCertificate=True}"
+      ASPNETCORE_URLS: "${PROGET_ASPNETCORE_URLS:-http://*:80;https://*:443}"
+      SSL_CERT_FILE: "${PROGET_SSL_CERT_FILE:-proget.cer}"
     ports:
-      - "8091:80"
-      - "8092:443"
+      - "${PROGET_HTTP_PORT:-8091}:80"
+      - "${PROGET_HTTPS_PORT:-8092}:443"
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.200
+        ipv4_address: ${PROGET_IP:-192.168.16.200}
         aliases:
           - proget
     volumes:

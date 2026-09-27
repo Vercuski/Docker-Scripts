@@ -1,24 +1,24 @@
 services:
   sonarqube:
-    image: sonarqube:community
+    image: sonarqube:${SONARQUBE_VERSION:-community}
     container_name: sonarqube
     restart: unless-stopped
     environment:
-      SONAR_JDBC_URL: jdbc:sqlserver://mssqldb;databaseName=sonar;encrypt=true;trustServerCertificate=true;
-      #SONAR_JDBC_URL: jdbc:postgresql://postgresql:5432/sonar
+      # PostgreSQL alternative: SONAR_JDBC_URL=jdbc:postgresql://postgresql:5432/sonar
+      SONAR_JDBC_URL: "${SONAR_JDBC_URL:-jdbc:sqlserver://mssqldb;databaseName=sonar;encrypt=true;trustServerCertificate=true;}"
       # Login created by CreateMSSQLDbScript.sql / CreatePostgreSQLDbScript.sql
-      SONAR_JDBC_USERNAME: sonarqube
-      SONAR_JDBC_PASSWORD: Password123
+      SONAR_JDBC_USERNAME: "${SONAR_JDBC_USERNAME:-sonarqube}"
+      SONAR_JDBC_PASSWORD: "${SONAR_JDBC_PASSWORD:-Password123}"
     volumes:
       # Paths are case-sensitive inside the container (/opt/sonarqube, not /opt/SonarQube)
       - sonarqube_data:/opt/sonarqube/data
       - sonarqube_extensions:/opt/sonarqube/extensions
       - sonarqube_logs:/opt/sonarqube/logs
     ports:
-      - 9000:9000
+      - "${SONARQUBE_PORT:-9000}:9000"
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.170
+        ipv4_address: ${SONARQUBE_IP:-192.168.16.170}
         aliases:
           - sonarqube
 volumes:

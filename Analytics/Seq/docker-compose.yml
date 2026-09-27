@@ -8,7 +8,7 @@ services:
       # Only used the first time the container initializes /data.
       # You'll be prompted to change it on first login.
       SEQ_FIRSTRUN_ADMINUSERNAME: ${SEQ_ADMIN_USERNAME:-admin}
-      SEQ_FIRSTRUN_ADMINPASSWORD: ${SEQ_ADMIN_PASSWORD:?Set SEQ_ADMIN_PASSWORD in .env}
+      SEQ_FIRSTRUN_ADMINPASSWORD: ${SEQ_ADMIN_PASSWORD:-Password123}
       # Public URL used when Seq generates links (alerts, notifications, etc.)
       SEQ_API_CANONICALURI: ${SEQ_CANONICAL_URI:-http://localhost:8089}
     ports:
@@ -20,7 +20,7 @@ services:
       - seq_data:/data
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.191
+        ipv4_address: ${SEQ_IP:-192.168.16.191}
         aliases:
           - seq
 volumes:

@@ -1,6 +1,6 @@
 services:
   terraform:
-    image: hashicorp/terraform:latest
+    image: hashicorp/terraform:${TERRAFORM_VERSION:-latest}
     container_name: terraform
     restart: unless-stopped
     # The image's entrypoint is the terraform CLI, which exits immediately (causing a restart loop).
@@ -8,43 +8,43 @@ services:
     entrypoint: ["/bin/sh", "-c", "sleep infinity"]
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.50
+        ipv4_address: ${TERRAFORM_IP:-192.168.16.50}
         aliases:
           - terraform
     volumes:
       - .:/infra
     working_dir: /infra
     environment:
-      TZ: "America/New_York"
+      TZ: "${TERRAFORM_TZ:-America/New_York}"
   gaia:
-    image: gaiaapp/gaia:latest
+    image: gaiaapp/gaia:${GAIA_VERSION:-latest}
     container_name: gaia
     restart: unless-stopped
     depends_on:
       - mongo
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.51
+        ipv4_address: ${GAIA_IP:-192.168.16.51}
         aliases:
           - gaia
     ports:
-      - "8085:8080" # 8080 is used by CockroachDB
+      - "${GAIA_PORT:-8085}:8080" # 8080 is used by CockroachDB
     environment:
-      GAIA_MONGODB_URI: mongodb://gaia-mongo/gaia
-      GAIA_RUNNER_API_PASSWORD: "123456"
-      GAIA_EXTERNAL_URL: http://gaia:8080
+      GAIA_MONGODB_URI: "${GAIA_MONGODB_URI:-mongodb://gaia-mongo/gaia}"
+      GAIA_RUNNER_API_PASSWORD: "${GAIA_RUNNER_API_PASSWORD:-123456}"
+      GAIA_EXTERNAL_URL: "${GAIA_EXTERNAL_URL:-http://gaia:8080}"
   runner:
-    image: gaiaapp/runner:latest
+    image: gaiaapp/runner:${GAIA_RUNNER_VERSION:-latest}
     container_name: runner
     restart: unless-stopped
     depends_on:
       - gaia
     environment:
       GAIA_URL: http://gaia:8080
-      GAIA_RUNNER_API_PASSWORD: "123456"
+      GAIA_RUNNER_API_PASSWORD: "${GAIA_RUNNER_API_PASSWORD:-123456}"
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.52
+        ipv4_address: ${GAIA_RUNNER_IP:-192.168.16.52}
         aliases:
           - gaiarunner
     volumes:
@@ -52,12 +52,12 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
   mongo:
     # Gaia's documented MongoDB version (the project is no longer actively maintained; newer servers are untested)
-    image: mongo:4.4
+    image: mongo:${GAIA_MONGO_VERSION:-4.4}
     container_name: gaia-mongo
     restart: unless-stopped
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.53
+        ipv4_address: ${GAIA_MONGO_IP:-192.168.16.53}
         aliases:
           - gaia-mongo
     volumes:

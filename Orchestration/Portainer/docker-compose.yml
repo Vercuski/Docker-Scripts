@@ -1,16 +1,16 @@
 services:
   portainer:
-    image: portainer/portainer-ce:latest
+    image: portainer/portainer-ce:${PORTAINER_VERSION:-latest}
     container_name: portainer
     restart: unless-stopped
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.92 # .91 is Rancher
+        ipv4_address: ${PORTAINER_IP:-192.168.16.92} # .91 is Rancher
         aliases:
           - portainer
     ports:
-      - "9010:9000" # Web UI over HTTP (9100 is used by Prometheus node-exporter)
-      - "9443:9443" # Web UI over HTTPS (self-signed)
+      - "${PORTAINER_HTTP_PORT:-9010}:9000" # Web UI over HTTP (9100 is used by Prometheus node-exporter)
+      - "${PORTAINER_HTTPS_PORT:-9443}:9443" # Web UI over HTTPS (self-signed)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data

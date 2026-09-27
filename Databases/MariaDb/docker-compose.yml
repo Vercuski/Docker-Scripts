@@ -1,33 +1,33 @@
 services:
   mariadb:
-    image: mariadb:latest
+    image: mariadb:${MARIADB_VERSION:-latest}
     container_name: MariaDb
     restart: unless-stopped
     environment:
-      MARIADB_ROOT_PASSWORD: "Password123"
-      MARIADB_USER: "user"
-      MARIADB_PASSWORD: "Password123"
+      MARIADB_ROOT_PASSWORD: "${MARIADB_ROOT_PASSWORD:-Password123}"
+      MARIADB_USER: "${MARIADB_USER:-user}"
+      MARIADB_PASSWORD: "${MARIADB_PASSWORD:-Password123}"
     ports:
-      - 3307:3306 # 3306 is used by MySQL
+      - "${MARIADB_PORT:-3307}:3306" # 3306 is used by MySQL
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.22
+        ipv4_address: ${MARIADB_IP:-192.168.16.22}
         aliases:
           - mariadb
     volumes:
       - MariaDB_backup:/backup
       - MariaDB_data:/var/lib/mysql:Z
   adminer:
-    image: adminer:latest
+    image: adminer:${ADMINER_VERSION:-latest}
     container_name: adminer
     restart: unless-stopped
     environment:
-      ADMINER_DEFAULT_SERVER: mariadb
+      ADMINER_DEFAULT_SERVER: "${ADMINER_DEFAULT_SERVER:-mariadb}"
     ports:
-      - 8087:8080
+      - "${ADMINER_PORT:-8087}:8080"
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.23
+        ipv4_address: ${ADMINER_IP:-192.168.16.23}
         aliases:
           - adminer
 volumes:

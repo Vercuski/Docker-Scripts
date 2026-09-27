@@ -1,24 +1,24 @@
 services:
   influxdb:
     # Pinned to v2: influxdb:latest now resolves to InfluxDB 3 Core, which ignores DOCKER_INFLUXDB_INIT_*
-    image: influxdb:2
+    image: influxdb:${INFLUXDB_VERSION:-2}
     container_name: influxdb
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
     ports:
-      - "8086:8086"
+      - "${INFLUXDB_PORT:-8086}:8086"
     environment:
-      DOCKER_INFLUXDB_INIT_MODE: setup
-      DOCKER_INFLUXDB_INIT_USERNAME: user
-      DOCKER_INFLUXDB_INIT_PASSWORD: Password123
-      DOCKER_INFLUXDB_INIT_ORG: HomeServer
-      DOCKER_INFLUXDB_INIT_BUCKET: Home
-      DOCKER_INFLUXDB_INIT_RETENTION: 1w
-      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: API_TOKEN
+      DOCKER_INFLUXDB_INIT_MODE: "${INFLUXDB_INIT_MODE:-setup}"
+      DOCKER_INFLUXDB_INIT_USERNAME: "${INFLUXDB_INIT_USERNAME:-user}"
+      DOCKER_INFLUXDB_INIT_PASSWORD: "${INFLUXDB_INIT_PASSWORD:-Password123}"
+      DOCKER_INFLUXDB_INIT_ORG: "${INFLUXDB_INIT_ORG:-HomeServer}"
+      DOCKER_INFLUXDB_INIT_BUCKET: "${INFLUXDB_INIT_BUCKET:-Home}"
+      DOCKER_INFLUXDB_INIT_RETENTION: "${INFLUXDB_INIT_RETENTION:-1w}"
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "${INFLUXDB_INIT_ADMIN_TOKEN:-API_TOKEN}"
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.12
+        ipv4_address: ${INFLUXDB_IP:-192.168.16.12}
         aliases:
           - influxdb
     volumes:

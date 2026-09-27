@@ -1,6 +1,6 @@
 services:
   spark-master:
-    image: spark:latest
+    image: spark:${SPARK_VERSION:-latest}
     container_name: apache-spark-master
     hostname: apachespark
     restart: unless-stopped
@@ -12,31 +12,31 @@ services:
       - spark_logs:/opt/spark/spark-events
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.190
+        ipv4_address: ${SPARK_MASTER_IP:-192.168.16.190}
         aliases:
           - apachespark
     environment:
       SPARK_MASTER_HOST: apachespark
       SPARK_NO_DAEMONIZE: "true"
     ports:
-      - 8090:8080 # Master web UI (9090 is used by Prometheus)
-      - 7077:7077 # Master RPC
+      - "${SPARK_UI_PORT:-8090}:8080" # Master web UI (9090 is used by Prometheus)
+      - "${SPARK_MASTER_PORT:-7077}:7077" # Master RPC
   spark-worker:
-    image: spark:latest
+    image: spark:${SPARK_VERSION:-latest}
     container_name: apache-spark-worker
     restart: unless-stopped
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://apachespark:7077
     depends_on:
       - spark-master
     environment:
-      SPARK_WORKER_CORES: 2
-      SPARK_WORKER_MEMORY: 2g
+      SPARK_WORKER_CORES: "${SPARK_WORKER_CORES:-2}"
+      SPARK_WORKER_MEMORY: "${SPARK_WORKER_MEMORY:-2g}"
     volumes:
       - spark_data:/opt/spark/data
       - spark_apps:/opt/spark/apps
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.192
+        ipv4_address: ${SPARK_WORKER_IP:-192.168.16.192}
         aliases:
           - apachespark-worker
 volumes:

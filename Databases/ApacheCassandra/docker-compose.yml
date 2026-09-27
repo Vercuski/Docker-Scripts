@@ -1,19 +1,19 @@
 services:
   cassandra:
-    image: cassandra:latest
+    image: cassandra:${CASSANDRA_VERSION:-latest}
     container_name: cassandra
     restart: unless-stopped
     ports:
-      - 9042:9042
+      - "${CASSANDRA_PORT:-9042}:9042"
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.10
+        ipv4_address: ${CASSANDRA_IP:-192.168.16.10}
         aliases:
           - cassandra
     volumes:
       - apache_cassandra:/var/lib/cassandra
     environment:
-      CASSANDRA_CLUSTER_NAME: DockerCluster
+      CASSANDRA_CLUSTER_NAME: "${CASSANDRA_CLUSTER_NAME:-DockerCluster}"
 volumes:
   apache_cassandra:
     name: apache_cassandra

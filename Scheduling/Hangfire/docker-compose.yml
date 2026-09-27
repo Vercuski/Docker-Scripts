@@ -6,19 +6,19 @@ services:
     container_name: hangfire-server
     restart: unless-stopped
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=${HANGFIRE_ENVIRONMENT:-Production}
       - ASPNETCORE_URLS=http://+:5000
       # "localhost" is the app container itself - use the MSSQL container's network alias
-      - ConnectionStrings__HangfireConnection=Server=mssqldb;Database=hangfire;User Id=sa;Password=Password123;MultipleActiveResultSets=true;Encrypt=True;TrustServerCertificate=True;
+      - ConnectionStrings__HangfireConnection=${HANGFIRE_CONNECTION_STRING:-Server=mssqldb;Database=hangfire;User Id=sa;Password=Password123;MultipleActiveResultSets=true;Encrypt=True;TrustServerCertificate=True;}
     ports:
-      - "5010:5000" # 5000 is used by the Docker Registry
+      - "${HANGFIRE_PORT:-5010}:5000" # 5000 is used by the Docker Registry
     volumes:
       - ./hangfire-app:/app
     working_dir: /app
     command: ["dotnet", "HangfireServer.dll"]
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.210
+        ipv4_address: ${HANGFIRE_IP:-192.168.16.210}
         aliases:
           - hangfire
 

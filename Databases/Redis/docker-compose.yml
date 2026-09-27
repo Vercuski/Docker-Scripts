@@ -1,14 +1,14 @@
 services:
   cache:
-    image: redis:latest
+    image: redis:${REDIS_VERSION:-latest}
     container_name: redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
-    command: redis-server --save 20 1 --requirepass Password123
+      - "${REDIS_PORT:-6379}:6379"
+    command: redis-server --save ${REDIS_SAVE:-20 1} --requirepass ${REDIS_PASSWORD:-Password123}
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.19
+        ipv4_address: ${REDIS_IP:-192.168.16.19}
         aliases:
           - redis
     volumes:

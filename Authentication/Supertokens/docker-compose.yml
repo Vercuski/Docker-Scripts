@@ -1,16 +1,16 @@
 services:
   supertokens: # SuperTokens Core
-    image: registry.supertokens.io/supertokens/supertokens-postgresql:9.3
+    image: registry.supertokens.io/supertokens/supertokens-postgresql:${SUPERTOKENS_VERSION:-9.3}
     container_name: supertokens
     restart: unless-stopped
     ports:
-      - "3567:3567"
+      - "${SUPERTOKENS_PORT:-3567}:3567"
     environment:
       # Requires the PostgreSQL stack (Databases/PostgreSQL) with a "supertokens" database created
-      POSTGRESQL_CONNECTION_URI: "postgresql://user%40user.com:Password123@postgresql:5432/supertokens"
+      POSTGRESQL_CONNECTION_URI: "${SUPERTOKENS_DB_URI:-postgresql://user%40user.com:Password123@postgresql:5432/supertokens}"
     networks:
       GroupNetwork:
-        ipv4_address: 192.168.16.211
+        ipv4_address: ${SUPERTOKENS_IP:-192.168.16.211}
         aliases:
           - supertokens
 networks:

@@ -7,6 +7,18 @@ Collection of Docker and Docker Compose scripts
 3. `cd <Category>/<Tool>` then `docker compose up -d`.
 
 Each stack's `.env` sets `ROOT_VOLUME_DIR=D:`. On Linux/macOS export `ROOT_VOLUME_DIR=$HOME` in your shell - a shell variable overrides the `.env` value.
+
+## Configuration (.env)
+Every settable value lives in the stack's `.env`, grouped as **Image versions**, **Host ports**, **Network (static IPs)**,
+**Credentials & settings** and **Tuning**. The compose files reference them as `${VAR:-default}`, so:
+- edit the `.env` to change a password, port, image tag or IP - no compose edits needed;
+- a variable missing from `.env` falls back to the compose default (the same value), so stacks still start;
+- a shell/environment variable overrides the `.env`, e.g. `KAFKA_PORT=19092 docker compose up -d`;
+- `docker compose config` shows the fully resolved result.
+
+Values that are internal wiring (container-side ports, service DNS names, certificate paths, cluster topology)
+stay in `docker-compose.yml` on purpose - changing them would break the stack.
+Credentials such as `*_PASSWORD` are usually only applied the first time a data folder is initialised.
 Passwords in this repo (`Password123`, etc.) are local-development defaults only.
 
 # Networking
