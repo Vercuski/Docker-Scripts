@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>My Website</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .menu-toggle:active {
+            opacity: 0.7;
+        }
+
+        .layout {
+            display: flex;
+            margin-top: 60px;
+            min-height: calc(100vh - 60px);
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            position: fixed;
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #999;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #f5f5f5;
+            border-left-color: #667eea;
+        }
+
+        .nav-item.active {
+            background: #eef2ff;
+            border-left-color: #667eea;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            min-width: 0;
+        }
+
+        .page-content {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            min-height: 500px;
+        }
+
+        .page-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-content h2 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+
+        .page-content h3 {
+            color: #2c3e50;
+            margin: 1.5rem 0 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .page-content p {
+            margin-bottom: 0.75rem;
+        }
+
+        .page-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .page-content li {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+            overflow-wrap: anywhere;
+        }
+
+        .page-content a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .page-content a:hover {
+            text-decoration: underline;
+        }
+
+        .page-content code {
+            background: #eef2ff;
+            padding: 0.1rem 0.35rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            overflow-wrap: anywhere;
+        }
+
+        .note {
+            color: #777;
+            font-size: 0.85rem;
+        }
+
+        .search-box {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        table {
+            margin: 1rem 0;
+        }
+
+        table td {
+            padding: 0.5rem;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table.port-map {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        table.port-map th {
+            text-align: left;
+            background: #eef2ff;
+            color: #2c3e50;
+            padding: 0.5rem;
+            border-bottom: 2px solid #667eea;
+            white-space: nowrap;
+        }
+
+        table.port-map td {
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+
+        table.port-map td:first-child {
+            color: #999;
+            white-space: nowrap;
+        }
+
+        input[type="text"] {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        input[type="button"] {
+            padding: 0.5rem 1rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type="button"]:hover {
+            background: #5568d3;
+        }
+
+        #snackbar {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1001;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+        }
+
+        #snackbar.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 6.5s;
+        }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+
+        /* Mobile styles */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                width: 80%;
+                max-width: 300px;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .overlay {
+                display: none;
+                position: fixed;
+                top: 60px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 999;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            .overlay.active {
+                display: block;
+            }
+
+            header h1 {
+                font-size: 1.2rem;
+            }
+
+            .page-content {
+                padding: 1.5rem;
+            }
+
+            .page-content h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>My Website</h1>
+            <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        </div>
+    </header>
+
+    <div class="overlay" onclick="toggleSidebar()"></div>
+
+    <div class="layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="search-box">
+                <input type="text" id="searchNav" placeholder="Search pages..." onkeyup="filterNav()">
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Docker-Scripts</div>
+                    <a class="nav-item active" onclick="openPage(event, 'Overview')">Overview &amp; Port Map</a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Infrastructure</div>
+                    <a class="nav-item" onclick="openPage(event, 'Analytics')">Analytics</a>
+                    <a class="nav-item" onclick="openPage(event, 'Authentication')">Authentication</a>
+                    <a class="nav-item" onclick="openPage(event, 'Cloud')">Cloud</a>
+                    <a class="nav-item" onclick="openPage(event, 'CloudEmulators')">Cloud Emulators</a>
+                    <a class="nav-item" onclick="openPage(event, 'Databases')">Databases</a>
+                    <a class="nav-item" onclick="openPage(event, 'Email')">Email</a>
+                    <a class="nav-item" onclick="openPage(event, 'Messaging')">Messaging</a>
+                    <a class="nav-item" onclick="openPage(event, 'Observability')">Observability</a>
+                    <a class="nav-item" onclick="openPage(event, 'Orchestration')">Orchestration</a>
+                    <a class="nav-item" onclick="openPage(event, 'Proxy')">Proxy / Load Balancing</a>
+                    <a class="nav-item" onclick="openPage(event, 'Scheduling')">Scheduling</a>
+                    <a class="nav-item" onclick="openPage(event, 'Search')">Search</a>
+                    <a class="nav-item" onclick="openPage(event, 'Security')">Security</a>
+                    <a class="nav-item" onclick="openPage(event, 'WebServers')">Web Servers</a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Development</div>
+                    <a class="nav-item" onclick="openPage(event, 'Code')">Code</a>
+                    <a class="nav-item" onclick="openPage(event, 'CodeAnalysis')">Code Analysis</a>
+                    <a class="nav-item" onclick="openPage(event, 'Containerization')">Containerization</a>
+                    <a class="nav-item" onclick="openPage(event, 'IaC')">IaC</a>
+                    <a class="nav-item" onclick="openPage(event, 'Packages')">Packages</a>
+                    <a class="nav-item" onclick="openPage(event, 'SourceControl')">Source Control</a>
+                    <a class="nav-item" onclick="openPage(event, 'Visualization')">Visualization</a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Resources</div>
+                    <a class="nav-item" onclick="openPage(event, 'Documentation')">Documentation</a>
+                    <a class="nav-item" onclick="openPage(event, 'Learning')">Learning</a>
+                    <a class="nav-item" onclick="openPage(event, 'Workflow')">Workflow</a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Personal</div>
+                    <a class="nav-item" onclick="openPage(event, 'Social')">Social</a>
+                    <a class="nav-item" onclick="openPage(event, 'Stretches')">Stretches</a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Tools</div>
+                    <a class="nav-item" onclick="openPage(event, 'Electronics')">Electronics</a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div id="Overview" class="page-content active">
+                <h2>Docker-Scripts</h2>
+                <p>
+                    Repo: <a href="https://github.com/Vercuski/Docker-Scripts" target="_blank">https://github.com/Vercuski/Docker-Scripts</a><br />
+                    Local: <code>D:\source\github\Docker-Scripts</code> <span style="cursor: pointer" onclick="ClipBoardText('D:\\source\\github\\Docker-Scripts')"><i class="fa-regular fa-copy"></i></span>
+                </p>
+
+                <h3>Getting started</h3>
+                <p>
+                    1. <code>CreateNetwork.bat</code> / <code>CreateNetwork.sh</code> &mdash; creates <b>GroupNetwork</b> (192.168.16.0/24, gateway 192.168.16.1).<br />
+                    2. <code>CreateVolumes.bat</code> / <code>CreateVolumes.sh</code> &mdash; creates the host folders behind the bind mounts (<code>ROOT_VOLUME_DIR=D:</code>).<br />
+                    3. <code>cd &lt;Category&gt;/&lt;Tool&gt;</code> then <code>docker compose up -d</code> <span style="cursor: pointer" onclick="ClipBoardText('docker compose up -d')"><i class="fa-regular fa-copy"></i></span>
+                </p>
+                <p class="note">
+                    Every settable value (image tag, host port, static IP, credentials) lives in each stack's <code>.env</code>; the compose files use <code>${VAR:-default}</code>.
+                    Passwords are usually only applied the first time a data folder is initialised. <code>docker compose config</code> shows the resolved values.
+                </p>
+
+                <h3>Port map</h3>
+                <div class="table-wrap">
+                <table class="port-map">
+                    <tr><th>Category</th><th>Service</th><th>Host endpoints (saturn)</th><th>IP</th></tr>
+                    <tr><td>Analytics</td><td>Apache Spark</td><td><a href="http://saturn:8090/" target="_blank">:8090</a> UI, :7077 master</td><td>.190 / worker .192</td></tr>
+                    <tr><td>Analytics</td><td>Seq</td><td><a href="http://saturn:8089/" target="_blank">:8089</a> UI, :5341 ingest</td><td>.191</td></tr>
+                    <tr><td>Authentication</td><td>Keycloak</td><td><a href="http://saturn:8280/" target="_blank">:8280</a>, :9001 management</td><td>.212</td></tr>
+                    <tr><td>Authentication</td><td>SuperTokens</td><td>:3567</td><td>.211</td></tr>
+                    <tr><td>Cloud Emulators</td><td>Azurite</td><td>:10000 blob, :10001 queue, :10002 table</td><td>.100</td></tr>
+                    <tr><td>Cloud Emulators</td><td>Azure Service Bus</td><td>:5673 AMQP, :5300 health</td><td>.101</td></tr>
+                    <tr><td>Cloud Emulators</td><td>Azure Cosmos DB</td><td>:8081 (https), <a href="http://saturn:1234/" target="_blank">:1234</a> explorer</td><td>.102</td></tr>
+                    <tr><td>Code Analysis</td><td>SonarQube</td><td><a href="http://saturn:9000/" target="_blank">:9000</a></td><td>.170</td></tr>
+                    <tr><td>Containerization</td><td>Docker Registry / UI</td><td>:5000 API, <a href="http://saturn:5001/" target="_blank">:5001</a> UI</td><td>.180 / .181</td></tr>
+                    <tr><td>Databases</td><td>Apache Cassandra</td><td>:9042</td><td>.10</td></tr>
+                    <tr><td>Databases</td><td>ClickHouse</td><td><a href="http://saturn:8123/play" target="_blank">:8123</a> HTTP, :19000 native</td><td>.29</td></tr>
+                    <tr><td>Databases</td><td>CockroachDB</td><td>:26257 SQL, <a href="http://saturn:8080/" target="_blank">:8080</a> UI</td><td>.11</td></tr>
+                    <tr><td>Databases</td><td>EventStoreDB</td><td><a href="http://saturn:2113/" target="_blank">:2113</a> HTTP, :1113 TCP</td><td>.21</td></tr>
+                    <tr><td>Databases</td><td>InfluxDB</td><td><a href="http://saturn:8086/" target="_blank">:8086</a></td><td>.12</td></tr>
+                    <tr><td>Databases</td><td>MariaDB / Adminer</td><td>:3307, <a href="http://saturn:8087/" target="_blank">:8087</a> Adminer</td><td>.22 / .23</td></tr>
+                    <tr><td>Databases</td><td>Milvus</td><td>:19530, :9091 metrics, :9110 MinIO API, <a href="http://saturn:9111/" target="_blank">:9111</a> MinIO console</td><td>.42 / etcd .40 / MinIO .41</td></tr>
+                    <tr><td>Databases</td><td>MongoDB / Mongo Express</td><td>:27017, <a href="http://saturn:8088/" target="_blank">:8088</a> Mongo Express</td><td>.13 / .24</td></tr>
+                    <tr><td>Databases</td><td>MSSQL</td><td>:1433</td><td>.14</td></tr>
+                    <tr><td>Databases</td><td>MySQL / phpMyAdmin</td><td>:3306, <a href="http://saturn:8082/" target="_blank">:8082</a> phpMyAdmin</td><td>.15 / .20</td></tr>
+                    <tr><td>Databases</td><td>Neo4j</td><td><a href="http://saturn:7474/" target="_blank">:7474</a> HTTP, :7473 HTTPS, :7687 Bolt</td><td>.16</td></tr>
+                    <tr><td>Databases</td><td>Oracle</td><td>:1521</td><td>.25</td></tr>
+                    <tr><td>Databases</td><td>PostgreSQL / pgAdmin</td><td>:5432, <a href="http://saturn:5050/" target="_blank">:5050</a> pgAdmin</td><td>.17 / .18</td></tr>
+                    <tr><td>Databases</td><td>Prometheus</td><td><a href="http://saturn:9090/" target="_blank">:9090</a>, :9100 node exporter, <a href="http://saturn:9093/" target="_blank">:9093</a> Alertmanager</td><td>.26 / .27 / .28</td></tr>
+                    <tr><td>Databases</td><td>Redis</td><td>:6379</td><td>.19</td></tr>
+                    <tr><td>Documentation</td><td>Backstage</td><td><a href="http://saturn:7007/" target="_blank">:7007</a></td><td>.30</td></tr>
+                    <tr><td>Documentation</td><td>MediaWiki</td><td><a href="http://saturn:8281/" target="_blank">:8281</a></td><td>.31</td></tr>
+                    <tr><td>Email</td><td>Mailpit</td><td><a href="http://saturn:8025/" target="_blank">:8025</a> UI, :1025 SMTP</td><td>.140</td></tr>
+                    <tr><td>IaC</td><td>Terraform / Gaia</td><td><a href="http://saturn:8085/" target="_blank">:8085</a> Gaia</td><td>.50 / .51 / runner .52 / mongo .53</td></tr>
+                    <tr><td>Messaging</td><td>Kafka / Kafka UI</td><td>:9092, <a href="http://saturn:8084/" target="_blank">:8084</a> Kafka UI</td><td>.70 / .73</td></tr>
+                    <tr><td>Messaging</td><td>RabbitMQ</td><td>:5672 AMQP, <a href="http://saturn:15672/" target="_blank">:15672</a> UI, :15692 metrics</td><td>.72</td></tr>
+                    <tr><td>Observability</td><td>Aspire Dashboard</td><td><a href="http://saturn:18888/" target="_blank">:18888</a> UI, :18889 OTLP gRPC, :18890 OTLP HTTP</td><td>.120</td></tr>
+                    <tr><td>Observability</td><td>OTel Collector</td><td>:4317 gRPC, :4318 HTTP, :8889 metrics, :13133 health</td><td>.121</td></tr>
+                    <tr><td>Observability</td><td>Tempo / Loki</td><td>:3200 Tempo, :3100 Loki</td><td>.122 / .123</td></tr>
+                    <tr><td>Orchestration</td><td>Kubernetes</td><td>:8001 (<code>kubectl proxy</code>)</td><td>.90</td></tr>
+                    <tr><td>Orchestration</td><td>Rancher</td><td>:8480, <a href="https://saturn:8444/" target="_blank">:8444</a> HTTPS</td><td>.91</td></tr>
+                    <tr><td>Orchestration</td><td>Portainer</td><td>:9010, <a href="https://saturn:9443/" target="_blank">:9443</a> HTTPS</td><td>.92</td></tr>
+                    <tr><td>Packages</td><td>ProGet</td><td><a href="http://saturn:8091/" target="_blank">:8091</a>, :8092 HTTPS</td><td>.200</td></tr>
+                    <tr><td>Proxy / LB</td><td>HAProxy</td><td><a href="http://saturn:8100/" target="_blank">:8100</a> frontend, <a href="http://saturn:8404/" target="_blank">:8404</a> stats</td><td>.160</td></tr>
+                    <tr><td>Proxy / LB</td><td>Nginx Proxy Manager</td><td>:80, :443, <a href="http://saturn:81/" target="_blank">:81</a> admin</td><td>.161</td></tr>
+                    <tr><td>Scheduling</td><td>Hangfire</td><td><a href="http://saturn:5010/hangfire" target="_blank">:5010</a></td><td>.210</td></tr>
+                    <tr><td>Search</td><td>Elasticsearch / Kibana</td><td>:9200 (https), <a href="http://saturn:5601/" target="_blank">:5601</a> Kibana</td><td>es01 .151 / Kibana .152 / setup .150 / beats .153-.155</td></tr>
+                    <tr><td>Search</td><td>OpenSearch / Dashboards</td><td>:9201 (https), :9601, <a href="http://saturn:5602/" target="_blank">:5602</a> Dashboards</td><td>.156 / .157 / .158</td></tr>
+                    <tr><td>Security</td><td>Vault</td><td><a href="http://saturn:8200/ui" target="_blank">:8200</a></td><td>.230</td></tr>
+                    <tr><td>Source Control</td><td>Gitea / runner</td><td><a href="http://saturn:3001/" target="_blank">:3001</a>, :2222 SSH</td><td>.225 / .226</td></tr>
+                    <tr><td>Visualization</td><td>Grafana</td><td><a href="http://saturn:3000/" target="_blank">:3000</a></td><td>.110</td></tr>
+                    <tr><td>Web Servers</td><td>Nginx / Nginx UI</td><td><a href="http://saturn:8180/" target="_blank">:8180</a>, <a href="http://saturn:8181/" target="_blank">:8181</a> UI, :8443 UI HTTPS</td><td>.130 / .131</td></tr>
+                    <tr><td>Web Servers</td><td>Apache</td><td><a href="http://saturn:8083/" target="_blank">:8083</a></td><td>.132</td></tr>
+                </table>
+                </div>
+                <p class="note">IPs are on GroupNetwork (192.168.16.x). Free ranges: .103-.109, .124-.129, .141-.149, .213+, .227-.229, .231+.</p>
+            </div>
+
+            <div id="Analytics" class="page-content">
+                <h2>Analytics</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Apache Spark</font><br />
+                        Spark UI: <a href="http://saturn:8090/" target="_blank">http://saturn:8090/</a><br />
+                        Master URL: spark://saturn:7077 <span style="cursor: pointer" onclick="ClipBoardText('spark://saturn:7077')"><i class="fa-regular fa-copy"></i></span><br />
+                        INFO: <a href="https://spark.apache.org/docs/latest/" target="_blank">https://spark.apache.org/docs/latest/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Seq</font><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        URL: <a href="http://saturn:8089/" target="_blank">http://saturn:8089/</a><br />
+                        Ingestion URL: http://saturn:5341 <span style="cursor: pointer" onclick="ClipBoardText('http://saturn:5341')"><i class="fa-regular fa-copy"></i></span><br />
+                        INFO: <a href="https://datalust.co/seq" target="_blank">https://datalust.co/seq</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Authentication" class="page-content">
+                <h2>Authentication</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Keycloak</font><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Admin Console: <a href="http://saturn:8280/" target="_blank">http://saturn:8280/</a><br />
+                        Health: <a href="http://saturn:9001/health/ready" target="_blank">http://saturn:9001/health/ready</a><br />
+                        Authority (realm dev): http://saturn:8280/realms/dev <span style="cursor: pointer" onclick="ClipBoardText('http://saturn:8280/realms/dev')"><i class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Requires the PostgreSQL <code>keycloak</code> database. From containers: <code>http://keycloak:8080</code></span><br />
+                        INFO: <a href="https://www.keycloak.org/documentation" target="_blank">https://www.keycloak.org/documentation</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">SuperTokens</font><br />
+                        Core API: <a href="http://saturn:3567/hello" target="_blank">http://saturn:3567/</a><br />
+                        <span class="note">Requires the PostgreSQL <code>supertokens</code> database.</span><br />
+                        INFO: <a href="https://supertokens.com/docs" target="_blank">https://supertokens.com/docs</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Cloud" class="page-content">
+                <h2>Cloud</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Amazon AWS</font><br />
+                        Username: scott.vercuski@gmail.com <span style="cursor: pointer" onclick="ClipBoardText('scott.vercuski@gmail.com')"><i class="fa-regular fa-copy"></i></span><br />
+                        URL: <a href="https://portal.aws.amazon.com" target="_blank">https://portal.aws.amazon.com</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Google Cloud</font><br />
+                        Username: Google Sign-In<br />
+                        URL: <a href="https://console.cloud.google.com/" target="_blank">https://console.cloud.google.com/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Microsoft Azure</font><br />
+                        Username: Microsoft Live Sign-In<br />
+                        URL: <a href="https://portal.azure.com/" target="_blank">https://portal.azure.com/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">The Linux Foundation</font><br />
+                        Username: Google Sign-In<br />
+                        URL: <a href="https://openprofile.dev/profile" target="_blank">https://openprofile.dev/profile</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="CloudEmulators" class="page-content">
+                <h2>Cloud Emulators</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Azurite (Blob / Queue / Table)</font><br />
+                        Connection String (host): UseDevelopmentStorage=true <span style="cursor: pointer" onclick="ClipBoardText('UseDevelopmentStorage=true')"><i class="fa-regular fa-copy"></i></span><br />
+                        Connection String (container): DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1; <span style="cursor: pointer" onclick="ClipBoardText('DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;')"><i class="fa-regular fa-copy"></i></span><br />
+                        Ports: 10000 blob, 10001 queue, 10002 table<br />
+                        Application: Azure Storage Explorer ("Attach to a local emulator")<br />
+                        INFO: <a href="https://learn.microsoft.com/azure/storage/common/storage-use-azurite" target="_blank">https://learn.microsoft.com/azure/storage/common/storage-use-azurite</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Azure Service Bus Emulator</font><br />
+                        Connection String (host): Endpoint=sb://saturn:5673;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true; <span style="cursor: pointer" onclick="ClipBoardText('Endpoint=sb://saturn:5673;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;')"><i class="fa-regular fa-copy"></i></span><br />
+                        Connection String (container): Endpoint=sb://servicebus-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true; <span style="cursor: pointer" onclick="ClipBoardText('Endpoint=sb://servicebus-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;')"><i class="fa-regular fa-copy"></i></span><br />
+                        Health: <a href="http://saturn:5300/health" target="_blank">http://saturn:5300/health</a><br />
+                        <span class="note">Requires the MSSQL stack. Queues/topics are declared in <code>Config.json</code> (namespace <code>sbemulatorns</code>).</span><br />
+                        INFO: <a href="https://learn.microsoft.com/azure/service-bus-messaging/overview-emulator" target="_blank">https://learn.microsoft.com/azure/service-bus-messaging/overview-emulator</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Azure Cosmos DB Emulator (vNext)</font><br />
+                        Connection String: AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==; <span style="cursor: pointer" onclick="ClipBoardText('AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==;')"><i class="fa-regular fa-copy"></i></span><br />
+                        Endpoint: <a href="https://saturn:8081/" target="_blank">https://saturn:8081/</a><br />
+                        Data Explorer: <a href="http://saturn:1234/" target="_blank">http://saturn:1234/</a><br />
+                        <span class="note">Self-signed certificate; NoSQL API, gateway mode only. The Data Explorer always calls <code>localhost:8081</code>, so open it on saturn itself.</span><br />
+                        INFO: <a href="https://learn.microsoft.com/azure/cosmos-db/emulator-linux" target="_blank">https://learn.microsoft.com/azure/cosmos-db/emulator-linux</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Code" class="page-content">
+                <h2>Code</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">GitHub</font><br />
+                        Username: Vercuski <span style="cursor: pointer" onclick="ClipBoardText('Vercuski')"><i class="fa-regular fa-copy"></i></span><br />
+                        URL: <a href="https://www.github.com" target="_blank">https://www.github.com</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Modular</font><br />
+                        Username: Google Sign-in<br />
+                        URL: <a href="https://developer.modular.com/" target="_blank">https://developer.modular.com/</a><br />
+                    </li>
+                </ul>
+                <div style="margin-top: 2rem;">
+                    <b>Links</b>
+                    <ul style="margin-top: 0.5rem;">
+                        <li><a href="https://github.com/Vercuski" target="_blank">Vercuski Github</a></li>
+                        <li><a href="https://github.com/Vercuski/Docker-Scripts" target="_blank">Docker-Scripts Repo</a></li>
+                        <li><a href="https://github.com/The-Software-Dispensary-LLC" target="_blank">The Software Dispensary Github</a></li>
+                        <li><a href="https://owasp.org/" target="_blank">OWASP</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="CodeAnalysis" class="page-content">
+                <h2>Code Analysis</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Sonarqube</font><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: Password1234! <span style="cursor: pointer" onclick="ClipBoardText('Password1234!')"><i class="fa-regular fa-copy"></i></span><br />
+                        URL: <a href="http://saturn:9000" target="_blank">http://saturn:9000</a><br />
+                        <span class="note">Stores its data in the MSSQL <code>sonar</code> database (login <code>sonarqube</code> / Password123) &mdash; see <code>CreateMSSQLDbScript.sql</code>.</span><br />
+                        INFO: <a href="https://www.sonarsource.com/" target="_blank">https://www.sonarsource.com/</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Containerization" class="page-content">
+                <h2>Containerization</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Docker Registry</font><br />
+                        Registry URL: <a href="http://saturn:5000/v2/_catalog" target="_blank">http://saturn:5000</a><br />
+                        Registry UI URL: <a href="http://saturn:5001" target="_blank">http://saturn:5001</a><br />
+                        Push: <code>docker tag myimage saturn:5000/myimage</code> then <code>docker push saturn:5000/myimage</code><br />
+                        INFO: <a href="https://distribution.github.io/distribution/" target="_blank">https://distribution.github.io/distribution/</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Databases" class="page-content">
+                <h2>Databases</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Apache Cassandra</font><br />
+                        Connection Info: Server=saturn,9042 <span style="cursor: pointer" onclick="ClipBoardText('saturn:9042')"><i class="fa-regular fa-copy"></i></span><br />
+                        Cluster Name: DockerCluster<br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">ClickHouse</font><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Database: default_db<br />
+                        HTTP / Play UI: <a href="http://saturn:8123/play" target="_blank">http://saturn:8123/play</a><br />
+                        Native Port: saturn:19000<br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">CockroachDB</font><br />
+                        Username: developer <span style="cursor: pointer" onclick="ClipBoardText('developer')"><i class="fa-regular fa-copy"></i></span> (insecure mode &mdash; no password)<br />
+                        Connection String: Host=saturn;Port=26257;Database=myapp_dev;Username=developer; <span style="cursor: pointer" onclick="ClipBoardText('Host=saturn;Port=26257;Database=myapp_dev;Username=developer;')"><i class="fa-regular fa-copy"></i></span><br />
+                        Admin UI: <a href="http://saturn:8080/" target="_blank">http://saturn:8080/</a><br />
+                        CLI: <code>docker exec -it cockroachdb ./cockroach sql --insecure</code><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Event Store DB</font><br />
+                        Connection String: esdb://saturn:2113?tls=false <span style="cursor: pointer" onclick="ClipBoardText('esdb://saturn:2113?tls=false')"><i class="fa-regular fa-copy"></i></span><br />
+                        Management URL (http): <a href="http://saturn:2113/" target="_blank">http://saturn:2113/</a><br />
+                        TCP Port: saturn:1113<br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">InfluxDB</font><br />
+                        Username: user <span style="cursor: pointer" onclick="ClipBoardText('user')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Org / Bucket: HomeServer / Home<br />
+                        Management URL (http): <a href="http://saturn:8086/" target="_blank">http://saturn:8086/</a><br />
+                        API Key: ptNBSIW71b8MOJ-nQgogvARVEtgylVyiGJ0Sr4eo4ND3i1MsZKqY7NDZ8hnZoyLmAe1tOPczp-vz1FT36XA2rg== <span style="cursor: pointer" onclick="ClipBoardText('ptNBSIW71b8MOJ-nQgogvARVEtgylVyiGJ0Sr4eo4ND3i1MsZKqY7NDZ8hnZoyLmAe1tOPczp-vz1FT36XA2rg==')"><i class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">A freshly initialised volume uses <code>INFLUXDB_INIT_ADMIN_TOKEN</code> from <code>.env</code> instead.</span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">MariaDb</font><br />
+                        Root Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Username: user <span style="cursor: pointer" onclick="ClipBoardText('user')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Connection String: Server=saturn;Port=3307;User Id=user;Password=Password123; <span style="cursor: pointer" onclick="ClipBoardText('Server=saturn;Port=3307;User Id=user;Password=Password123;')"><i class="fa-regular fa-copy"></i></span><br />
+                        Adminer URL: <a href="http://saturn:8087/" target="_blank">http://saturn:8087/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Milvus</font><br />
+                        Endpoint: http://saturn:19530 <span style="cursor: pointer" onclick="ClipBoardText('http://saturn:19530')"><i class="fa-regular fa-copy"></i></span><br />
+                        Metrics / Health: <a href="http://saturn:9091/healthz" target="_blank">http://saturn:9091/healthz</a><br />
+                        MinIO Console: <a href="http://saturn:9111/" target="_blank">http://saturn:9111/</a> (minioadmin / minioadmin <span style="cursor: pointer" onclick="ClipBoardText('minioadmin')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        INFO: <a href="https://milvus.io/docs" target="_blank">https://milvus.io/docs</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">MongoDb</font><br />
+                        Database Root Username: user <span style="cursor: pointer" onclick="ClipBoardText('user')"><i class="fa-regular fa-copy"></i></span><br />
+                        Database Root Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Connection String: mongodb://user:Password123@saturn:27017 <span style="cursor: pointer" onclick="ClipBoardText('mongodb://user:Password123@saturn:27017')"><i class="fa-regular fa-copy"></i></span><br />
+                        Management Username: user <span style="cursor: pointer" onclick="ClipBoardText('user')"><i class="fa-regular fa-copy"></i></span><br />
+                        Management Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Management URL: <a href="http://saturn:8088/" target="_blank">http://saturn:8088/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">MSSQL</font><br />
+                        Username: sa <span style="cursor: pointer" onclick="ClipBoardText('sa')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Connection String: Server=saturn,1433;Database=master;User Id=sa;Password=Password123;TrustServerCertificate=True; <span style="cursor: pointer" onclick="ClipBoardText('Server=saturn,1433;Database=master;User Id=sa;Password=Password123;TrustServerCertificate=True;')"><i class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Also hosts the databases for SonarQube, ProGet, Hangfire and the Service Bus emulator (container name <code>mssqldb</code>).</span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">MySQL</font><br />
+                        Username: user <span style="cursor: pointer" onclick="ClipBoardText('user')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Root Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Connection String: Server=saturn;Port=3306;Database=db;User Id=user;Password=Password123; <span style="cursor: pointer" onclick="ClipBoardText('Server=saturn;Port=3306;Database=db;User Id=user;Password=Password123;')"><i class="fa-regular fa-copy"></i></span><br />
+                        Management URL (phpMyAdmin): <a href="http://saturn:8082/" target="_blank">http://saturn:8082/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Neo4j</font><br />
+                        Username: neo4j <span style="cursor: pointer" onclick="ClipBoardText('neo4j')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Bolt URL: bolt://saturn:7687 <span style="cursor: pointer" onclick="ClipBoardText('bolt://saturn:7687')"><i class="fa-regular fa-copy"></i></span><br />
+                        Management URL: <a href="http://saturn:7474/" target="_blank">http://saturn:7474/</a><br />
+                        <span class="note">The password only applies to a new data volume &mdash; a volume created from the old compose file keeps its original password (Khelben75 <span style="cursor: pointer" onclick="ClipBoardText('Khelben75')"><i class="fa-regular fa-copy"></i></span>).</span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Oracle</font><br />
+                        Username: sys (as sysdba) <span style="cursor: pointer" onclick="ClipBoardText('sys')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Connect: sys/Password123@//saturn:1521/ORCLCDB as sysdba <span style="cursor: pointer" onclick="ClipBoardText('sys/Password123@//saturn:1521/ORCLCDB as sysdba')"><i class="fa-regular fa-copy"></i></span><br />
+                        SID / PDB: ORCLCDB / ORCLPDB1<br />
+                        <span class="note">Requires <code>docker login container-registry.oracle.com</code> and accepting the license first.</span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">PostgreSQL</font><br />
+                        Username: user@user.com <span style="cursor: pointer" onclick="ClipBoardText('user@user.com')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Connection String: Host=saturn;Port=5432;Database=postgres;Username=user@user.com;Password=Password123; <span style="cursor: pointer" onclick="ClipBoardText('Host=saturn;Port=5432;Database=postgres;Username=user@user.com;Password=Password123;')"><i class="fa-regular fa-copy"></i></span><br />
+                        pgAdmin: <a href="http://saturn:5050" target="_blank">http://saturn:5050</a> (user@user.com / Password123)<br />
+                        <span class="note">Also hosts the databases for Keycloak, SuperTokens and Backstage (container name <code>postgresql</code>).</span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Prometheus</font><br />
+                        Prometheus DB: <a href="http://saturn:9090/" target="_blank">http://saturn:9090/</a><br />
+                        Node Exporter: <a href="http://saturn:9100/metrics" target="_blank">http://saturn:9100/metrics</a><br />
+                        Alert Manager: <a href="http://saturn:9093/" target="_blank">http://saturn:9093/</a><br />
+                        <span class="note">Config in <code>prometheus.yml</code> / <code>alertmanager.yml</code>. Reload: <code>curl -X POST http://localhost:9090/-/reload</code>. Scrapes the OTel collector and accepts remote write from Tempo.</span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Redis</font><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Connection String: saturn:6379,password=Password123 <span style="cursor: pointer" onclick="ClipBoardText('saturn:6379,password=Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Application: <a href="https://github.com/qishibo/AnotherRedisDesktopManager" target="_blank">Another Redis Desktop Manager</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Documentation" class="page-content">
+                <h2>Documentation</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Backstage</font><br />
+                        URL: <a href="http://saturn:7007" target="_blank">http://saturn:7007</a><br />
+                        <span class="note">Build the image with <code>SetupBackstage.bat</code>; uses PostgreSQL.</span><br />
+                        INFO: <a href="https://backstage.io/docs/deployment/docker/" target="_blank">https://backstage.io/docs/deployment/docker/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Mediawiki</font><br />
+                        URL: <a href="http://saturn:8281" target="_blank">http://saturn:8281</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Electronics" class="page-content">
+                <h2>Electronics Calculator</h2>
+                <p>Calculate electrical values using Ohm's Law. Enter any two values to calculate the others.</p>
+                <table>
+                    <tr><td>Voltage (V):</td><td><input type="text" id="voltage" style="width: 100px" /> Volts</td></tr>
+                    <tr><td>Current (I):</td><td><input type="text" id="current" style="width: 100px" /> Amps</td></tr>
+                    <tr><td>Resistance (R):</td><td><input type="text" id="resistence" style="width: 100px" /> Ohms</td></tr>
+                    <tr><td>Power (W):</td><td><input type="text" id="power" readonly style="width: 100px" /> Watts</td></tr>
+                </table>
+                <br/>
+                <input type="button" value="Clear" onclick="clearFields()" />
+            </div>
+
+            <div id="Email" class="page-content">
+                <h2>Email</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Mailpit</font><br />
+                        Web UI: <a href="http://saturn:8025/" target="_blank">http://saturn:8025/</a><br />
+                        SMTP (host): saturn:1025 <span style="cursor: pointer" onclick="ClipBoardText('saturn:1025')"><i class="fa-regular fa-copy"></i></span> &mdash; no TLS, any username/password accepted<br />
+                        SMTP (container): mailpit:1025 <span style="cursor: pointer" onclick="ClipBoardText('mailpit:1025')"><i class="fa-regular fa-copy"></i></span><br />
+                        REST API: <a href="http://saturn:8025/api/v1/messages" target="_blank">http://saturn:8025/api/v1/messages</a><br />
+                        INFO: <a href="https://mailpit.axllent.org/docs/" target="_blank">https://mailpit.axllent.org/docs/</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="IaC" class="page-content">
+                <h2>Infrastructure as Code</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Terraform</font><br />
+                        CLI: <code>docker exec -it terraform terraform init</code> <span style="cursor: pointer" onclick="ClipBoardText('docker exec -it terraform terraform init')"><i class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">The stack folder is mounted at <code>/infra</code>.</span><br />
+                        INFO: <a href="https://developer.hashicorp.com/terraform/docs" target="_blank">https://developer.hashicorp.com/terraform/docs</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Gaia</font><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: admin123 <span style="cursor: pointer" onclick="ClipBoardText('admin123')"><i class="fa-regular fa-copy"></i></span><br />
+                        URL: <a href="http://saturn:8085/" target="_blank">http://saturn:8085/</a><br />
+                        <span class="note">Gaia is no longer maintained.</span><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Messaging" class="page-content">
+                <h2>Messaging</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Kafka (KRaft)</font><br />
+                        Bootstrap Servers (host): saturn:9092 <span style="cursor: pointer" onclick="ClipBoardText('saturn:9092')"><i class="fa-regular fa-copy"></i></span><br />
+                        Bootstrap Servers (container): kafka:29092 <span style="cursor: pointer" onclick="ClipBoardText('kafka:29092')"><i class="fa-regular fa-copy"></i></span><br />
+                        Kafka UI: <a href="http://saturn:8084/" target="_blank">http://saturn:8084/</a><br />
+                        Application: <a href="https://www.kafkatool.com/" target="_blank">Offset Explorer</a><br />
+                        Documentation URL: <a href="https://kafka.apache.org/documentation/" target="_blank">https://kafka.apache.org/documentation/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">RabbitMQ</font><br />
+                        Username: guest <span style="cursor: pointer" onclick="ClipBoardText('guest')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: guest <span style="cursor: pointer" onclick="ClipBoardText('guest')"><i class="fa-regular fa-copy"></i></span><br />
+                        AMQP URL: amqp://guest:guest@saturn:5672 <span style="cursor: pointer" onclick="ClipBoardText('amqp://guest:guest@saturn:5672')"><i class="fa-regular fa-copy"></i></span><br />
+                        Management URL: <a href="http://saturn:15672/" target="_blank">http://saturn:15672/</a><br />
+                        Metrics: <a href="http://saturn:15692/metrics" target="_blank">http://saturn:15692/metrics</a><br />
+                        Documentation URL: <a href="https://www.rabbitmq.com/" target="_blank">https://www.rabbitmq.com/</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Observability" class="page-content">
+                <h2>Observability</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">.NET Aspire Dashboard</font><br />
+                        Dashboard: <a href="http://saturn:18888/" target="_blank">http://saturn:18888/</a> (anonymous access)<br />
+                        OTLP gRPC: http://saturn:18889 <span style="cursor: pointer" onclick="ClipBoardText('http://saturn:18889')"><i class="fa-regular fa-copy"></i></span><br />
+                        OTLP HTTP: http://saturn:18890 <span style="cursor: pointer" onclick="ClipBoardText('http://saturn:18890')"><i class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">In-memory only &mdash; telemetry is lost when the container restarts.</span><br />
+                        INFO: <a href="https://learn.microsoft.com/dotnet/aspire/fundamentals/dashboard/standalone" target="_blank">https://learn.microsoft.com/dotnet/aspire/fundamentals/dashboard/standalone</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">OpenTelemetry Collector</font><br />
+                        OTLP gRPC: http://saturn:4317 <span style="cursor: pointer" onclick="ClipBoardText('http://saturn:4317')"><i class="fa-regular fa-copy"></i></span><br />
+                        OTLP HTTP: http://saturn:4318 <span style="cursor: pointer" onclick="ClipBoardText('http://saturn:4318')"><i class="fa-regular fa-copy"></i></span><br />
+                        Container Endpoint: http://otel-collector:4317 <span style="cursor: pointer" onclick="ClipBoardText('http://otel-collector:4317')"><i class="fa-regular fa-copy"></i></span><br />
+                        Health: <a href="http://saturn:13133/" target="_blank">http://saturn:13133/</a><br />
+                        Prometheus Exporter: <a href="http://saturn:8889/metrics" target="_blank">http://saturn:8889/metrics</a><br />
+                        <span class="note">Start order: Prometheus, Grafana, then this stack. Traces &rarr; Tempo, logs &rarr; Loki, metrics &rarr; Prometheus.</span><br />
+                        INFO: <a href="https://opentelemetry.io/docs/collector/" target="_blank">https://opentelemetry.io/docs/collector/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Grafana Tempo</font><br />
+                        API: <a href="http://saturn:3200/ready" target="_blank">http://saturn:3200/</a><br />
+                        <span class="note">Retention 14 days. View in Grafana (Tempo data source).</span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Grafana Loki</font><br />
+                        API: <a href="http://saturn:3100/ready" target="_blank">http://saturn:3100/</a><br />
+                        <span class="note">Retention 7 days. View in Grafana (Loki data source).</span><br />
+                    </li>
+                </ul>
+                <div style="margin-top: 1rem;">
+                    <b>App settings</b> <span style="cursor: pointer" onclick="ClipBoardText('OTEL_EXPORTER_OTLP_ENDPOINT=http://saturn:4317\nOTEL_EXPORTER_OTLP_PROTOCOL=grpc\nOTEL_SERVICE_NAME=MyApi')"><i class="fa-regular fa-copy"></i></span><br />
+                    <code>OTEL_EXPORTER_OTLP_ENDPOINT=http://saturn:4317</code><br />
+                    <code>OTEL_EXPORTER_OTLP_PROTOCOL=grpc</code><br />
+                    <code>OTEL_SERVICE_NAME=MyApi</code><br />
+                    <span class="note">Use port 18889 instead to send straight to the Aspire Dashboard.</span>
+                </div>
+            </div>
+
+            <div id="Orchestration" class="page-content">
+                <h2>Orchestration</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Kubernetes</font><br />
+                        Dashboard (via <code>kubectl proxy</code>): <a href="http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/" target="_blank">http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/...</a><br />
+                        Token: <code>kubectl -n kubernetes-dashboard create token admin-user</code> <span style="cursor: pointer" onclick="ClipBoardText('kubectl -n kubernetes-dashboard create token admin-user')"><i class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">The Kubernetes Dashboard project is archived; Headlamp is the recommended replacement. See <code>Orchestration/Kubernetes/notes.txt</code>.</span><br />
+                        INFO: <a href="https://headlamp.dev" target="_blank">https://headlamp.dev</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Rancher</font><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: Khelben1975! <span style="cursor: pointer" onclick="ClipBoardText('Khelben1975!')"><i class="fa-regular fa-copy"></i></span><br />
+                        Management URL: <a href="https://saturn:8444/" target="_blank">https://saturn:8444/</a> (http 8480)<br />
+                        <span class="note">First start: <code>docker logs rancher 2>&amp;1 | grep "Bootstrap Password:"</code></span><br />
+                        INFO: <a href="https://ranchermanager.docs.rancher.com/" target="_blank">https://ranchermanager.docs.rancher.com/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Portainer</font><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: Khelben1975! <span style="cursor: pointer" onclick="ClipBoardText('Khelben1975!')"><i class="fa-regular fa-copy"></i></span><br />
+                        Management URL: <a href="https://saturn:9443/" target="_blank">https://saturn:9443/</a> (http <a href="http://saturn:9010/" target="_blank">9010</a>)<br />
+                        <span class="note">Create the admin user within 5 minutes of the first start.</span><br />
+                        INFO: <a href="https://docs.portainer.io/" target="_blank">https://docs.portainer.io/</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Packages" class="page-content">
+                <h2>Packages</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">ProGet</font><br />
+                        URL: <a href="http://saturn:8091/" target="_blank">http://saturn:8091/</a> (https 8092)<br />
+                        NuGet Feed: http://saturn:8091/nuget/&lt;feed&gt;/v3/index.json<br />
+                        <span class="note">Requires the MSSQL <code>Proget</code> login and database (Proget / Password123).</span><br />
+                        INFO: <a href="https://docs.inedo.com/docs/proget/overview" target="_blank">https://docs.inedo.com/docs/proget/overview</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Proxy" class="page-content">
+                <h2>Proxy / Load Balancing</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Nginx Proxy Manager</font><br />
+                        Username: lumazi <span style="cursor: pointer" onclick="ClipBoardText('lumazi')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: InVault <span style="cursor: pointer" onclick="ClipBoardText('InVault')"><i class="fa-regular fa-copy"></i></span><br />
+                        Management URL: <a href="http://saturn:81/" target="_blank">http://saturn:81/</a><br />
+                        <span class="note">Owns host ports 80 and 443.</span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">HAProxy</font><br />
+                        Frontend: <a href="http://saturn:8100/" target="_blank">http://saturn:8100/</a> (round-robins Nginx and Apache)<br />
+                        Stats: <a href="http://saturn:8404/" target="_blank">http://saturn:8404/</a><br />
+                        <span class="note">Edit <code>haproxy.cfg</code>, then <code>docker kill -s HUP haproxy</code> to reload.</span><br />
+                        INFO: <a href="https://docs.haproxy.org/" target="_blank">https://docs.haproxy.org/</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Scheduling" class="page-content">
+                <h2>Scheduling</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Hangfire</font><br />
+                        Hangfire Dashboard: <a href="http://saturn:5010/hangfire" target="_blank">http://saturn:5010/hangfire</a><br />
+                        Connection String: Server=saturn,1433;Database=hangfire;User Id=sa;Password=Password123;TrustServerCertificate=True; <span style="cursor: pointer" onclick="ClipBoardText('Server=saturn,1433;Database=hangfire;User Id=sa;Password=Password123;TrustServerCertificate=True;')"><i class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Runs your own published host app (<code>./hangfire-app/HangfireServer.dll</code>) on the .NET 10 runtime; requires the MSSQL <code>hangfire</code> database.</span><br />
+                        INFO: <a href="https://docs.hangfire.io/" target="_blank">https://docs.hangfire.io/</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Search" class="page-content">
+                <h2>Search</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Elastic Search</font><br />
+                        Username: elastic <span style="cursor: pointer" onclick="ClipBoardText('elastic')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Elasticsearch (https): <a href="https://saturn:9200/" target="_blank">https://saturn:9200/</a><br />
+                        Kibana URL (http): <a href="http://saturn:5601/" target="_blank">http://saturn:5601/</a><br />
+                        <span class="note">Stack version 8.7.1 with Logstash, Filebeat and Metricbeat.</span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Open Search</font><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: Dev!OpenSearch#2026 <span style="cursor: pointer" onclick="ClipBoardText('Dev!OpenSearch#2026')"><i class="fa-regular fa-copy"></i></span><br />
+                        OpenSearch (https): <a href="https://saturn:9201/" target="_blank">https://saturn:9201/</a><br />
+                        Dashboards URL (http): <a href="http://saturn:5602/" target="_blank">http://saturn:5602/</a><br />
+                        <span class="note">The admin password is only applied when the data folders are empty.</span><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Security" class="page-content">
+                <h2>Security</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">HashiCorp Vault</font><br />
+                        UI: <a href="http://saturn:8200/ui" target="_blank">http://saturn:8200/ui</a><br />
+                        Address: http://saturn:8200 <span style="cursor: pointer" onclick="ClipBoardText('http://saturn:8200')"><i class="fa-regular fa-copy"></i></span> (containers: <code>http://vault:8200</code>)<br />
+                        Unseal (after every start): <code>docker exec vault vault operator unseal &lt;unseal-key&gt;</code> <span style="cursor: pointer" onclick="ClipBoardText('docker exec vault vault operator unseal ')"><i class="fa-regular fa-copy"></i></span><br />
+                        Initialise (first time only): <code>docker exec vault vault operator init -key-shares=1 -key-threshold=1</code><br />
+                        <span class="note">Server mode with file storage &mdash; starts sealed. Keep the unseal key and root token in your password vault, not on this page.</span><br />
+                        INFO: <a href="https://developer.hashicorp.com/vault/docs" target="_blank">https://developer.hashicorp.com/vault/docs</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Social" class="page-content">
+                <h2>Social</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Bluesky</font><br />
+                        Username: scott.vercuski@gmail.com <span style="cursor: pointer" onclick="ClipBoardText('scott.vercuski@gmail.com')"><i class="fa-regular fa-copy"></i></span><br />
+                        URL: <a href="https://bsky.app/" target="_blank">https://bsky.app/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Facebook</font><br />
+                        Username: scott.vercuski@gmail.com <span style="cursor: pointer" onclick="ClipBoardText('scott.vercuski@gmail.com')"><i class="fa-regular fa-copy"></i></span><br />
+                        URL: <a href="https://www.facebook.com/" target="_blank">https://www.facebook.com/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Google Domains</font><br />
+                        Username: Google Sign-in<br />
+                        URL: <a href="https://domains.google.com/" target="_blank">https://domains.google.com/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Gravatar</font><br />
+                        Username: Google Sign-in<br />
+                        URL: <a href="https://gravatar.com" target="_blank">https://gravatar.com</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Instagram</font><br />
+                        Username: scott.vercuski <span style="cursor: pointer" onclick="ClipBoardText('scott.vercuski')"><i class="fa-regular fa-copy"></i></span><br />
+                        URL: <a href="https://www.instagram.com/" target="_blank">https://www.instagram.com/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">LinkedIn</font><br />
+                        Username: scott.vercuski@gmail.com <span style="cursor: pointer" onclick="ClipBoardText('scott.vercuski@gmail.com')"><i class="fa-regular fa-copy"></i></span><br />
+                        URL: <a href="http://linkedin.com" target="_blank">http://linkedin.com</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Mastodon</font><br />
+                        Username: scott.vercuski@gmail.com <span style="cursor: pointer" onclick="ClipBoardText('scott.vercuski@gmail.com')"><i class="fa-regular fa-copy"></i></span><br />
+                        URL: <a href="https://mastodon.social/" target="_blank">https://mastodon.social/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Medium</font><br />
+                        Username: Google Sign-in<br />
+                        URL: <a href="https://www.medium.com" target="_blank">https://www.medium.com</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Twitter</font><br />
+                        Username: scott.vercuski@gmail.com <span style="cursor: pointer" onclick="ClipBoardText('scott.vercuski@gmail.com')"><i class="fa-regular fa-copy"></i></span><br />
+                        URL: <a href="https://twitter.com/" target="_blank">https://twitter.com/</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="SourceControl" class="page-content">
+                <h2>Source Control</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Gitea + Actions Runner</font><br />
+                        URL: <a href="http://saturn:3001/" target="_blank">http://saturn:3001/</a><br />
+                        Clone (SSH): ssh://git@saturn:2222/&lt;owner&gt;/&lt;repo&gt;.git <span style="cursor: pointer" onclick="ClipBoardText('ssh://git@saturn:2222/')"><i class="fa-regular fa-copy"></i></span><br />
+                        Runners: <a href="http://saturn:3001/-/admin/actions/runners" target="_blank">Site Administration &gt; Actions &gt; Runners</a><br />
+                        <span class="note">Admin account is created in the one-time installer. ROOT_URL is <code>http://host.docker.internal:3001/</code> so <code>actions/checkout</code> works from job containers; jobs run on GroupNetwork. Workflows go in <code>.gitea/workflows/</code>.</span><br />
+                        INFO: <a href="https://docs.gitea.com/usage/actions/overview" target="_blank">https://docs.gitea.com/usage/actions/overview</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Stretches" class="page-content">
+                <h2>Stretches</h2>
+                <table>
+                    <tr>
+                        <td valign="top" style="width: 50%">
+                            <b>NECK</b><br/>
+                            <ul style="list-style-type: disc; padding-left: 1.5rem;">
+                                <li><a target="_blank" href="https://exrx.net/Stretches/Sternocleidomastoid/NeckRetraction">Pull Head Back</a></li>
+                                <li><a target="_blank" href="https://exrx.net/Stretches/Splenius/Neck">Lean Head Forward</a></li>
+                            </ul>
+                            <br/>
+                            <b>ARMS</b><br/>
+                            <ul style="list-style-type: disc; padding-left: 1.5rem;">
+                                <li><a target="_blank" href="https://exrx.net/Stretches/Biceps/Doorway">Biceps (Doorway/Wall)</a></li>
+                                <li><a target="_blank" href="https://exrx.net/Stretches/Triceps/Overhead">Triceps (Overhead)</a></li>
+                            </ul>
+                            <br/>
+                            <b>SHOULDERS</b><br/>
+                            <ul style="list-style-type: disc; padding-left: 1.5rem;">
+                                <li><a target="_blank" href="https://exrx.net/Stretches/DeltoidAnterior/Doorway">Anterior Deltoid (Doorway)</a></li>
+                                <li><a target="_blank" href="https://exrx.net/Stretches/DeltoidLateral/SideDelt">Lateral Deltoid (Side)</a></li>
+                                <li><a target="_blank" href="https://exrx.net/Stretches/DeltoidPosterior/RearDelt">Rear Deltoid (High Side)</a></li>
+                            </ul>
+                            <br/>
+                            <b>BACK</b><br/>
+                            <ul style="list-style-type: disc; padding-left: 1.5rem;">
+                                <li><a target="_blank" href="https://exrx.net/Stretches/LatissimusDorsi/Overhead">Lats (Overhead)</a></li>
+                                <li><a target="_blank" href="https://exrx.net/Stretches/TrapeziusUpper/Trap">Traps (Behind Back Wrist Pull)</a></li>
+                                <li><a target="_blank" href="https://exrx.net/Stretches/Rhomboids/Hugging">Rhomboids (Hug)</a></li>
+                            </ul>
+                            <br/>
+                            <b>CHEST</b><br/>
+                            <ul style="list-style-type: disc; padding-left: 1.5rem;">
+                                <li><a target="_blank" href="https://exrx.net/Stretches/ChestGeneral/Doorway">Pecs (Doorway)</a></li>
+                            </ul>
+                        </td>
+                        <td valign="top" style="width: 50%">
+                            <b>ABS/SIDES</b><br/>
+                            <ul style="list-style-type: disc; padding-left: 1.5rem;">
+                                <li><a target="_blank" href="https://exrx.net/Stretches/RectusAbdominis/Prone">Abs (Cobra Pose)</a></li>
+                                <li><a target="_blank" href="https://exrx.net/Stretches/Obliques/Pretzel">Obliques (Pretzel)</a></li>
+                                <li><a target="_blank" href="https://exrx.net/Stretches/ErectorSpinae/Cat">Erector Spinae (Cat Pose)</a></li>
+                            </ul>
+                            <br/>
+                            <b>HIPS</b><br/>
+                            <ul style="list-style-type: disc; padding-left: 1.5rem;">
+                                <li><a target="_blank" href="https://exrx.net/Stretches/GluteusMaximus/Lying">Glutes (Lying Foot on Knee)</a></li>
+                                <li><a target="_blank" href="https://exrx.net/Stretches/HipAbductors/WallIliotibial">Minor Glutes (Lean on Wall)</a></li>
+                                <li><a target="_blank" href="https://exrx.net/Stretches/HipFlexors/Standing">Flexors (Lunge)</a></li>
+                                <li><a target="_blank" href="https://exrx.net/Stretches/HipExternalRotators/SeatedHipExternalRotator">Rotators (Leg Pull Up)</a></li>
+                                <li><a target="_blank" href="https://exrx.net/Stretches/HipAdductors/SeatedGroinFloor">Adductors (Feet Together)</a></li>
+                            </ul>
+                            <br/>
+                            <b>QUADS/HAMS</b><br/>
+                            <ul style="list-style-type: disc; padding-left: 1.5rem;">
+                                <li><a target="_blank" href="https://exrx.net/Stretches/Quadriceps/Standing">Quads (Standing Quad)</a></li>
+                                <li><a target="_blank" href="https://exrx.net/Stretches/Hamstrings/SeatedBenchSingleLeg">Hams (Toe Touch)</a></li>
+                            </ul>
+                            <br/>
+                            <b>CALVES</b><br/>
+                            <ul style="list-style-type: disc; padding-left: 1.5rem;">
+                                <li><a target="_blank" href="https://exrx.net/Stretches/Gastrocnemius/FloorBoard">Calf (Foot Against Wall)</a></li>
+                                <li><a target="_blank" href="https://exrx.net/Stretches/Soleus/FloorBoard">Soleus (Mod Foot Against Wall)</a></li>
+                                <li><a target="_blank" href="https://exrx.net/Stretches/TibialisAnterior/Kneeling">Shin (Kneeling)</a></li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="Visualization" class="page-content">
+                <h2>Visualization</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Grafana</font><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Management URL (http): <a href="http://saturn:3000/" target="_blank">http://saturn:3000/</a><br />
+                        <span class="note">Data sources provisioned from <code>provisioning/datasources</code>: Prometheus, Tempo, Loki, InfluxDB.</span><br />
+                        INFO: <a href="https://grafana.com/docs/grafana/latest/" target="_blank">https://grafana.com/docs/grafana/latest/</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="WebServers" class="page-content">
+                <h2>Web Servers</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Nginx</font><br />
+                        Nginx URL (http): <a href="http://saturn:8180/" target="_blank">http://saturn:8180/</a> (serves <code>./src</code>)<br />
+                        Nginx UI Username: svercuski <span style="cursor: pointer" onclick="ClipBoardText('svercuski')"><i class="fa-regular fa-copy"></i></span><br />
+                        Nginx UI Password: Khelben <span style="cursor: pointer" onclick="ClipBoardText('Khelben')"><i class="fa-regular fa-copy"></i></span><br />
+                        Nginx UI URL (http): <a href="http://saturn:8181/" target="_blank">http://saturn:8181/</a> (https 8443)<br />
+                        INFO: <a href="https://nginx.org/" target="_blank">https://nginx.org/</a><br />
+                        INFO: <a href="https://nginxui.com/" target="_blank">https://nginxui.com/</a>
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Apache</font><br />
+                        URL (http): <a href="http://saturn:8083/" target="_blank">http://saturn:8083/</a><br />
+                        <span class="note">Serves the <code>WebServers/Apache</code> volume folder.</span><br />
+                        INFO: <a href="https://httpd.apache.org/docs/" target="_blank">https://httpd.apache.org/docs/</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Workflow" class="page-content">
+                <h2>Workflow</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">JIRA</font><br />
+                        Login: Google Login<br />
+                        JIRA URL: <a href="https://scott-vercuski.atlassian.net/jira/your-work" target="_blank">https://scott-vercuski.atlassian.net/jira/your-work</a><br />
+                        Confluence URL: <a href="https://scott-vercuski.atlassian.net/wiki/home" target="_blank">https://scott-vercuski.atlassian.net/wiki/home</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Learning" class="page-content">
+                <h2>Learning Resources</h2>
+                <ul style="list-style-type: none; padding: 0;">
+                    <li style="background: none; border: none; padding: 0.25rem 0;">
+                        DevBlogs (dotnet) @ Microsoft: <a href="https://devblogs.microsoft.com/dotnet/" target="_blank">https://devblogs.microsoft.com/dotnet/</a>
+                    </li>
+                    <li style="background: none; border: none; padding: 0.25rem 0;">
+                        DevBlogs (visualstudio) @ Microsoft: <a href="https://devblogs.microsoft.com/visualstudio/" target="_blank">https://devblogs.microsoft.com/visualstudio/</a>
+                    </li>
+                    <li style="background: none; border: none; padding: 0.25rem 0;">
+                        DevBlogs (devops) @ Microsoft: <a href="https://devblogs.microsoft.com/devops/" target="_blank">https://devblogs.microsoft.com/devops/</a>
+                    </li>
+                    <li style="background: none; border: none; padding: 0.25rem 0;">
+                        DevBlogs (powershell) @ Microsoft: <a href="https://devblogs.microsoft.com/powershell/" target="_blank">https://devblogs.microsoft.com/powershell/</a>
+                    </li>
+                    <li style="background: none; border: none; padding: 0.25rem 0;">
+                        DevBlogs (typescript) @ Microsoft: <a href="https://devblogs.microsoft.com/typescript/" target="_blank">https://devblogs.microsoft.com/typescript/</a>
+                    </li>
+                    <li style="background: none; border: none; padding: 0.25rem 0;">
+                        DevBlogs (c#) @ Microsoft: <a href="https://devblogs.microsoft.com/dotnet/category/csharp/" target="_blank">https://devblogs.microsoft.com/dotnet/category/csharp/</a>
+                    </li>
+                    <li style="background: none; border: none; padding: 0.25rem 0;">
+                        DevBlogs (aspnet core) @ Microsoft: <a href="https://devblogs.microsoft.com/dotnet/category/aspnetcore/" target="_blank">https://devblogs.microsoft.com/dotnet/category/aspnetcore/</a>
+                    </li>
+                    <li style="background: none; border: none; padding: 0.25rem 0;">
+                        DevBlogs (blazor) @ Microsoft: <a href="https://devblogs.microsoft.com/dotnet/category/blazor/" target="_blank">https://devblogs.microsoft.com/dotnet/category/blazor/</a>
+                    </li>
+                    <li style="background: none; border: none; padding: 0.25rem 0;">
+                        DevBlogs (Entity Framework) @ Microsoft: <a href="https://devblogs.microsoft.com/dotnet/category/entity-framework/" target="_blank">https://devblogs.microsoft.com/dotnet/category/entity-framework/</a>
+                    </li>
+                    <li style="background: none; border: none; padding: 0.25rem 0;">
+                        DevBlogs (MAUI) @ Microsoft: <a href="https://devblogs.microsoft.com/dotnet/category/maui/" target="_blank">https://devblogs.microsoft.com/dotnet/category/maui/</a>
+                    </li>
+                    <li style="background: none; border: none; padding: 0.25rem 0;">
+                        DevBlogs (Azure SQL) @ Microsoft: <a href="https://devblogs.microsoft.com/azure-sql/" target="_blank">https://devblogs.microsoft.com/azure-sql/</a>
+                    </li>
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <div id="snackbar"></div>
+
+    <script>
+        var voltageField = document.getElementById("voltage");
+        var currentField = document.getElementById("current");
+        var resistenceField = document.getElementById("resistence");
+        var powerField = document.getElementById("power");
+
+        if (voltageField) {
+            voltageField.addEventListener("input", calculate);
+            currentField.addEventListener("input", calculate);
+            resistenceField.addEventListener("input", calculate);
+        }
+
+        function calculate() {
+            var numberOfPlaces = 3;
+            var volts = parseFloat(voltageField.value);
+            var current = parseFloat(currentField.value);
+            var resistence = parseFloat(resistenceField.value);
+
+            if (!isNaN(volts) && !isNaN(current)) {
+                powerField.value = (volts * current).toFixed(numberOfPlaces);
+                resistenceField.value = (volts / current).toFixed(numberOfPlaces);
+            } else if (!isNaN(current) && !isNaN(resistence)) {
+                powerField.value = (current * current * resistence).toFixed(numberOfPlaces);
+                voltageField.value = (current * resistence).toFixed(numberOfPlaces);
+            } else if (!isNaN(volts) && !isNaN(resistence)) {
+                powerField.value = ((volts * volts) / resistence).toFixed(numberOfPlaces);
+                currentField.value = (volts / resistence).toFixed(numberOfPlaces);
+            } else {
+                powerField.value = "";
+            }
+        }
+
+        function clearFields() {
+            voltageField.value = "";
+            currentField.value = "";
+            resistenceField.value = "";
+            powerField.value = "";
+        }
+
+        function openPage(evt, pageName) {
+            var contents = document.getElementsByClassName('page-content');
+            for (var i = 0; i < contents.length; i++) {
+                contents[i].classList.remove('active');
+            }
+
+            var navItems = document.getElementsByClassName('nav-item');
+            for (var i = 0; i < navItems.length; i++) {
+                navItems[i].classList.remove('active');
+            }
+
+            document.getElementById(pageName).classList.add('active');
+            evt.currentTarget.classList.add('active');
+
+            if (window.innerWidth <= 768) {
+                toggleSidebar();
+            }
+        }
+
+        function toggleSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            var overlay = document.querySelector('.overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        function filterNav() {
+            var input = document.getElementById('searchNav');
+            var filter = input.value.toLowerCase();
+            var navItems = document.getElementsByClassName('nav-item');
+
+            for (var i = 0; i < navItems.length; i++) {
+                var text = navItems[i].textContent || navItems[i].innerText;
+                if (text.toLowerCase().indexOf(filter) > -1) {
+                    navItems[i].style.display = '';
+                } else {
+                    navItems[i].style.display = 'none';
+                }
+            }
+        }
+
+        function ClipBoardText(clipBoardText) {
+            navigator.clipboard.writeText(clipBoardText);
+            ShowSnackbar();
+        }
+
+        function ShowSnackbar() {
+            var x = document.getElementById("snackbar");
+            x.className = "show";
+            var currentDateTime = new Date().toLocaleString();
+            x.innerHTML = "Text Copied To Clipboard - " + currentDateTime;
+            setTimeout(function() {
+                x.className = x.className.replace("show", "");
+            }, 7000);
+        }
+    </script>
+</body>
+</html>

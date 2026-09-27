@@ -1,0 +1,32 @@
+# Keycloak in development mode (HTTP, no hostname checks), backed by the PostgreSQL stack.
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION:-26.7}
+    container_name: keycloak
+    restart: unless-stopped
+    command: ["start-dev"]
+    environment:
+      # Temporary admin for the master realm - only created when the database is empty.
+      # Create a permanent admin user afterwards and delete this one.
+      KC_BOOTSTRAP_ADMIN_USERNAME: "${KEYCLOAK_ADMIN_USERNAME:-admin}"
+      KC_BOOTSTRAP_ADMIN_PASSWORD: "${KEYCLOAK_ADMIN_PASSWORD:-Password123}"
+      # Database: the "keycloak" database in Databases/PostgreSQL (create it first - see ReadMe.md)
+      KC_DB: "${KEYCLOAK_DB_VENDOR:-postgres}"
+      KC_DB_URL: "${KEYCLOAK_DB_URL:-jdbc:postgresql://postgresql:5432/keycloak}"
+      KC_DB_USERNAME: "${KEYCLOAK_DB_USERNAME:-user@user.com}"
+      KC_DB_PASSWORD: "${KEYCLOAK_DB_PASSWORD:-Password123}"
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      KC_LOG_LEVEL: "${KEYCLOAK_LOG_LEVEL:-info}"
+    ports:
+      - "${KEYCLOAK_PORT:-8280}:8080" # Admin console + OIDC endpoints (8080 is used by CockroachDB)
+      - "${KEYCLOAK_MANAGEMENT_PORT:-9001}:9000" # /health and /metrics (9000 is used by SonarQube)
+    networks:
+      GroupNetwork:
+        ipv4_address: ${KEYCLOAK_IP:-192.168.16.212}
+        aliases:
+          - keycloak
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

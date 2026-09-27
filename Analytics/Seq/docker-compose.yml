@@ -13,7 +13,7 @@ services:
       SEQ_API_CANONICALURI: ${SEQ_CANONICAL_URI:-http://localhost:8089}
     ports:
       # UI + API (also accepts ingestion, including OTLP at /ingest/otlp)
-      - "${SEQ_UI_PORT:-8089}:80" # 8081 is used by MediaWiki
+      - "${SEQ_UI_PORT:-8089}:80" # 8081 is used by the Cosmos DB emulator
       # Ingestion-only endpoint (safe to expose to apps without exposing the UI)
       - "${SEQ_INGEST_PORT:-5341}:5341"
     volumes:

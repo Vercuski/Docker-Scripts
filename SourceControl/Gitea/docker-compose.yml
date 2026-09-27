@@ -1,0 +1,76 @@
+# Gitea git server + Gitea Actions runner (GitHub Actions compatible CI).
+services:
+  gitea:
+    image: gitea/gitea:${GITEA_VERSION:-latest}
+    container_name: gitea
+    restart: unless-stopped
+    environment:
+      USER_UID: "${GITEA_UID:-1000}"
+      USER_GID: "${GITEA_GID:-1000}"
+      GITEA__database__DB_TYPE: sqlite3
+      # host.docker.internal works from your browser (Docker Desktop adds it to the hosts file) AND from CI job
+      # containers, so actions/checkout can clone. "localhost" would break checkout inside job containers.
+      GITEA__server__ROOT_URL: "${GITEA_ROOT_URL:-http://host.docker.internal:3001/}"
+      GITEA__server__SSH_DOMAIN: "${GITEA_SSH_DOMAIN:-localhost}"
+      GITEA__server__SSH_PORT: "${GITEA_SSH_PORT:-2222}"
+      GITEA__actions__ENABLED: "true"
+      # Shared runner registration token - the runner below registers itself with it on first start
+      GITEA_RUNNER_REGISTRATION_TOKEN: "${GITEA_RUNNER_REGISTRATION_TOKEN:-8f3c1d6e2a9b4c7d5e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b}"
+    volumes:
+      - gitea_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3000/api/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    ports:
+      - "${GITEA_HTTP_PORT:-3001}:3000" # Web UI + git over HTTP (3000 is used by Grafana)
+      - "${GITEA_SSH_PORT:-2222}:22" # git over SSH
+    networks:
+      GroupNetwork:
+        ipv4_address: ${GITEA_IP:-192.168.16.225}
+        aliases:
+          - gitea
+  runner:
+    image: gitea/runner:${GITEA_RUNNER_VERSION:-latest}
+    container_name: gitea-runner
+    restart: unless-stopped
+    depends_on:
+      gitea:
+        condition: service_healthy
+        restart: true
+    environment:
+      GITEA_INSTANCE_URL: http://gitea:3000
+      GITEA_RUNNER_REGISTRATION_TOKEN: "${GITEA_RUNNER_REGISTRATION_TOKEN:-8f3c1d6e2a9b4c7d5e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b}"
+      GITEA_RUNNER_NAME: "${GITEA_RUNNER_NAME:-docker-runner}"
+      CONFIG_FILE: /config.yaml
+    volumes:
+      - ./runner-config.yaml:/config.yaml:ro
+      - gitea_runner_data:/data
+      # Jobs run as sibling containers on the host Docker daemon
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      GroupNetwork:
+        ipv4_address: ${GITEA_RUNNER_IP:-192.168.16.226}
+        aliases:
+          - gitea-runner
+volumes:
+  gitea_data:
+    name: gitea_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/SourceControl/Gitea/data
+  gitea_runner_data:
+    name: gitea_runner_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/SourceControl/Gitea/runner
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

@@ -1,0 +1,25 @@
+# Azure Service Bus emulator. Stores its state in SQL Server - uses the MSSQL stack (Databases/MSSQL).
+services:
+  servicebus-emulator:
+    image: mcr.microsoft.com/azure-messaging/servicebus-emulator:${SERVICEBUS_EMULATOR_VERSION:-latest}
+    container_name: servicebus-emulator
+    restart: unless-stopped
+    volumes:
+      # Queues/topics/subscriptions are declared here (the emulator has no management API for creating them)
+      - ./Config.json:/ServiceBus_Emulator/ConfigFiles/Config.json:ro
+    environment:
+      ACCEPT_EULA: "${SERVICEBUS_ACCEPT_EULA:-Y}"
+      SQL_SERVER: "${SERVICEBUS_SQL_SERVER:-mssqldb}"
+      MSSQL_SA_PASSWORD: "${SERVICEBUS_SQL_SA_PASSWORD:-Password123}"
+    ports:
+      - "${SERVICEBUS_AMQP_PORT:-5673}:5672" # AMQP (5672 is used by RabbitMQ)
+      - "${SERVICEBUS_HTTP_PORT:-5300}:5300" # Management / health
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SERVICEBUS_EMULATOR_IP:-192.168.16.101}
+        aliases:
+          - servicebus-emulator
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

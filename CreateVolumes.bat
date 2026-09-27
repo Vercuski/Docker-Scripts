@@ -5,6 +5,9 @@ mkdir D:\docker\volumes\Analytics\ApacheSpark\apps
 mkdir D:\docker\volumes\Analytics\ApacheSpark\logs
 mkdir D:\docker\volumes\Analytics\Seq\data
 
+mkdir D:\docker\volumes\CloudEmulators\Azurite\data
+mkdir D:\docker\volumes\CloudEmulators\AzureCosmosDb\data
+
 mkdir D:\docker\volumes\CodeAnalysis\SonarQube\data
 mkdir D:\docker\volumes\CodeAnalysis\SonarQube\extensions
 mkdir D:\docker\volumes\CodeAnalysis\SonarQube\logs
@@ -43,11 +46,16 @@ mkdir D:\docker\volumes\Databases\Redis\cache
 
 mkdir D:\docker\volumes\Documentation\Mediawiki\html
 
+mkdir D:\docker\volumes\Email\Mailpit\data
+
 mkdir D:\docker\volumes\IaC\Terraform\data
 
 mkdir D:\docker\volumes\Messaging\Kafka\Kafka\data\
 mkdir D:\docker\volumes\Messaging\RabbitMQ\data
 mkdir D:\docker\volumes\Messaging\RabbitMQ\log
+
+mkdir D:\docker\volumes\Observability\OpenTelemetry\tempo
+mkdir D:\docker\volumes\Observability\OpenTelemetry\loki
 
 mkdir D:\docker\volumes\Orchestration\Rancher\data
 mkdir D:\docker\volumes\Orchestration\Portainer\data
@@ -66,6 +74,11 @@ mkdir D:\docker\volumes\Search\ElasticSearch\kibanadata
 mkdir D:\docker\volumes\Search\ElasticSearch\metricbeatdata01
 mkdir D:\docker\volumes\Search\ElasticSearch\filebeatdata01
 mkdir D:\docker\volumes\Search\ElasticSearch\logstashdata01
+
+mkdir D:\docker\volumes\Security\Vault\data
+
+mkdir D:\docker\volumes\SourceControl\Gitea\data
+mkdir D:\docker\volumes\SourceControl\Gitea\runner
 
 mkdir D:\docker\volumes\Visualization\Grafana\storage
 

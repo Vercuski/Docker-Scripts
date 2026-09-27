@@ -1,0 +1,32 @@
+services:
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:${AZURITE_VERSION:-latest}
+    container_name: azurite
+    restart: unless-stopped
+    # --loose ignores unsupported headers, --skipApiVersionCheck lets newer Azure SDKs connect
+    command: >
+      azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0
+      --location /data --loose --skipApiVersionCheck
+    volumes:
+      - azurite_data:/data
+    ports:
+      - "${AZURITE_BLOB_PORT:-10000}:10000"
+      - "${AZURITE_QUEUE_PORT:-10001}:10001"
+      - "${AZURITE_TABLE_PORT:-10002}:10002"
+    networks:
+      GroupNetwork:
+        ipv4_address: ${AZURITE_IP:-192.168.16.100}
+        aliases:
+          - azurite
+volumes:
+  azurite_data:
+    name: azurite_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/CloudEmulators/Azurite/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

@@ -11,6 +11,8 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--web.enable-lifecycle'
+      # Lets Tempo's metrics-generator push span metrics / service graphs (Observability/OpenTelemetry)
+      - '--web.enable-remote-write-receiver'
     networks:
       GroupNetwork:
         ipv4_address: ${PROMETHEUS_IP:-192.168.16.26}

@@ -1,0 +1,15 @@
+# Gitea runner configuration - only the settings that differ from the defaults.
+# Full reference: https://gitea.com/gitea/act_runner/src/branch/main/internal/pkg/config/config.example.yaml
+runner:
+  file: .runner
+  capacity: 1
+  timeout: 3h
+  labels:
+    - "ubuntu-latest:docker://docker.gitea.com/runner-images:ubuntu-latest"
+    - "ubuntu-24.04:docker://docker.gitea.com/runner-images:ubuntu-24.04"
+
+container:
+  # Run job containers on GroupNetwork so workflows can reach the other stacks (mssqldb, postgresql, kafka, ...)
+  network: GroupNetwork
+  # Lets jobs resolve host.docker.internal on Linux hosts too (Docker Desktop already provides it)
+  options: --add-host=host.docker.internal:host-gateway

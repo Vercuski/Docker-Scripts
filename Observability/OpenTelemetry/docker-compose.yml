@@ -1,0 +1,72 @@
+# OpenTelemetry Collector -> Tempo (traces), Loki (logs), Prometheus (metrics, scraped from the collector).
+# Grafana (Visualization/Grafana) has these provisioned as data sources.
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:${OTEL_COLLECTOR_VERSION:-0.161.0}
+    container_name: otel-collector
+    restart: unless-stopped
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml:ro
+    depends_on:
+      - tempo
+      - loki
+    ports:
+      - "${OTEL_GRPC_PORT:-4317}:4317" # OTLP/gRPC  - point your apps here
+      - "${OTEL_HTTP_PORT:-4318}:4318" # OTLP/HTTP
+      - "${OTEL_METRICS_PORT:-8889}:8889" # Prometheus exporter (app metrics, scraped by Prometheus)
+      - "${OTEL_HEALTH_PORT:-13133}:13133" # Health check
+    networks:
+      GroupNetwork:
+        ipv4_address: ${OTEL_COLLECTOR_IP:-192.168.16.121}
+        aliases:
+          - otel-collector
+  tempo:
+    image: grafana/tempo:${TEMPO_VERSION:-3.0.3}
+    container_name: tempo
+    restart: unless-stopped
+    command: ["-target=all", "-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml:ro
+      - tempo_data:/var/tempo
+    ports:
+      - "${TEMPO_PORT:-3200}:3200" # Tempo HTTP API (query)
+    networks:
+      GroupNetwork:
+        ipv4_address: ${TEMPO_IP:-192.168.16.122}
+        aliases:
+          - tempo
+  loki:
+    image: grafana/loki:${LOKI_VERSION:-3.7.8}
+    container_name: loki
+    restart: unless-stopped
+    command: ["-config.file=/etc/loki/loki.yaml"]
+    volumes:
+      - ./loki.yaml:/etc/loki/loki.yaml:ro
+      - loki_data:/loki
+    ports:
+      - "${LOKI_PORT:-3100}:3100" # Loki HTTP API (push/query)
+    networks:
+      GroupNetwork:
+        ipv4_address: ${LOKI_IP:-192.168.16.123}
+        aliases:
+          - loki
+volumes:
+  tempo_data:
+    name: tempo_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Observability/OpenTelemetry/tempo
+  loki_data:
+    name: loki_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Observability/OpenTelemetry/loki
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

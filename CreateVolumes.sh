@@ -9,6 +9,9 @@ mkdir -p "$ROOT/docker/volumes/Analytics/ApacheSpark/apps"
 mkdir -p "$ROOT/docker/volumes/Analytics/ApacheSpark/logs"
 mkdir -p "$ROOT/docker/volumes/Analytics/Seq/data"
 
+mkdir -p "$ROOT/docker/volumes/CloudEmulators/Azurite/data"
+mkdir -p "$ROOT/docker/volumes/CloudEmulators/AzureCosmosDb/data"
+
 mkdir -p "$ROOT/docker/volumes/CodeAnalysis/SonarQube/data"
 mkdir -p "$ROOT/docker/volumes/CodeAnalysis/SonarQube/extensions"
 mkdir -p "$ROOT/docker/volumes/CodeAnalysis/SonarQube/logs"
@@ -47,11 +50,16 @@ mkdir -p "$ROOT/docker/volumes/Databases/Redis/cache"
 
 mkdir -p "$ROOT/docker/volumes/Documentation/Mediawiki/html"
 
+mkdir -p "$ROOT/docker/volumes/Email/Mailpit/data"
+
 mkdir -p "$ROOT/docker/volumes/IaC/Terraform/data"
 
 mkdir -p "$ROOT/docker/volumes/Messaging/Kafka/Kafka/data/"
 mkdir -p "$ROOT/docker/volumes/Messaging/RabbitMQ/data"
 mkdir -p "$ROOT/docker/volumes/Messaging/RabbitMQ/log"
+
+mkdir -p "$ROOT/docker/volumes/Observability/OpenTelemetry/tempo"
+mkdir -p "$ROOT/docker/volumes/Observability/OpenTelemetry/loki"
 
 mkdir -p "$ROOT/docker/volumes/Orchestration/Rancher/data"
 mkdir -p "$ROOT/docker/volumes/Orchestration/Portainer/data"
@@ -70,6 +78,11 @@ mkdir -p "$ROOT/docker/volumes/Search/ElasticSearch/kibanadata"
 mkdir -p "$ROOT/docker/volumes/Search/ElasticSearch/metricbeatdata01"
 mkdir -p "$ROOT/docker/volumes/Search/ElasticSearch/filebeatdata01"
 mkdir -p "$ROOT/docker/volumes/Search/ElasticSearch/logstashdata01"
+
+mkdir -p "$ROOT/docker/volumes/Security/Vault/data"
+
+mkdir -p "$ROOT/docker/volumes/SourceControl/Gitea/data"
+mkdir -p "$ROOT/docker/volumes/SourceControl/Gitea/runner"
 
 mkdir -p "$ROOT/docker/volumes/Visualization/Grafana/storage"
 

@@ -1,0 +1,36 @@
+# Azure Cosmos DB emulator (Linux, vNext - NoSQL API)
+services:
+  cosmosdb-emulator:
+    image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:${COSMOSDB_EMULATOR_VERSION:-vnext-latest}
+    container_name: cosmosdb-emulator
+    restart: unless-stopped
+    environment:
+      # The .NET and Java SDKs need https (self-signed certificate - see ReadMe.md)
+      PROTOCOL: "${COSMOSDB_PROTOCOL:-https}"
+      ENABLE_EXPLORER: "${COSMOSDB_ENABLE_EXPLORER:-true}"
+      EXPLORER_PROTOCOL: "${COSMOSDB_EXPLORER_PROTOCOL:-http}"
+      LOG_LEVEL: "${COSMOSDB_LOG_LEVEL:-info}"
+      DATA_PATH: /data
+    volumes:
+      - cosmosdb_data:/data
+    ports:
+      # Keep the host port at 8081: the Data Explorer always calls localhost:8081
+      - "${COSMOSDB_PORT:-8081}:8081" # Gateway endpoint
+      - "${COSMOSDB_EXPLORER_PORT:-1234}:1234" # Data Explorer
+    networks:
+      GroupNetwork:
+        ipv4_address: ${COSMOSDB_EMULATOR_IP:-192.168.16.102}
+        aliases:
+          - cosmosdb-emulator
+volumes:
+  cosmosdb_data:
+    name: cosmosdb_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/CloudEmulators/AzureCosmosDb/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

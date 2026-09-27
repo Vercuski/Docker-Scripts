@@ -1,0 +1,34 @@
+services:
+  mailpit:
+    image: axllent/mailpit:${MAILPIT_VERSION:-latest}
+    container_name: mailpit
+    restart: unless-stopped
+    environment:
+      MP_DATABASE: /data/mailpit.db
+      MP_MAX_MESSAGES: "${MAILPIT_MAX_MESSAGES:-5000}"
+      # Accept any SMTP credentials over plain SMTP so apps configured for auth still work
+      MP_SMTP_AUTH_ACCEPT_ANY: "${MAILPIT_SMTP_AUTH_ACCEPT_ANY:-true}"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "${MAILPIT_SMTP_AUTH_ALLOW_INSECURE:-true}"
+      TZ: "${MAILPIT_TZ:-America/New_York}"
+    volumes:
+      - mailpit_data:/data
+    ports:
+      - "${MAILPIT_UI_PORT:-8025}:8025" # Web UI + REST API
+      - "${MAILPIT_SMTP_PORT:-1025}:1025" # SMTP
+    networks:
+      GroupNetwork:
+        ipv4_address: ${MAILPIT_IP:-192.168.16.140}
+        aliases:
+          - mailpit
+volumes:
+  mailpit_data:
+    name: mailpit_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Email/Mailpit/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

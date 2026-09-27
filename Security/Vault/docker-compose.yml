@@ -1,0 +1,34 @@
+# HashiCorp Vault in server mode with file storage (data survives restarts; needs init + unseal - see ReadMe.md)
+services:
+  vault:
+    image: hashicorp/vault:${VAULT_VERSION:-latest}
+    container_name: vault
+    restart: unless-stopped
+    command: ["server"]
+    cap_add:
+      - IPC_LOCK
+    environment:
+      VAULT_ADDR: "http://127.0.0.1:8200" # for the vault CLI inside the container
+      VAULT_LOG_LEVEL: "${VAULT_LOG_LEVEL:-info}"
+    volumes:
+      - ./vault.hcl:/vault/config/vault.hcl:ro
+      - vault_data:/vault/file
+    ports:
+      - "${VAULT_PORT:-8200}:8200" # API + web UI
+    networks:
+      GroupNetwork:
+        ipv4_address: ${VAULT_IP:-192.168.16.230}
+        aliases:
+          - vault
+volumes:
+  vault_data:
+    name: vault_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Security/Vault/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

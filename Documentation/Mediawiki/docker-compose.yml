@@ -6,7 +6,7 @@ services:
     # First run: complete the web installer (SQLite is simplest - use /var/www/data), then place
     # the generated LocalSettings.php into the html volume folder and restart.
     ports:
-      - "${MEDIAWIKI_PORT:-8081}:80"
+      - "${MEDIAWIKI_PORT:-8281}:80" # 8081 is reserved for the Cosmos DB emulator
     volumes:
       - mediawiki_data:/var/www/html/
     networks:

@@ -38,6 +38,14 @@ Passwords in this repo (`Password123`, etc.) are local-development defaults only
 |Name|IP Address|
 |:----------|:----------|
 |SuperTokens| 192.168.16.211|
+|Keycloak| 192.168.16.212|
+
+## Cloud Emulators
+|Name|IP Address|
+|:----------|:----------|
+|Azurite| 192.168.16.100|
+|Azure Service Bus emulator| 192.168.16.101|
+|Azure Cosmos DB emulator| 192.168.16.102|
 
 ## CodeAnalysis
 |Name|IP Address|
@@ -83,6 +91,11 @@ Passwords in this repo (`Password123`, etc.) are local-development defaults only
 |Backstage| 192.168.16.30|
 |Mediawiki| 192.168.16.31|
 
+## Email
+|Name|IP Address|
+|:----------|:----------|
+|Mailpit| 192.168.16.140|
+
 ## IaC
 |Name|IP Address|
 |:----------|:----------|
@@ -97,6 +110,14 @@ Passwords in this repo (`Password123`, etc.) are local-development defaults only
 |Kafka| 192.168.16.70|
 |RabbitMQ| 192.168.16.72|
 |Kafka UI| 192.168.16.73|
+
+## Observability
+|Name|IP Address|
+|:----------|:----------|
+|Aspire Dashboard| 192.168.16.120|
+|OpenTelemetry Collector| 192.168.16.121|
+|Tempo| 192.168.16.122|
+|Loki| 192.168.16.123|
 
 ## Orchestration
 |Name|IP Address|
@@ -133,6 +154,17 @@ Passwords in this repo (`Password123`, etc.) are local-development defaults only
 |OpenSearchNode1| 192.168.16.156|
 |OpenSearchNode2| 192.168.16.157|
 |OpenSearchDashboard| 192.168.16.158|
+
+## Security
+|Name|IP Address|
+|:----------|:----------|
+|Vault| 192.168.16.230|
+
+## Source Control
+|Name|IP Address|
+|:----------|:----------|
+|Gitea| 192.168.16.225|
+|Gitea Actions runner| 192.168.16.226|
 
 ## Visualization
 |Name|IP Address|

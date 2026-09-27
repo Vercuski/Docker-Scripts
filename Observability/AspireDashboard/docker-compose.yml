@@ -1,0 +1,29 @@
+services:
+  aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:${ASPIRE_DASHBOARD_VERSION:-latest}
+    container_name: aspire-dashboard
+    restart: unless-stopped
+    environment:
+      # Local dev: skip the browser-token login and accept OTLP without an API key.
+      # Set to false to require the login token printed in the container log.
+      ASPIRE_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS: "${ASPIRE_ALLOW_ANONYMOUS:-true}"
+      # Origins allowed to send OTLP/HTTP from the browser (browser telemetry), comma separated
+      DASHBOARD__OTLP__CORS__ALLOWEDORIGINS: "${ASPIRE_OTLP_CORS_ORIGINS:-*}"
+      # Telemetry is kept in memory only - these cap how much is retained
+      DASHBOARD__TELEMETRYLIMITS__MAXLOGCOUNT: "${ASPIRE_MAX_LOG_COUNT:-10000}"
+      DASHBOARD__TELEMETRYLIMITS__MAXTRACECOUNT: "${ASPIRE_MAX_TRACE_COUNT:-10000}"
+      DASHBOARD__TELEMETRYLIMITS__MAXMETRICSCOUNT: "${ASPIRE_MAX_METRICS_COUNT:-50000}"
+    ports:
+      - "${ASPIRE_UI_PORT:-18888}:18888" # Dashboard UI
+      # OTLP endpoints use the dashboard's native ports so 4317/4318 stay free for the OpenTelemetry Collector
+      - "${ASPIRE_OTLP_GRPC_PORT:-18889}:18889" # OTLP/gRPC
+      - "${ASPIRE_OTLP_HTTP_PORT:-18890}:18890" # OTLP/HTTP
+    networks:
+      GroupNetwork:
+        ipv4_address: ${ASPIRE_DASHBOARD_IP:-192.168.16.120}
+        aliases:
+          - aspire-dashboard
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

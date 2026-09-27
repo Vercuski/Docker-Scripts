@@ -1,6 +1,6 @@
 # Docker-Scripts review — September 2026
 
-All 36 `docker-compose.yml` files now pass `docker compose config` (Compose v2.39.4). They also pass a repo-wide check for duplicate IPs, host ports, network aliases and container names, and for volume paths that are missing from `CreateVolumes`. Before these changes, 3 files failed to parse or validate. There were also 2 IP collisions, 7 host-port collisions, 1 alias collision and about a dozen volume/path mismatches.
+All `docker-compose.yml` files (36 at the time of the review, 45 now) now pass `docker compose config` (Compose v2.39.4). They also pass a repo-wide check for duplicate IPs, host ports, network aliases and container names, and for volume paths that are missing from `CreateVolumes`. Before these changes, 3 files failed to parse or validate. There were also 2 IP collisions, 7 host-port collisions, 1 alias collision and about a dozen volume/path mismatches.
 
 Your uncommitted work in progress (Seq, MSSQL, SuperTokens, README) was kept and built on.
 
@@ -100,3 +100,37 @@ Notes:
 - Kafka's advertised `EXTERNAL` listener follows `KAFKA_PORT`, so changing the host port keeps clients working.
 - The existing `.env` values for Seq, Elastic, OpenSearch and Hangfire were preserved under "Stack settings". The OpenSearch and Seq passwords switched from `:?` (required) to `:-` defaults, matching the rest of the repo.
 - Milvus: changing `MILVUS_MINIO_ACCESS_KEY/SECRET_KEY` also requires changing Milvus's `milvus.yaml`. Milvus expects `minioadmin` by default.
+
+## New stacks added (2026-09-27)
+
+The top 7 suggestions were added as 9 stacks, because the Azure emulators are one stack each. They follow the repo conventions: one tool per folder, a static IP on GroupNetwork, bind-mounted volumes created by `CreateVolumes`, and every setting in `.env` as `${VAR:-default}`.
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| .NET Aspire Dashboard | Observability/AspireDashboard | .120 | 18888 UI, 18889 OTLP gRPC, 18890 OTLP HTTP | Anonymous by default. Telemetry is in memory only. |
+| OpenTelemetry Collector | Observability/OpenTelemetry | .121 | 4317, 4318, 8889 (metrics), 13133 (health) | Traces go to Tempo, logs to Loki, metrics to Prometheus. |
+| Grafana Tempo 3.0 | Observability/OpenTelemetry | .122 | 3200 | Monolithic mode. The metrics-generator remote-writes span metrics to Prometheus. |
+| Grafana Loki 3.7 | Observability/OpenTelemetry | .123 | 3100 | Native OTLP ingestion, 7-day retention. |
+| Keycloak | Authentication/Keycloak | .212 | 8280, 9001 (health/metrics) | `start-dev`, backed by the PostgreSQL stack (`keycloak` database). |
+| Azurite | CloudEmulators/Azurite | .100 | 10000-10002 | Blob / Queue / Table. |
+| Azure Service Bus emulator | CloudEmulators/AzureServiceBus | .101 | 5673 AMQP, 5300 | Uses the MSSQL stack. Entities are defined in `Config.json`. |
+| Azure Cosmos DB emulator (vNext) | CloudEmulators/AzureCosmosDb | .102 | 8081, 1234 (Data Explorer) | HTTPS by default for the .NET SDK. |
+| Mailpit | Email/Mailpit | .140 | 8025 UI, 1025 SMTP | Messages persisted in SQLite. |
+| HashiCorp Vault | Security/Vault | .230 | 8200 | Server mode with file storage: needs init once, then unseal after each restart. |
+| Gitea + Actions runner | SourceControl/Gitea | .225 / .226 | 3001 web, 2222 SSH | The runner registers itself with a shared token. Job containers join GroupNetwork. |
+
+Changes to existing stacks to support these:
+- **MediaWiki moved from 8081 to 8281.** The Cosmos DB Data Explorer always calls `localhost:8081` (upstream bug), so the emulator needs that port.
+- **Prometheus** now has `--web.enable-remote-write-receiver` (for Tempo span metrics) and scrapes `otel-collector:8889`.
+- **Grafana** now provisions Prometheus, Tempo, Loki and InfluxDB data sources, with trace-to-log links, from `provisioning/datasources/datasources.yaml`.
+
+Verification:
+- All 45 stacks pass `docker compose config`.
+- There are no duplicate IPs, host ports, aliases or container names.
+- `.env` values equal the compose defaults.
+- These config files were checked with the real binaries: `otelcol-contrib validate`, `tempo -config.verify`, `loki -verify-config` and `promtool check config`.
+- An end-to-end smoke test sent an OTLP trace, log and metric through the collector. They were readable in Tempo, Loki and the Prometheus exporter.
+- Vault init/unseal/kv-v2 was tested against `vault.hcl`.
+- Gitea 1.27 accepted the shared runner token and the runner registered with `runner-config.yaml`.
+- Mailpit started with the configured settings.
+- All image tags were confirmed to exist in their registries.
