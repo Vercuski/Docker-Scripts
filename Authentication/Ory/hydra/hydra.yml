@@ -1,0 +1,25 @@
+# Ory Hydra (OAuth2 / OpenID Connect server) - local development config.
+# Hydra has no login screens of its own: it sends users to the Kratos self-service UI (urls.login / urls.consent).
+# Secrets and the database DSN are set with environment variables in docker-compose.yml (.env).
+serve:
+  cookies:
+    same_site_mode: Lax
+
+urls:
+  self:
+    issuer: http://127.0.0.1:4444
+  login: http://127.0.0.1:4455/login
+  consent: http://127.0.0.1:4455/consent
+  logout: http://127.0.0.1:4455/logout
+  identity_provider:
+    publicUrl: http://127.0.0.1:4433
+    url: http://kratos:4434
+
+oidc:
+  subject_identifiers:
+    supported_types:
+      - public
+
+log:
+  level: info
+  format: text

@@ -1,0 +1,339 @@
+# Harbor container registry, rebuilt from the compose file and configs that Harbor's own "prepare" step generates
+# (v2.15.5, with Trivy), adapted to this repo: services are prefixed harbor-* on GroupNetwork, secrets come from .env,
+# the database is in the PostgreSQL stack, and the harbor-log/syslog container is replaced by normal Docker logs.
+# Static config files: ./config. Generated keys/passwords: created by the one-shot harbor-init container.
+x-harbor-core-env: &harbor-core-env
+  CONFIG_PATH: /etc/core/app.conf
+  _REDIS_URL_CORE: redis://harbor-redis:6379?idle_timeout_seconds=30
+  _REDIS_URL_REG: redis://harbor-redis:6379/1?idle_timeout_seconds=30
+  LOG_LEVEL: info
+  EXT_ENDPOINT: http://localhost:${HARBOR_PORT:-8104}
+  DATABASE_TYPE: postgresql
+  POSTGRESQL_HOST: postgresql
+  POSTGRESQL_PORT: "5432"
+  POSTGRESQL_USERNAME: ${HARBOR_DB_USER:-harbor}
+  POSTGRESQL_PASSWORD: ${HARBOR_DB_PASSWORD:-Password123}
+  POSTGRESQL_DATABASE: ${HARBOR_DB_NAME:-harbor}
+  POSTGRESQL_SSLMODE: disable
+  POSTGRESQL_MAX_IDLE_CONNS: "2"
+  POSTGRESQL_MAX_OPEN_CONNS: "0"
+  POSTGRESQL_CONN_MAX_LIFETIME: 5m
+  POSTGRESQL_CONN_MAX_IDLE_TIME: "0"
+  REGISTRY_URL: http://harbor-registry:5000
+  PORTAL_URL: http://harbor-portal:8080
+  TOKEN_SERVICE_URL: http://harbor-core:8080/service/token
+  HARBOR_ADMIN_PASSWORD: ${HARBOR_ADMIN_PASSWORD:-Password123}
+  MAX_JOB_WORKERS: "10"
+  CORE_SECRET: ${HARBOR_CORE_SECRET:-LocalDevCore0016}
+  JOBSERVICE_SECRET: ${HARBOR_JOBSERVICE_SECRET:-LocalDevJobs0016}
+  WITH_TRIVY: "True"
+  CORE_URL: http://harbor-core:8080
+  CORE_LOCAL_URL: http://127.0.0.1:8080
+  JOBSERVICE_URL: http://harbor-jobservice:8080
+  TRIVY_ADAPTER_URL: http://harbor-trivy:8080
+  REGISTRY_STORAGE_PROVIDER_NAME: filesystem
+  READ_ONLY: "false"
+  RELOAD_KEY: ""
+  REGISTRY_CONTROLLER_URL: http://harbor-registryctl:8080
+  REGISTRY_CREDENTIAL_USERNAME: harbor_registry_user
+  REGISTRY_CREDENTIAL_PASSWORD: ${HARBOR_REGISTRY_PASSWORD:-LocalDevOnly-harbor-registry-pass}
+  CSRF_KEY: ${HARBOR_CSRF_KEY:-LocalDevOnlyHarborCsrfKey0000032}
+  ROBOT_SCANNER_NAME_PREFIX: scanner0
+  PERMITTED_REGISTRY_TYPES_FOR_PROXY_CACHE: docker-hub,harbor,azure-acr,ali-acr,aws-ecr,google-gcr,docker-registry,github-ghcr,jfrog-artifactory
+  REPLICATION_ADAPTER_WHITELIST: ali-acr,aws-ecr,azure-acr,docker-hub,docker-registry,github-ghcr,google-gcr,harbor,huawei-SWR,jfrog-artifactory,tencent-tcr,volcengine-cr
+  HARBOR_ALLOW_PRIVATE_NETWORK_ACCESS: "true"
+  CONTENT_TRUST_LEGACY_SIGNER_PULL_ENABLED: "true"
+  PORT: "8080"
+  QUOTA_UPDATE_PROVIDER: db
+services:
+  # One-shot: creates Harbor's role and database in the PostgreSQL stack if they don't exist yet
+  harbor-db-init:
+    image: ${HARBOR_DB_INIT_IMAGE:-postgres:18}
+    container_name: harbor-db-init
+    restart: "no"
+    environment:
+      PGHOST: postgresql
+      PGUSER: ${HARBOR_DB_ADMIN_USER:-user@user.com}
+      PGPASSWORD: ${HARBOR_DB_ADMIN_PASSWORD:-Password123}
+      DB_NAME: ${HARBOR_DB_NAME:-harbor}
+      DB_USER: ${HARBOR_DB_USER:-harbor}
+      DB_PASSWORD: ${HARBOR_DB_PASSWORD:-Password123}
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        for i in $$(seq 30); do pg_isready -q -d postgres && break; echo "waiting for postgresql (start Databases/PostgreSQL)"; sleep 2; done
+        psql -d postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$$DB_USER'" | grep -q 1 \
+          || psql -d postgres -c "CREATE ROLE \"$$DB_USER\" LOGIN PASSWORD '$$DB_PASSWORD'"
+        psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$$DB_NAME'" | grep -q 1 \
+          && echo "database $$DB_NAME exists" \
+          || psql -d postgres -c "CREATE DATABASE \"$$DB_NAME\" OWNER \"$$DB_USER\""
+    networks:
+      GroupNetwork:
+        ipv4_address: ${HARBOR_DB_INIT_IP:-172.20.5.40}
+        aliases:
+          - harbor-db-init
+  # One-shot: assembles /etc/core and /etc/registry (configs from ./config, plus the secret key, the token signing
+  # key pair and the registry's htpasswd file, generated once) and sets data folder owners
+  harbor-init:
+    image: goharbor/prepare:${HARBOR_VERSION:-v2.15.5}
+    container_name: harbor-init
+    restart: "no"
+    environment:
+      REGISTRY_PASSWORD: ${HARBOR_REGISTRY_PASSWORD:-LocalDevOnly-harbor-registry-pass}
+    entrypoint:
+      - sh
+      - -c
+      - |
+        set -e
+        cp /src/core/app.conf /etc-core/app.conf
+        cp /src/registry/config.yml /etc-registry/config.yml
+        if [ ! -s /etc-core/key ]; then
+          head -c 256 /dev/urandom | tr -dc 'A-Za-z0-9' | head -c 16 > /etc-core/key
+          echo "generated secret key"
+        fi
+        if [ ! -s /etc-core/private_key.pem ] || [ ! -s /etc-registry/root.crt ]; then
+          openssl genrsa -traditional -out /etc-core/private_key.pem 4096
+          openssl req -new -x509 -key /etc-core/private_key.pem -out /etc-registry/root.crt -days 3650 -subj "/CN=harbor-token-issuer"
+          echo "generated token signing key pair"
+        fi
+        htpasswd -bBc /etc-registry/passwd harbor_registry_user "$$REGISTRY_PASSWORD"
+        mkdir -p /trivy/trivy /trivy/reports
+        chown -R 10000:10000 /etc-core /etc-registry /registry-data /job-logs /trivy
+        chown -R 999:999 /redis-data
+    volumes:
+      - ./config:/src:ro
+      - harbor_core_etc:/etc-core
+      - harbor_registry_etc:/etc-registry
+      - harbor_registry_data:/registry-data
+      - harbor_job_logs:/job-logs
+      - harbor_trivy:/trivy
+      - harbor_redis:/redis-data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${HARBOR_INIT_IP:-172.20.5.41}
+        aliases:
+          - harbor-init
+  harbor-registry:
+    image: goharbor/registry-photon:${HARBOR_VERSION:-v2.15.5}
+    container_name: harbor-registry
+    restart: unless-stopped
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETGID, SETUID]
+    depends_on:
+      harbor-init:
+        condition: service_completed_successfully
+    volumes:
+      - harbor_registry_data:/storage
+      - harbor_registry_etc:/etc/registry
+    networks:
+      GroupNetwork:
+        ipv4_address: ${HARBOR_REGISTRY_IP:-172.20.5.42}
+        aliases:
+          - harbor-registry
+  harbor-registryctl:
+    image: goharbor/harbor-registryctl:${HARBOR_VERSION:-v2.15.5}
+    container_name: harbor-registryctl
+    restart: unless-stopped
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETGID, SETUID]
+    depends_on:
+      harbor-init:
+        condition: service_completed_successfully
+    environment:
+      CORE_SECRET: ${HARBOR_CORE_SECRET:-LocalDevCore0016}
+      JOBSERVICE_SECRET: ${HARBOR_JOBSERVICE_SECRET:-LocalDevJobs0016}
+    volumes:
+      - harbor_registry_data:/storage
+      - harbor_registry_etc:/etc/registry
+      - ./config/registryctl/config.yml:/etc/registryctl/config.yml:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${HARBOR_REGISTRYCTL_IP:-172.20.5.43}
+        aliases:
+          - harbor-registryctl
+  harbor-core:
+    image: goharbor/harbor-core:${HARBOR_VERSION:-v2.15.5}
+    container_name: harbor-core
+    restart: unless-stopped
+    cap_drop: [ALL]
+    cap_add: [SETGID, SETUID]
+    depends_on:
+      harbor-db-init:
+        condition: service_completed_successfully
+      harbor-init:
+        condition: service_completed_successfully
+      harbor-registry:
+        condition: service_started
+      harbor-redis:
+        condition: service_started
+    environment: *harbor-core-env
+    volumes:
+      - harbor_core_etc:/etc/core
+    networks:
+      GroupNetwork:
+        ipv4_address: ${HARBOR_CORE_IP:-172.20.5.44}
+        aliases:
+          - harbor-core
+  harbor-portal:
+    image: goharbor/harbor-portal:${HARBOR_VERSION:-v2.15.5}
+    container_name: harbor-portal
+    restart: unless-stopped
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETGID, SETUID, NET_BIND_SERVICE]
+    volumes:
+      - ./config/portal/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${HARBOR_PORTAL_IP:-172.20.5.45}
+        aliases:
+          - harbor-portal
+  harbor-jobservice:
+    image: goharbor/harbor-jobservice:${HARBOR_VERSION:-v2.15.5}
+    container_name: harbor-jobservice
+    restart: unless-stopped
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETGID, SETUID]
+    depends_on:
+      - harbor-core
+    environment:
+      CORE_SECRET: ${HARBOR_CORE_SECRET:-LocalDevCore0016}
+      JOBSERVICE_SECRET: ${HARBOR_JOBSERVICE_SECRET:-LocalDevJobs0016}
+      REGISTRY_URL: http://harbor-registry:5000
+      CORE_URL: http://harbor-core:8080
+      REGISTRY_CONTROLLER_URL: http://harbor-registryctl:8080
+      JOBSERVICE_WEBHOOK_JOB_MAX_RETRY: "3"
+      JOBSERVICE_WEBHOOK_JOB_HTTP_CLIENT_TIMEOUT: "3"
+      LOG_LEVEL: info
+      HARBOR_ALLOW_PRIVATE_NETWORK_ACCESS: "true"
+      REGISTRY_CREDENTIAL_USERNAME: harbor_registry_user
+      REGISTRY_CREDENTIAL_PASSWORD: ${HARBOR_REGISTRY_PASSWORD:-LocalDevOnly-harbor-registry-pass}
+    volumes:
+      - harbor_job_logs:/var/log/jobs
+      - ./config/jobservice/config.yml:/etc/jobservice/config.yml:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${HARBOR_JOBSERVICE_IP:-172.20.5.46}
+        aliases:
+          - harbor-jobservice
+  # Private Redis-compatible store for Harbor (no host port)
+  harbor-redis:
+    image: goharbor/valkey-photon:${HARBOR_VERSION:-v2.15.5}
+    container_name: harbor-redis
+    restart: unless-stopped
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETGID, SETUID]
+    depends_on:
+      harbor-init:
+        condition: service_completed_successfully
+    volumes:
+      - harbor_redis:/var/lib/redis
+    networks:
+      GroupNetwork:
+        ipv4_address: ${HARBOR_REDIS_IP:-172.20.5.47}
+        aliases:
+          - harbor-redis
+  harbor-proxy:
+    image: goharbor/nginx-photon:${HARBOR_VERSION:-v2.15.5}
+    container_name: harbor-proxy
+    restart: unless-stopped
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETGID, SETUID, NET_BIND_SERVICE]
+    depends_on:
+      - harbor-registry
+      - harbor-core
+      - harbor-portal
+    volumes:
+      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${HARBOR_PROXY_IP:-172.20.5.48}
+        aliases:
+          - harbor
+    ports:
+      - "${HARBOR_PORT:-8104}:8080" # Web UI, API and registry
+  harbor-trivy:
+    image: goharbor/trivy-adapter-photon:${HARBOR_VERSION:-v2.15.5}
+    container_name: harbor-trivy
+    restart: unless-stopped
+    cap_drop: [ALL]
+    depends_on:
+      harbor-init:
+        condition: service_completed_successfully
+      harbor-redis:
+        condition: service_started
+    environment:
+      SCANNER_LOG_LEVEL: info
+      SCANNER_REDIS_URL: redis://harbor-redis:6379/5?idle_timeout_seconds=30
+      SCANNER_STORE_REDIS_URL: redis://harbor-redis:6379/5?idle_timeout_seconds=30
+      SCANNER_STORE_REDIS_NAMESPACE: harbor.scanner.trivy:store
+      SCANNER_JOB_QUEUE_REDIS_URL: redis://harbor-redis:6379/5?idle_timeout_seconds=30
+      SCANNER_JOB_QUEUE_REDIS_NAMESPACE: harbor.scanner.trivy:job-queue
+      SCANNER_TRIVY_CACHE_DIR: /home/scanner/.cache/trivy
+      SCANNER_TRIVY_REPORTS_DIR: /home/scanner/.cache/reports
+      SCANNER_TRIVY_VULN_TYPE: os,library
+      SCANNER_TRIVY_SEVERITY: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+      SCANNER_TRIVY_IGNORE_UNFIXED: "False"
+      SCANNER_TRIVY_SKIP_UPDATE: "False"
+      SCANNER_TRIVY_SKIP_JAVA_DB_UPDATE: "False"
+      SCANNER_TRIVY_DB_REPOSITORY: ghcr.io/aquasecurity/trivy-db
+      SCANNER_TRIVY_JAVA_DB_REPOSITORY: ghcr.io/aquasecurity/trivy-java-db
+      SCANNER_TRIVY_OFFLINE_SCAN: "False"
+      SCANNER_TRIVY_SECURITY_CHECKS: vuln
+      SCANNER_TRIVY_INSECURE: "False"
+      SCANNER_TRIVY_TIMEOUT: 5m0s
+    volumes:
+      - harbor_trivy:/home/scanner/.cache
+    networks:
+      GroupNetwork:
+        ipv4_address: ${HARBOR_TRIVY_IP:-172.20.5.49}
+        aliases:
+          - harbor-trivy
+volumes:
+  harbor_core_etc:
+    name: harbor_core_etc
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Containerization/Harbor/core
+  harbor_registry_etc:
+    name: harbor_registry_etc
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Containerization/Harbor/registry-config
+  harbor_registry_data:
+    name: harbor_registry_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Containerization/Harbor/registry
+  harbor_job_logs:
+    name: harbor_job_logs
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Containerization/Harbor/job_logs
+  harbor_trivy:
+    name: harbor_trivy
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Containerization/Harbor/trivy
+  harbor_redis:
+    name: harbor_redis
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Containerization/Harbor/redis
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

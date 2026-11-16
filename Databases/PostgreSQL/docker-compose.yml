@@ -1,8 +1,10 @@
 services:
   postgres:
-    # Pin the major version: a floating tag would jump majors, which requires pg_upgrade on existing data.
+    # Official PostgreSQL image plus the pgvector extension (run CREATE EXTENSION vector; per database).
+    # Same Debian (trixie) base as postgres:18, so existing data folders keep working.
+    # Pin the major version (pg18): a different major requires pg_upgrade on existing data.
     # PostgreSQL 18+ keeps data under /var/lib/postgresql/<major>/docker, so mount /var/lib/postgresql.
-    image: postgres:${POSTGRES_VERSION:-18}
+    image: pgvector/pgvector:${PGVECTOR_VERSION:-pg18-trixie}
     container_name: postgresql
     restart: unless-stopped
     environment:

@@ -15,7 +15,7 @@ services:
       - "${GRAFANA_PORT:-3000}:3000"
     volumes:
       - grafana_storage:/var/lib/grafana
-      # Prometheus, Tempo and Loki data sources (Databases/Prometheus, Observability/OpenTelemetry)
+      # Prometheus, Tempo and Loki data sources (Observability/Prometheus, Observability/OpenTelemetry)
       - ./provisioning:/etc/grafana/provisioning:ro
 volumes:
   grafana_storage:

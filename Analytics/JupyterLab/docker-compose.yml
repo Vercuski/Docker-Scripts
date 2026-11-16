@@ -1,0 +1,52 @@
+services:
+  jupyterlab:
+    # Docker Hub's jupyter/* images stopped updating in 2023; the project publishes to quay.io
+    image: quay.io/jupyter/pyspark-notebook:${JUPYTERLAB_VERSION:-spark-4.3.0}
+    container_name: jupyterlab
+    # Spark executors connect back to the notebook's driver by this name
+    hostname: jupyterlab
+    restart: unless-stopped
+    # Starts as root only so the image's start script can switch the notebook user to Spark's UID (185)
+    # and then drop privileges. Driver and executors then write files in /opt/spark/data as the same user.
+    user: root
+    environment:
+      NB_UID: 185
+      NB_GID: 100
+      CHOWN_HOME: "yes"
+      CHOWN_HOME_OPTS: "-R"
+      JUPYTER_TOKEN: ${JUPYTERLAB_TOKEN:-Password123}
+      # Convenience values for notebooks: os.environ["SPARK_MASTER"], os.environ["TRINO_HOST"]
+      SPARK_MASTER: spark://apachespark:7077
+      TRINO_HOST: trino
+    volumes:
+      - jupyterlab_work:/home/jovyan/work
+      # Same folder the Spark master and worker mount, so cluster jobs and notebooks see the same files
+      - spark_data:/opt/spark/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${JUPYTERLAB_IP:-172.20.1.50}
+        aliases:
+          - jupyterlab
+    ports:
+      - "${JUPYTERLAB_PORT:-8888}:8888" # JupyterLab
+      - "${JUPYTERLAB_SPARK_UI_PORT:-4040}:4040" # Spark UI of the notebook's Spark session
+volumes:
+  jupyterlab_work:
+    name: jupyterlab_work
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Analytics/JupyterLab/work
+  # Defined identically in Analytics/Apache Spark; whichever stack starts first creates it
+  spark_data:
+    name: spark_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Analytics/ApacheSpark/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

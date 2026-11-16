@@ -1,0 +1,111 @@
+# ZITADEL v4 identity provider backed by the PostgreSQL stack.
+# v4 serves the login pages from a separate container (zitadel-login). It shares the zitadel container's
+# network, so the two need no reverse proxy: API/console on ZITADEL_PORT, login on ZITADEL_LOGIN_PORT.
+services:
+  # One-shot: creates the zitadel database in the PostgreSQL stack if it doesn't exist yet
+  zitadel-db-init:
+    image: ${ZITADEL_DB_INIT_IMAGE:-postgres:18}
+    container_name: zitadel-db-init
+    restart: "no"
+    environment:
+      PGHOST: postgresql
+      PGUSER: ${ZITADEL_DB_USER:-user@user.com}
+      PGPASSWORD: ${ZITADEL_DB_PASSWORD:-Password123}
+      DB_NAME: ${ZITADEL_DB_NAME:-zitadel}
+    command:
+      - sh
+      - -c
+      - |
+        for i in $$(seq 30); do pg_isready -q -d postgres && break; echo "waiting for postgresql (start Databases/PostgreSQL)"; sleep 2; done
+        psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$$DB_NAME'" | grep -q 1 \
+          && echo "database $$DB_NAME exists" \
+          || psql -d postgres -c "CREATE DATABASE \"$$DB_NAME\""
+    networks:
+      GroupNetwork:
+        ipv4_address: ${ZITADEL_DB_INIT_IP:-172.20.2.40}
+        aliases:
+          - zitadel-db-init
+  zitadel:
+    image: ghcr.io/zitadel/zitadel:${ZITADEL_VERSION:-v4.20.3}
+    container_name: zitadel
+    restart: unless-stopped
+    # Root so it can write the login client's token to the bootstrap volume
+    user: "0"
+    command: start-from-init --masterkey "${ZITADEL_MASTERKEY:-LocalDevOnlyMasterkey32Chars0000}"
+    depends_on:
+      zitadel-db-init:
+        condition: service_completed_successfully
+    environment:
+      ZITADEL_PORT: 8080
+      ZITADEL_EXTERNALDOMAIN: localhost
+      ZITADEL_EXTERNALPORT: ${ZITADEL_PORT:-8300}
+      ZITADEL_EXTERNALSECURE: "false"
+      ZITADEL_TLS_ENABLED: "false"
+      ZITADEL_DATABASE_POSTGRES_DSN: "postgresql://${ZITADEL_DB_USER:-user@user.com}:${ZITADEL_DB_PASSWORD:-Password123}@postgresql:5432/${ZITADEL_DB_NAME:-zitadel}?sslmode=disable"
+      ZITADEL_FIRSTINSTANCE_ORG_HUMAN_USERNAME: ${ZITADEL_ADMIN_USERNAME:-admin}
+      ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORD: ${ZITADEL_ADMIN_PASSWORD:-Password123!}
+      ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORDCHANGEREQUIRED: "false"
+      # Machine user for the login container; its token is written to the bootstrap volume
+      ZITADEL_FIRSTINSTANCE_LOGINCLIENTPATPATH: /zitadel/bootstrap/login-client.pat
+      ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_MACHINE_USERNAME: login-client
+      ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_MACHINE_NAME: Automatically Initialized IAM_LOGIN_CLIENT
+      ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_PAT_EXPIRATIONDATE: "2099-01-01T00:00:00Z"
+      ZITADEL_DEFAULTINSTANCE_FEATURES_LOGINV2_REQUIRED: "true"
+      ZITADEL_DEFAULTINSTANCE_FEATURES_LOGINV2_BASEURI: http://localhost:${ZITADEL_LOGIN_PORT:-8301}/ui/v2/login/
+      ZITADEL_OIDC_DEFAULTLOGINURLV2: http://localhost:${ZITADEL_LOGIN_PORT:-8301}/ui/v2/login/login?authRequest=
+      ZITADEL_OIDC_DEFAULTLOGOUTURLV2: http://localhost:${ZITADEL_LOGIN_PORT:-8301}/ui/v2/login/logout?post_logout_redirect=
+      ZITADEL_SAML_DEFAULTLOGINURLV2: http://localhost:${ZITADEL_LOGIN_PORT:-8301}/ui/v2/login/login?samlRequest=
+    healthcheck:
+      test: ["CMD", "/app/zitadel", "ready"]
+      interval: 10s
+      timeout: 30s
+      retries: 12
+      start_period: 30s
+    volumes:
+      - zitadel_bootstrap:/zitadel/bootstrap
+    networks:
+      GroupNetwork:
+        ipv4_address: ${ZITADEL_IP:-172.20.2.41}
+        aliases:
+          - zitadel
+    ports:
+      - "${ZITADEL_PORT:-8300}:8080" # API, console, OIDC (8080 is used by CockroachDB)
+      - "${ZITADEL_LOGIN_PORT:-8301}:3000" # Login V2 UI (served by zitadel-login; 3000 is used by Grafana)
+  zitadel-login:
+    image: ghcr.io/zitadel/zitadel-login:${ZITADEL_VERSION:-v4.20.3}
+    container_name: zitadel-login
+    restart: unless-stopped
+    user: "0"
+    # Shares zitadel's network namespace: it reaches the API on localhost:8080 and its port 3000 is published above
+    network_mode: service:zitadel
+    depends_on:
+      zitadel:
+        condition: service_healthy
+    environment:
+      ZITADEL_API_URL: http://localhost:8080
+      NEXT_PUBLIC_BASE_PATH: /ui/v2/login
+      ZITADEL_SERVICE_USER_TOKEN_FILE: /zitadel/bootstrap/login-client.pat
+      ZITADEL_SESSION_COOKIE_SECRET: ${ZITADEL_LOGIN_COOKIE_SECRET:-LocalDevOnly-zitadel-login-cookie-secret}
+      CUSTOM_REQUEST_HEADERS: Host:localhost,X-Forwarded-Proto:http
+      # Next.js listens on :: by default, which fails on hosts with IPv6 disabled in containers
+      HOSTNAME: 0.0.0.0
+    healthcheck:
+      test: ["CMD", "/bin/sh", "-c", "node /app/healthcheck.mjs http://localhost:3000/ui/v2/login/healthy"]
+      interval: 10s
+      timeout: 30s
+      retries: 12
+      start_period: 20s
+    volumes:
+      - zitadel_bootstrap:/zitadel/bootstrap:ro
+volumes:
+  zitadel_bootstrap:
+    name: zitadel_bootstrap
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Authentication/Zitadel/bootstrap
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

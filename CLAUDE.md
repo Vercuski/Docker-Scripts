@@ -15,6 +15,8 @@ cd <Category>/<Tool> && docker compose up -d
 docker compose config # validate a stack and show fully resolved values (the main "test")
 ```
 
+`.env` files Claude creates are delivered as `Claude outputs/<Tool>.env` (remote tools can't write `.env` files); `Claude outputs/Move-EnvFiles.ps1` moves them into `<Category>/<Tool>/.env`. Stack folder names are unique across categories, which that script relies on.
+
 `ROOT_VOLUME_DIR` is the only host-specific value. It is **not** set in any `.env`; `CreateVolumes.bat` (default `D:`, saved with `setx`) or `CreateVolumes.sh` (default `$HOME`, saved to the shell rc file) sets it once per machine. Both accept an optional root argument. For ad-hoc validation: `ROOT_VOLUME_DIR=/tmp docker compose config`.
 
 ## Conventions that span multiple files
@@ -32,10 +34,21 @@ When adding or changing a stack, these must stay consistent across the repo:
 
 Stacks talk to each other over `GroupNetwork` by alias, so some require another stack to be running:
 - Keycloak and SuperTokens → PostgreSQL stack (their own databases must exist)
+- Authentik, Zitadel and Ory (Kratos + Hydra) → PostgreSQL stack; their one-shot `*-db-init` containers create their databases. Authentik, Authelia and Kratos send mail to Mailpit
+- Authelia forward-auth → Nginx Proxy Manager, which mounts the nginx snippets in `RP-LB/NginxProxyManager/snippets` at `/snippets`
 - Azure Service Bus emulator, Hangfire → MSSQL stack (`mssqldb`)
-- OpenTelemetry Collector → Tempo/Loki (same stack) and Prometheus (`Databases/Prometheus`, which scrapes `otel-collector:8889` and accepts remote-write from Tempo)
+- Azure Event Hubs emulator → Azurite stack (`azurite`) for checkpoints and metadata
+- Dependency-Track and DefectDojo → PostgreSQL stack (their `*-db-init` containers create the databases); DefectDojo brings its own Valkey. Trivy (server) output feeds DefectDojo (`Trivy Scan` import) and Dependency-Track (CycloneDX SBOMs)
+- Harbor → PostgreSQL stack (`harbor-db-init` creates a `harbor` role and database); its own services are prefixed `harbor-*` so generic names like `redis`/`registry` don't collide. Dozzle mounts the Docker socket read-only
+- Floci and LocalStack mount the Docker socket and start sibling containers for Lambda, RDS and similar services; LocalStack needs `LOCALSTACK_AUTH_TOKEN` in its `.env`
+- OpenTelemetry Collector → Tempo/Loki (same stack) and Prometheus (`Observability/Prometheus`, which scrapes `otel-collector:8889` and accepts remote-write from Tempo)
+- CloudBeaver → PostgreSQL, TimescaleDB, MSSQL, MySQL, MariaDB and ClickHouse stacks (connections seeded from `Databases/CloudBeaver/initial-data-sources.conf` into an empty workspace)
+- RavenDB and Couchbase publish host-reachable addresses (`localhost:<port>`) to their clients; clients on GroupNetwork use the alias (RavenDB also needs `DisableTopologyUpdates`)
 - Grafana provisions Prometheus, Tempo, Loki and InfluxDB data sources from `Visualization/Grafana/provisioning/datasources/datasources.yaml`
 - HAProxy round-robins to the Nginx and Apache web server stacks
+- Trino → PostgreSQL, MSSQL, MySQL, MongoDB, ClickHouse and Cassandra stacks, one catalog each in `Analytics/Trino/etc/catalog` (credentials in Trino's `.env` must match those stacks; Trino starts even when they are down)
+- JupyterLab → Apache Spark (both define the same `spark_data` bind volume and the notebook runs as UID 185) and Trino
+- Apache Flink → Kafka (`kafka:29092`) for streaming jobs; connector JARs go in the Flink `jobs` volume
 
 ## Verifying changes
 

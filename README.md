@@ -20,7 +20,7 @@ If `ROOT_VOLUME_DIR` is missing, `docker compose` stops with *run CreateVolumes.
 instead of binding volumes to the wrong place. To point a single stack somewhere else, uncomment `ROOT_VOLUME_DIR` in its `.env`.
 
 On native Linux the script also `chown`s the folders of images that run as a fixed non-root user (Grafana, Prometheus,
-Tempo/Loki, Elasticsearch, OpenSearch, SonarQube, pgAdmin, Vault, Kafka, Spark, Oracle, EventStoreDB, Wazuh), using `sudo`.
+Tempo/Loki, Elasticsearch, OpenSearch, SonarQube, Dependency-Track, DefectDojo, pgAdmin, Vault, authentik, Kafka, Spark, Flink, JupyterLab, Oracle, KurrentDB, Garnet, RavenDB, ScyllaDB, Wazuh), using `sudo`.
 Docker Desktop ignores bind-mount ownership, so Windows and macOS skip this. Set `SKIP_CHOWN=1` or `SKIP_PERSIST=1` to opt out.
 
 ## Configuration (.env)
@@ -80,12 +80,29 @@ Every stack joins the external `GroupNetwork` bridge, **172.20.0.0/16**, with a 
 |Apache Spark|Apache Spark (master)| 172.20.1.10|
 |Apache Spark|Apache Spark Worker| 172.20.1.11|
 |Seq|Seq| 172.20.1.20|
+|ApacheFlink|Flink JobManager| 172.20.1.30|
+|ApacheFlink|Flink TaskManager| 172.20.1.31|
+|Trino|Trino| 172.20.1.40|
+|JupyterLab|JupyterLab| 172.20.1.50|
 
 ## Authentication (172.20.2.x)
 |Folder|Name|IP Address|
 |:----------|:----------|:----------|
 |Keycloak|Keycloak| 172.20.2.10|
 |Supertokens|SuperTokens| 172.20.2.20|
+|Authentik|authentik DB setup (one-shot)| 172.20.2.30|
+|Authentik|authentik server| 172.20.2.31|
+|Authentik|authentik worker| 172.20.2.32|
+|Zitadel|ZITADEL DB setup (one-shot)| 172.20.2.40|
+|Zitadel|ZITADEL + Login UI (shared network)| 172.20.2.41|
+|Authelia|Authelia cert/key setup (one-shot)| 172.20.2.50|
+|Authelia|Authelia| 172.20.2.51|
+|Ory|Ory DB setup (one-shot)| 172.20.2.60|
+|Ory|Kratos migrations (one-shot)| 172.20.2.61|
+|Ory|Kratos| 172.20.2.62|
+|Ory|Hydra migrations (one-shot)| 172.20.2.63|
+|Ory|Hydra| 172.20.2.64|
+|Ory|Kratos self-service UI| 172.20.2.65|
 
 ## CloudEmulators (172.20.3.x)
 |Folder|Name|IP Address|
@@ -93,17 +110,47 @@ Every stack joins the external `GroupNetwork` bridge, **172.20.0.0/16**, with a 
 |AzureCosmosDb|Azure Cosmos DB emulator| 172.20.3.10|
 |AzureServiceBus|Azure Service Bus emulator| 172.20.3.20|
 |Azurite|Azurite| 172.20.3.30|
+|AzureEventHubs|Azure Event Hubs emulator| 172.20.3.40|
+|Floci|Floci (AWS emulator)| 172.20.3.50|
+|LocalStack|LocalStack (AWS emulator, auth token)| 172.20.3.60|
+|GcpPubSub|Google Cloud Pub/Sub emulator| 172.20.3.70|
+|GcpFirestore|Google Cloud Firestore emulator| 172.20.3.80|
+|GcpSpanner|Google Cloud Spanner emulator| 172.20.3.90|
+|LowkeyVault|Lowkey Vault (Azure Key Vault emulator)| 172.20.3.100|
 
 ## CodeAnalysis (172.20.4.x)
 |Folder|Name|IP Address|
 |:----------|:----------|:----------|
 |Sonarqube|SonarQube| 172.20.4.10|
+|DependencyTrack|Dependency-Track DB setup (one-shot)| 172.20.4.20|
+|DependencyTrack|Dependency-Track API server| 172.20.4.21|
+|DependencyTrack|Dependency-Track frontend| 172.20.4.22|
+|Trivy|Trivy server| 172.20.4.30|
+|DefectDojo|DefectDojo DB setup (one-shot)| 172.20.4.40|
+|DefectDojo|DefectDojo initializer (one-shot)| 172.20.4.41|
+|DefectDojo|DefectDojo uWSGI| 172.20.4.42|
+|DefectDojo|DefectDojo Celery beat| 172.20.4.43|
+|DefectDojo|DefectDojo Celery worker| 172.20.4.44|
+|DefectDojo|DefectDojo nginx| 172.20.4.45|
+|DefectDojo|DefectDojo Valkey| 172.20.4.46|
 
 ## Containerization (172.20.5.x)
 |Folder|Name|IP Address|
 |:----------|:----------|:----------|
 |DockerRegistry|Docker Registry| 172.20.5.10|
 |DockerRegistry|Docker Registry UI| 172.20.5.11|
+|Dozzle|Dozzle| 172.20.5.20|
+|Zot|zot registry| 172.20.5.30|
+|Harbor|Harbor DB setup (one-shot)| 172.20.5.40|
+|Harbor|Harbor key/config setup (one-shot)| 172.20.5.41|
+|Harbor|Harbor registry| 172.20.5.42|
+|Harbor|Harbor registryctl| 172.20.5.43|
+|Harbor|Harbor core| 172.20.5.44|
+|Harbor|Harbor portal| 172.20.5.45|
+|Harbor|Harbor jobservice| 172.20.5.46|
+|Harbor|Harbor Redis (Valkey)| 172.20.5.47|
+|Harbor|Harbor proxy (nginx)| 172.20.5.48|
+|Harbor|Harbor Trivy adapter| 172.20.5.49|
 
 ## Databases (172.20.6.x)
 |Folder|Name|IP Address|
@@ -111,7 +158,7 @@ Every stack joins the external `GroupNetwork` bridge, **172.20.0.0/16**, with a 
 |ApacheCassandra|Apache Cassandra| 172.20.6.10|
 |ClickHouse|ClickHouse| 172.20.6.20|
 |CockroachDB|CockroachDB| 172.20.6.30|
-|EventStoreDb|EventStoreDB| 172.20.6.40|
+|KurrentDB|KurrentDB (formerly EventStoreDB)| 172.20.6.40|
 |InfluxDb|InfluxDB| 172.20.6.50|
 |MariaDb|MariaDB| 172.20.6.60|
 |MariaDb|Adminer| 172.20.6.61|
@@ -125,12 +172,22 @@ Every stack joins the external `GroupNetwork` bridge, **172.20.0.0/16**, with a 
 |MySQL|phpMyAdmin| 172.20.6.101|
 |Neo4J|Neo4j| 172.20.6.110|
 |Oracle|Oracle| 172.20.6.120|
-|PostgreSQL|PostgreSQL| 172.20.6.130|
+|PostgreSQL|PostgreSQL (with pgvector)| 172.20.6.130|
 |PostgreSQL|pgAdmin4| 172.20.6.131|
-|Prometheus|Prometheus| 172.20.6.140|
-|Prometheus|Prometheus Node Exporter| 172.20.6.141|
-|Prometheus|Prometheus Alertmanager| 172.20.6.142|
+| *(.140-.149 free: Prometheus moved to Observability)*| | |
 |Redis|Redis| 172.20.6.150|
+|RavenDB|RavenDB| 172.20.6.160|
+|CouchDB|CouchDB| 172.20.6.170|
+|CouchDB|CouchDB setup (one-shot)| 172.20.6.171|
+|Couchbase|Couchbase Server CE| 172.20.6.180|
+|Couchbase|Couchbase setup (one-shot)| 172.20.6.181|
+|Garnet|Garnet| 172.20.6.190|
+|Memcached|Memcached| 172.20.6.200|
+|Qdrant|Qdrant| 172.20.6.210|
+|ScyllaDB|ScyllaDB| 172.20.6.220|
+|CloudBeaver|CloudBeaver| 172.20.6.230|
+|TimescaleDB|TimescaleDB| 172.20.6.240|
+|Valkey|Valkey| 172.20.6.250|
 
 ## Documentation (172.20.7.x)
 |Folder|Name|IP Address|
@@ -165,6 +222,9 @@ Every stack joins the external `GroupNetwork` bridge, **172.20.0.0/16**, with a 
 |OpenTelemetry|OpenTelemetry Collector| 172.20.11.20|
 |OpenTelemetry|Tempo| 172.20.11.21|
 |OpenTelemetry|Loki| 172.20.11.22|
+|Prometheus|Prometheus| 172.20.11.30|
+|Prometheus|Prometheus Node Exporter| 172.20.11.31|
+|Prometheus|Prometheus Alertmanager| 172.20.11.32|
 
 ## Orchestration (172.20.12.x)
 |Folder|Name|IP Address|

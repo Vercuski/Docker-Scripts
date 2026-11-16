@@ -1,0 +1,76 @@
+# Shared Flink settings for both containers (merged into conf/config.yaml by the image entrypoint)
+x-flink-properties: &flink-properties |
+  jobmanager.rpc.address: flink-jobmanager
+  jobmanager.memory.process.size: ${FLINK_JOBMANAGER_MEMORY:-1600m}
+  taskmanager.memory.process.size: ${FLINK_TASKMANAGER_MEMORY:-1728m}
+  taskmanager.numberOfTaskSlots: ${FLINK_TASK_SLOTS:-4}
+  parallelism.default: ${FLINK_PARALLELISM:-1}
+  execution.checkpointing.storage: filesystem
+  execution.checkpointing.dir: file:///opt/flink/checkpoints
+  execution.checkpointing.savepoint-dir: file:///opt/flink/savepoints
+  web.upload.dir: /opt/flink/jobs
+services:
+  flink-jobmanager:
+    image: flink:${FLINK_VERSION:-2.3}
+    container_name: flink-jobmanager
+    hostname: flink-jobmanager
+    restart: unless-stopped
+    command: jobmanager
+    environment:
+      FLINK_PROPERTIES: *flink-properties
+    volumes:
+      - flink_checkpoints:/opt/flink/checkpoints
+      - flink_savepoints:/opt/flink/savepoints
+      - flink_jobs:/opt/flink/jobs
+    networks:
+      GroupNetwork:
+        ipv4_address: ${FLINK_JOBMANAGER_IP:-172.20.1.30}
+        aliases:
+          - flink-jobmanager
+    ports:
+      - "${FLINK_UI_PORT:-8093}:8081" # Web UI + REST API (8081 is used by the Cosmos DB emulator)
+  flink-taskmanager:
+    image: flink:${FLINK_VERSION:-2.3}
+    container_name: flink-taskmanager
+    hostname: flink-taskmanager
+    restart: unless-stopped
+    command: taskmanager
+    depends_on:
+      - flink-jobmanager
+    environment:
+      FLINK_PROPERTIES: *flink-properties
+    volumes:
+      - flink_checkpoints:/opt/flink/checkpoints
+      - flink_savepoints:/opt/flink/savepoints
+      - flink_jobs:/opt/flink/jobs
+    networks:
+      GroupNetwork:
+        ipv4_address: ${FLINK_TASKMANAGER_IP:-172.20.1.31}
+        aliases:
+          - flink-taskmanager
+volumes:
+  flink_checkpoints:
+    name: flink_checkpoints
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Analytics/ApacheFlink/checkpoints
+  flink_savepoints:
+    name: flink_savepoints
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Analytics/ApacheFlink/savepoints
+  flink_jobs:
+    name: flink_jobs
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Analytics/ApacheFlink/jobs
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

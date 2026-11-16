@@ -1,0 +1,35 @@
+# CloudBeaver: browser-based SQL client (DBeaver) for every SQL database in this repo. UI: http://localhost:8978
+# The server configures itself and creates the admin on first start; initial-data-sources.conf seeds the shared
+# connections (each target stack must be running to connect). Settings and users live in the workspace volume.
+services:
+  cloudbeaver:
+    image: dbeaver/cloudbeaver:${CLOUDBEAVER_VERSION:-26.2.5}
+    container_name: cloudbeaver
+    restart: unless-stopped
+    environment:
+      CB_SERVER_NAME: ${CLOUDBEAVER_SERVER_NAME:-Local Dev CloudBeaver}
+      CB_SERVER_URL: http://localhost:${CLOUDBEAVER_PORT:-8978}
+      CB_ADMIN_NAME: ${CLOUDBEAVER_ADMIN_USER:-cbadmin}
+      CB_ADMIN_PASSWORD: ${CLOUDBEAVER_ADMIN_PASSWORD:-Password123}
+    volumes:
+      - cloudbeaver_workspace:/opt/cloudbeaver/workspace
+      - ./initial-data-sources.conf:/opt/cloudbeaver/conf/initial-data-sources.conf:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${CLOUDBEAVER_IP:-172.20.6.230}
+        aliases:
+          - cloudbeaver
+    ports:
+      - "${CLOUDBEAVER_PORT:-8978}:8978"
+volumes:
+  cloudbeaver_workspace:
+    name: cloudbeaver_workspace
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/CloudBeaver/workspace
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

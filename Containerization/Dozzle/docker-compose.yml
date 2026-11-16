@@ -1,0 +1,31 @@
+# Dozzle: real-time logs of all containers on this Docker host in the browser (no log storage; it reads the Docker API).
+services:
+  dozzle:
+    image: amir20/dozzle:${DOZZLE_VERSION:-v11.4.3}
+    container_name: dozzle
+    restart: unless-stopped
+    environment:
+      DOZZLE_FILTER: ${DOZZLE_FILTER:-}
+      DOZZLE_ENABLE_ACTIONS: ${DOZZLE_ENABLE_ACTIONS:-true}
+      DOZZLE_ENABLE_SHELL: ${DOZZLE_ENABLE_SHELL:-false}
+      DOZZLE_NO_ANALYTICS: "true"
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    volumes:
+      # Read-only access to the Docker API is enough to stream logs and stats
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${DOZZLE_IP:-172.20.5.20}
+        aliases:
+          - dozzle
+    ports:
+      - "${DOZZLE_PORT:-8103}:8080" # Web UI (8080 is used by CockroachDB)
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

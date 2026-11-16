@@ -1,0 +1,36 @@
+# Trivy in server mode. The server downloads and keeps the vulnerability database up to date (in the cache folder);
+# clients scan locally and send only package lists, e.g.:
+#   trivy image --server http://localhost:4954 --token Password123 myapp:latest
+services:
+  trivy:
+    image: aquasec/trivy:${TRIVY_VERSION:-0.76.2}
+    container_name: trivy
+    restart: unless-stopped
+    command: server --listen 0.0.0.0:4954 --cache-dir /cache --token ${TRIVY_SERVER_TOKEN:-Password123}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:4954/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    volumes:
+      - trivy_cache:/cache
+    networks:
+      GroupNetwork:
+        ipv4_address: ${TRIVY_IP:-172.20.4.30}
+        aliases:
+          - trivy
+    ports:
+      - "${TRIVY_PORT:-4954}:4954" # Trivy server API
+volumes:
+  trivy_cache:
+    name: trivy_cache
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/CodeAnalysis/Trivy/cache
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

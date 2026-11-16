@@ -1,0 +1,64 @@
+# Authelia configuration for local development.
+# Loaded with Authelia's template filter: "env" values come from docker-compose.yml / .env, and "secret" reads
+# files that the one-shot authelia-init container generates in the data volume. Template expressions are
+# evaluated even inside comments, so don't write double braces in a comment.
+# Secrets (session, storage, JWT, OIDC HMAC) are set with AUTHELIA_* environment variables in docker-compose.yml.
+theme: 'auto'
+
+server:
+  address: 'tcp://0.0.0.0:9091/'
+  # Self-signed certificate for auth.<domain>, *.<domain> and localhost (Authelia only works over HTTPS)
+  tls:
+    key: '/data/certs/private.pem'
+    certificate: '/data/certs/public.crt'
+
+log:
+  level: 'info'
+
+authentication_backend:
+  file:
+    path: '/config/users_database.yml'
+    watch: true
+
+# Forward-auth rules. Hosts not matched here are denied.
+access_control:
+  default_policy: 'deny'
+  rules:
+    - domain: '*.{{ env "COOKIE_DOMAIN" }}'
+      policy: 'one_factor'
+
+session:
+  cookies:
+    - domain: '{{ env "COOKIE_DOMAIN" }}'
+      authelia_url: '{{ env "PORTAL_URL" }}'
+
+storage:
+  local:
+    path: '/data/db.sqlite3'
+
+# Mail (one-time codes, password resets) goes to the Email/Mailpit stack
+notifier:
+  disable_startup_check: true
+  smtp:
+    address: 'smtp://mailpit:1025'
+    sender: 'Authelia <authelia@{{ env "COOKIE_DOMAIN" }}>'
+    disable_require_tls: true
+
+identity_providers:
+  oidc:
+    jwks:
+      - key: {{ secret "/data/keys/private.pem" | mindent 10 "|" | msquote }}
+    clients:
+      - client_id: 'dotnet-dev'
+        client_name: 'ASP.NET Core dev app'
+        # Digest of 'Password123' (authelia crypto hash generate pbkdf2 --variant sha512)
+        client_secret: '$pbkdf2-sha512$310000$MOVQC76tkoeZ1LCOQskoyg$THzJ/01QiQP8n5XaMO5N9aMs27jQywP.sIZtwNAA5xQ3gsp7NmyDCLbQQRfInPqxM0jbxECYet7hjCtPsKsDoA'
+        public: false
+        authorization_policy: 'one_factor'
+        redirect_uris:
+          - 'https://localhost:5001/signin-oidc'
+        scopes: ['openid', 'profile', 'email', 'groups', 'offline_access']
+        grant_types: ['authorization_code', 'refresh_token']
+        response_types: ['code']
+        # ASP.NET Core's OpenIdConnect handler sends the secret in the request body
+        token_endpoint_auth_method: 'client_secret_post'

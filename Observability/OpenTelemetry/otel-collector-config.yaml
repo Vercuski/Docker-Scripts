@@ -27,7 +27,7 @@ exporters:
     # Loki 3.x native OTLP ingestion
     endpoint: http://loki:3100/otlp
   prometheus:
-    # Scraped by Prometheus (job "otel-collector" in Databases/Prometheus/prometheus.yml)
+    # Scraped by Prometheus (job "otel-collector" in Observability/Prometheus/prometheus.yml)
     endpoint: 0.0.0.0:8889
     resource_to_telemetry_conversion:
       enabled: true

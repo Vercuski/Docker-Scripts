@@ -1,0 +1,36 @@
+# Valkey: open-source (BSD) continuation of Redis 7.2, drop-in compatible with Redis clients.
+# Append-only file persistence in the data folder.
+services:
+  valkey:
+    image: valkey/valkey:${VALKEY_VERSION:-9.0-alpine}
+    container_name: valkey
+    restart: unless-stopped
+    command: valkey-server --appendonly yes --requirepass ${VALKEY_PASSWORD:-Password123}
+    healthcheck:
+      test: ["CMD-SHELL", "valkey-cli -a \"$$VALKEY_PASSWORD\" --no-auth-warning ping | grep -q PONG"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    environment:
+      VALKEY_PASSWORD: ${VALKEY_PASSWORD:-Password123}
+    volumes:
+      - valkey_data:/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${VALKEY_IP:-172.20.6.250}
+        aliases:
+          - valkey
+    ports:
+      - "${VALKEY_PORT:-6381}:6379" # RESP (6379 Redis, 6380 Garnet)
+volumes:
+  valkey_data:
+    name: valkey_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/Valkey/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

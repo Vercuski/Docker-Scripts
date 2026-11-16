@@ -1,0 +1,29 @@
+# zot: OCI-native image registry (images, Helm charts, SBOMs, signatures) with a web UI, search and
+# Trivy-based CVE scanning built in. Settings: config.json.
+services:
+  zot:
+    image: ghcr.io/project-zot/zot-linux-amd64:${ZOT_VERSION:-v2.1.23}
+    container_name: zot
+    restart: unless-stopped
+    volumes:
+      - ./config.json:/etc/zot/config.json:ro
+      - zot_data:/var/lib/registry
+    networks:
+      GroupNetwork:
+        ipv4_address: ${ZOT_IP:-172.20.5.30}
+        aliases:
+          - zot
+    ports:
+      - "${ZOT_PORT:-5002}:5000" # Registry API + web UI (5000/5001 are used by DockerRegistry)
+volumes:
+  zot_data:
+    name: zot_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Containerization/Zot/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

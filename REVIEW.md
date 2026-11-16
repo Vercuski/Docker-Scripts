@@ -51,7 +51,7 @@ Your uncommitted work in progress (Seq, MSSQL, SuperTokens, README) was kept and
 
 ## Flagged but not changed (your call)
 
-1. **EventStoreDB** `20.10.2-buster-slim` is from 2021. The product is now **KurrentDB** (`kurrentplatform/kurrentdb`), with `KURRENTDB_*` env vars. External TCP was removed in v24, so it needs client changes.
+1. ~~**EventStoreDB**~~ *Done 2026-11-16: replaced by `Databases/KurrentDB`.* `20.10.2-buster-slim` is from 2021. The product is now **KurrentDB** (`kurrentplatform/kurrentdb`), with `KURRENTDB_*` env vars. External TCP was removed in v24, so it needs client changes.
 2. **Elastic** `STACK_VERSION=8.7.1` is very old. Bump to the latest 8.x or 9.x.
 3. **ProGet** `24.0.2` is old. The `SSL_CERT_FILE`/`https://*:443` settings should be checked against Inedo's current Docker HTTPS docs, or you could terminate TLS in Nginx Proxy Manager instead.
 4. **PostgreSQL**: if your existing data folder was created by PG 17 or earlier, pin that major version instead of 18, or migrate with `pg_upgrade`.
@@ -62,7 +62,7 @@ Your uncommitted work in progress (Seq, MSSQL, SuperTokens, README) was kept and
 
 ## Host port map (after the changes)
 
-80/81/443 NPM · 1113/2113 EventStore · 1433 MSSQL · 1521 Oracle · 3000 Grafana · 3306 MySQL · 3307 MariaDB · 3567 SuperTokens · 5000/5001 Registry/UI · 5010 Hangfire · 5050 pgAdmin · 5341/8089 Seq · 5432 Postgres · 5601 Kibana · 5602 OpenSearch Dashboards · 5672/15672/15692 RabbitMQ · 6379 Redis · 7007 Backstage · 7077/8090 Spark · 7473/7474/7687 Neo4j · 8080/26257 CockroachDB · 8081 MediaWiki · 8082 phpMyAdmin · 8083 Apache · 8084 Kafka UI · 8085 Gaia · 8086 InfluxDB · 8087 Adminer · 8088 mongo-express · 8091/8092 ProGet · 8100/8404 HAProxy · 8123/19000 ClickHouse · 8180/8181/8443 Nginx/Nginx UI · 8480/8444 Rancher · 9000 SonarQube · 9010/9443 Portainer · 9042 Cassandra · 9090 Prometheus · 9091/19530 Milvus · 9092 Kafka · 9093 Alertmanager · 9100 node-exporter · 9110/9111 MinIO (Milvus) · 9200 Elasticsearch · 9201/9601 OpenSearch · 27017 MongoDB · 514/udp, 1514/1515, 55000 Wazuh manager · 5603 Wazuh dashboard · 9202 Wazuh indexer
+80/81/443 NPM · 2113 KurrentDB · 1433 MSSQL · 1521 Oracle · 3000 Grafana · 3306 MySQL · 3307 MariaDB · 3567 SuperTokens · 5000/5001 Registry/UI · 5010 Hangfire · 5050 pgAdmin · 5341/8089 Seq · 5432 Postgres · 5601 Kibana · 5602 OpenSearch Dashboards · 5672/15672/15692 RabbitMQ · 6379 Redis · 7007 Backstage · 7077/8090 Spark · 7473/7474/7687 Neo4j · 8080/26257 CockroachDB · 8081 MediaWiki · 8082 phpMyAdmin · 8083 Apache · 8084 Kafka UI · 8085 Gaia · 8086 InfluxDB · 8087 Adminer · 8088 mongo-express · 8091/8092 ProGet · 8100/8404 HAProxy · 8123/19000 ClickHouse · 8180/8181/8443 Nginx/Nginx UI · 8480/8444 Rancher · 9000 SonarQube · 9010/9443 Portainer · 9042 Cassandra · 9090 Prometheus · 9091/19530 Milvus · 9092 Kafka · 9093 Alertmanager · 9100 node-exporter · 9110/9111 MinIO (Milvus) · 9200 Elasticsearch · 9201/9601 OpenSearch · 27017 MongoDB · 514/udp, 1514/1515, 55000 Wazuh manager · 5603 Wazuh dashboard · 9202 Wazuh indexer · 8093 Flink · 8094 Trino · 8888/4040 JupyterLab · 8290/8445 authentik · 8300/8301 ZITADEL · 9095 Authelia · 4433/4434 Kratos · 4444/4445 Hydra · 4455 Ory UI · 5674/9094/5301 Event Hubs emulator · 4566 Floci · 4567 LocalStack · 8095 Pub/Sub emulator · 8096 Firestore emulator · 9011/9020 Spanner emulator · 8446/8097 Lowkey Vault · 8098/8099 Dependency-Track API/UI · 4954 Trivy server · 8102 DefectDojo · 8103 Dozzle · 5002 zot · 8104 Harbor · 8105/38888 RavenDB · 6380 Garnet · 6381 Valkey · 11211 Memcached · 6333/6334 Qdrant · 5984 CouchDB · 8107-8110/11210 Couchbase · 9043/8106 ScyllaDB CQL/Alternator · 5433 TimescaleDB · 8978 CloudBeaver
 
 ## Suggested new stacks
 
@@ -154,3 +154,135 @@ Goal: every stack runs unchanged on Windows (Docker Desktop) and native Linux/ma
 - `CreateVolumes.sh`: optional root argument (default `$ROOT_VOLUME_DIR`, then `$HOME`), saves an idempotent `export` block to `~/.bashrc` / `~/.zshenv` / `~/.profile`, and on native Linux chowns the folders of images that run as a fixed non-root UID (Docker Desktop ignores ownership). `SKIP_CHOWN=1` / `SKIP_PERSIST=1` opt out.
 - Compose files: `${ROOT_VOLUME_DIR:?error}` now reads `${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}` so the failure says what to do.
 - Checked: all 84 bind paths match `CreateVolumes.sh` and `CreateVolumes.bat` with identical case; all files are stored LF in git; no other Windows paths in compose or mounted config files. `/var/run/docker.sock` mounts (Portainer, Gitea runner, Terraform runner, Beats) work on both Docker Desktop and Linux.
+
+## New stacks added (2026-11-16): Analytics
+
+From the "Missing Apps & New Category Suggestions" list. Folder names have no spaces (like `Databases/ApacheCassandra`); `Analytics/Apache Spark` keeps its existing name.
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| Apache Flink 2.3 (JobManager + TaskManager) | Analytics/ApacheFlink | .30 / .31 | 8093 UI/REST | Session cluster, 4 slots. Checkpoints and savepoints persist to bind volumes. Connector JARs go in the `jobs` volume and are loaded with `ADD JAR`. |
+| Trino 484 | Analytics/Trino | .40 | 8094 | Single node. Catalogs for PostgreSQL, SQL Server, MySQL, MongoDB, ClickHouse and Cassandra (credentials from `.env` via `${ENV:...}`), plus `tpch` and `memory`. |
+| JupyterLab (`quay.io/jupyter/pyspark-notebook:spark-4.3.0`) | Analytics/JupyterLab | .50 | 8888 lab, 4040 Spark UI | Mounts the Spark stack's `spark_data` folder at `/opt/spark/data`. Runs the notebook user as UID 185 so the driver and executors write files as the same user. |
+
+Findings while testing:
+- **ClickHouse catalog** needs `?compress=0` in its JDBC URL. With compression on, the driver bundled in Trino 484 fails against ClickHouse 26.10 with *Magic is not correct*.
+- **Flink 2.x** renamed the checkpoint settings: `execution.checkpointing.dir` / `execution.checkpointing.savepoint-dir` replace `state.checkpoints.dir` / `state.savepoints.dir`.
+- **PySpark from JupyterLab on the cluster**: DataFrame and SQL work, but Python UDFs fail with `PYTHON_VERSION_MISMATCH` (notebook Python 3.13, `spark` image workers Python 3.10). Local mode is unaffected. Documented in the JupyterLab ReadMe.
+- Starting JupyterLab while the Spark stack is up prints a harmless warning that `spark_data` belongs to another project.
+
+Verification:
+- All 49 stacks pass `docker compose config`; no duplicate IPs, host ports, aliases or container names; every bind path exists in both `CreateVolumes` scripts with identical case; `.env` values equal the compose defaults.
+- Flink: cluster up with 1 TaskManager / 4 slots; Flink SQL wrote 3 JSON rows to the Kafka stack (`kafka:29092`) through `flink-sql-connector-kafka-5.0.0-2.2` and aggregated them back.
+- Trino: starts with every database stack down. With all six up, one query joined PostgreSQL, SQL Server, MySQL, Cassandra and ClickHouse tables; MongoDB, `tpch`, a Mongo → ClickHouse `CREATE TABLE AS` and the HTTP client protocol also worked.
+- JupyterLab: token login works; a notebook session ran a job on the Spark cluster (2 executors), wrote Parquet to `/opt/spark/data` and read it back; the `trino` Python client queried Trino into pandas.
+
+## New stacks added (2026-11-16): Authentication
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| authentik 2026.8.5 (server + worker) | Authentication/Authentik | .30 db-init, .31 server, .32 worker | 8290, 8445 (HTTPS) | PostgreSQL stack (`authentik` database). Bootstrap admin `akadmin` and API token from `.env`. Mail to Mailpit. |
+| ZITADEL v4.20.3 + Login V2 | Authentication/Zitadel | .40 db-init, .41 (login shares it) | 8300 console/API, 8301 login | PostgreSQL stack (`zitadel` database). The login container uses `network_mode: service:zitadel` instead of Traefik. |
+| Authelia 4.39 | Authentication/Authelia | .50 cert/key init, .51 | 9095 (HTTPS) | Portal `https://auth.dev.localhost:9095`, cookie domain `dev.localhost`. File users, SQLite, OIDC client `dotnet-dev`. Mail to Mailpit. |
+| Ory Kratos + Hydra v26.2.0 + self-service UI | Authentication/Ory | .60 db-init, .61/.63 migrations, .62 Kratos, .64 Hydra, .65 UI | 4433/4434, 4444/4445, 4455 | PostgreSQL stack (`kratos`, `hydra` databases). Hydra delegates login/consent to the UI with Kratos sessions. Mail to Mailpit. |
+
+Each PostgreSQL-backed stack has a one-shot `*-db-init` container (`postgres:18` psql client) that creates its database if missing, so there is no manual `CREATE DATABASE` step (unlike Keycloak and SuperTokens).
+
+Nginx Proxy Manager now mounts `RP-LB/NginxProxyManager/snippets` at `/snippets`, with Authelia's `proxy.conf`, `authelia-location.conf` and `authelia-authrequest.conf` (upstream changed to `https://authelia:9091`).
+
+Findings while testing:
+- **IPv6-only listeners**: authentik (`[::]`) and the ZITADEL login (Next.js, `::`) failed with *Address family not supported* where containers have no IPv6. Fixed with `AUTHENTIK_LISTEN__*=0.0.0.0:...` and `HOSTNAME=0.0.0.0`.
+- **authentik 2026.8** OAuth2 providers have an explicit `grant_types` list; providers created through the API start empty and every token request fails with *Invalid grant_type for provider*.
+- **ZITADEL** resolves the instance from the Host header, so containers must call `http://zitadel:8080` with `Host: localhost:8300`.
+- **Authelia** rejects a cookie domain without a dot and non-HTTPS portal URLs, hence `dev.localhost` and a generated self-signed certificate. Its template filter also evaluates `{{ }}` inside YAML comments. Non-browser clients may need a hosts entry for `auth.dev.localhost`.
+- **Ory UI**: `HYDRA_ADMIN_URL` with a trailing `/` makes the UI call `//admin/...` and consent fails with a 404.
+
+Verification:
+- All stacks pass `docker compose config`; no duplicate IPs, host ports, aliases or container names; bind paths are in both `CreateVolumes` scripts; `.env` values equal the compose defaults.
+- authentik: started against the PostgreSQL stack from an empty database; API token works; `akadmin` password login through the default authentication flow; created an OIDC application through the API and completed the authorization-code flow (ID token) and client credentials; test mail arrived in Mailpit.
+- ZITADEL: headless Chrome opened the console, was redirected to the Login V2 UI on 8301, signed in as the bootstrap admin and returned to the console.
+- Authelia: headless Chrome completed the OIDC authorization-code flow (login, consent, code, token exchange) for `dotnet-dev`; Nginx Proxy Manager 2.17 with the snippets protected `https://mailpit.dev.localhost` (redirect to the portal, login, back to Mailpit).
+- Ory: headless Chrome registered a user, verified the email with the code from Mailpit, then signed in through Hydra (Kratos login, consent) and exchanged the code for access, ID (with the `email` claim) and refresh tokens; client credentials also issued a token.
+
+## New stacks added (2026-11-16): CloudEmulators
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| Azure Event Hubs emulator 2.2.1 | CloudEmulators/AzureEventHubs | .40 | 5674 AMQP, 9094 Kafka, 5301 health | Uses the Azurite stack. Hubs and consumer groups in `Config.json` (`eh1`, `cg1`). |
+| Floci 2.5.0 | CloudEmulators/Floci | .50 | 4566 | MIT-licensed AWS emulator, no account. `hybrid` storage persisted to the data folder. Docker socket for Lambda etc. |
+| LocalStack 2026.10 | CloudEmulators/LocalStack | .60 | 4567 | Official image; needs `LOCALSTACK_AUTH_TOKEN` (free tier is non-commercial). |
+| Pub/Sub emulator (gcloud 593.0.0) | CloudEmulators/GcpPubSub | .70 | 8095 | In-memory. |
+| Firestore emulator (gcloud 593.0.0) | CloudEmulators/GcpFirestore | .80 | 8096 | In-memory; explicit HTTP exports to the data folder, newest one imported on start. |
+| Spanner emulator 1.5.59 | CloudEmulators/GcpSpanner | .90 | 9011 gRPC, 9020 REST | In-memory. |
+| Lowkey Vault 7.4.0 | CloudEmulators/LowkeyVault | .100 | 8446 HTTPS API, 8097 metadata | Azure Key Vault emulator with a simulated managed identity endpoint. Auto-export/import of `export.json`. |
+
+Decision: LocalStack has required an account and auth token since release 2026.03 (4.14 was the last token-free version), so the token-free Floci is the default AWS emulator on 4566 and LocalStack moved to 4567.
+
+Findings while testing:
+- **Event Hubs over Kafka**: the emulator advertises the host and port from the SASL password's connection string, so Kafka clients must use `Endpoint=sb://localhost:9094;...` (the Kafka port), not the AMQP port.
+- **Firestore persistence**: `--export-on-exit` never ran when Docker stopped the container (SIGTERM and SIGINT, via gcloud and with the emulator's Java process as PID 1). The stack runs the Java process directly and imports the newest export written by the emulator's HTTP export endpoint.
+- **Lowkey Vault import**: importing an export while the default vaults are auto-registered fails with *Vault is already created*; the start command adds `--LOWKEY_VAULT_NAMES=-` once an export exists.
+- **LocalStack without a token** exits with *License activation failed* (exit code 55) and restarts in a loop.
+
+Verification:
+- All stacks pass `docker compose config`; no duplicate IPs, host ports, aliases or container names; bind paths are in both `CreateVolumes` scripts; `.env` values equal the compose defaults.
+- Event Hubs: Python `azure-eventhub` sent and received over AMQP on 5674; `confluent-kafka` produced and consumed over the Kafka endpoint on 9094 (and saw the AMQP events).
+- Floci: AWS CLI against S3, SQS, DynamoDB and Secrets Manager; all data present after a restart; a Python Lambda function was created and invoked (ran in a sibling container).
+- Pub/Sub, Firestore, Spanner: Google's Python client libraries created a topic/subscription and pulled a message, wrote and read a document, created an instance/database/table and queried rows; the ReadMe's gcloud commands created a Spanner instance and database; a Firestore export was imported after recreating the container.
+- Lowkey Vault: Python `azure-keyvault-secrets` with `ManagedIdentityCredential` against the simulated token endpoint set and read a secret; the secret survived a container recreate; `https://lowkey-vault:8443` answered from another container.
+- LocalStack: only the start-up without a token was tested (no token available).
+
+## New stacks added (2026-11-16): CodeAnalysis
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| OWASP Dependency-Track 5.2.1 (API server + frontend) | CodeAnalysis/DependencyTrack | .20 db-init, .21 API, .22 UI | 8098 API, 8099 UI | v5 (PostgreSQL only) from `ghcr.io/dependencytrack`; `dtrack` database in the PostgreSQL stack. First login `admin` / `admin` with a forced password change. |
+| Trivy 0.76.2 (server mode) | CodeAnalysis/Trivy | .30 | 4954 | Vulnerability database cached in the `cache` folder; clients use `--server` and `--token`. |
+| DefectDojo 3.5.103 | CodeAnalysis/DefectDojo | .40 db-init, .41 initializer, .42 uWSGI, .43 beat, .44 worker, .45 nginx, .46 Valkey | 8102 | `defectdojo` database in the PostgreSQL stack; private Valkey for Celery. Admin `admin` / `Password123`. |
+
+Decision: the suggestion list named Dependency-Track generally; v5 is its current release (the project's own compose file uses 5.2.1; 4.14.6 is the last 4.x).
+
+Verification:
+- All stacks pass `docker compose config`; no duplicate IPs, host ports, aliases or container names; bind paths are in both `CreateVolumes` scripts; `.env` values equal the compose defaults.
+- Dependency-Track: forced password change and login through the API; a CycloneDX SBOM generated by Trivy (154 components) uploaded with `autoCreate`; the ReadMe's `curl` upload with an Automation-team API key. Vulnerability analysis needs the API server to mirror NVD/OSV from the internet, which wasn't possible from the test environment.
+- Trivy: server healthy with the database in the cache folder; a client `trivy image --server ... --token ...` scan of `postgres:18` returned findings; a wrong token was rejected.
+- DefectDojo: initializer loaded the schema and created the admin; `/api/v2/import-scan/` imported the Trivy JSON report (502 findings, product and engagement auto-created) and `/api/v2/reimport-scan/` reused the same test; the scan type names used in the ReadMe exist; no errors in uWSGI, beat or worker logs.
+
+## New stacks added (2026-11-16): Containerization
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| Dozzle v11.4.3 | Containerization/Dozzle | .20 | 8103 | Live logs of all containers; Docker socket read-only; actions on, shell off. |
+| zot v2.1.23 | Containerization/Zot | .30 | 5002 | OCI registry with UI, search and Trivy CVE scanning; `config.json` in the stack folder. |
+| Harbor v2.15.5 (with Trivy) | Containerization/Harbor | .40-.49 | 8104 | Built from the output of Harbor's `prepare` step; PostgreSQL stack for the database (dedicated `harbor` role). |
+
+Harbor design: the installer's generated compose file and configs were adapted instead of being used as-is. Services are renamed `harbor-*` (the defaults `redis`, `registry`, `core`, `portal` would collide with other stacks' aliases), the static configs live in `Containerization/Harbor/config` (mode 644: the containers run as non-root and couldn't read the installer's 600 files), shared secrets are `.env` values, and the one-shot `harbor-init` generates the secret key, the token signing key pair (`openssl genrsa -traditional`, the format Harbor writes) and the registry htpasswd file into the data folders, so no private key is committed. The `harbor-log` syslog container is dropped.
+
+`Claude outputs/Move-EnvFiles.ps1` moves the `<Tool>.env` files delivered in `Claude outputs` into their stack folders.
+
+Verification:
+- All stacks pass `docker compose config`; no duplicate IPs, host ports, aliases or container names; bind paths are in both `CreateVolumes` scripts; `.env` values equal the compose defaults; stack folder names are unique.
+- Dozzle: healthy; headless Chrome showed the container list.
+- zot: `docker push`/`pull` of `localhost:5002/demo/alpine:3.22`, catalog and GraphQL search. The CVE database download needs internet access from the container (not available in the test environment).
+- Harbor: all components healthy; `docker login`, push and pull through `localhost:8104`; artifact listed by the API; UI login in headless Chrome; a Trivy scan of the pushed image succeeded (with the database pre-seeded, as the test environment's containers had no internet); after `docker compose down`/`up` the secret key was unchanged and the image still pulled.
+- `Move-EnvFiles.ps1`: tested with PowerShell 7.5 (`-WhatIf`, real move replacing an existing `.env`, unknown name skipped with a warning).
+
+## New stacks added (2026-11-16): Databases
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| RavenDB 7.2 | Databases/RavenDB | .160 | 8105, 38888 | Unsecured dev mode. Listens on the host port numbers inside the container (it calls itself on its public URL `http://localhost:8105`). |
+| CouchDB 3.5.3 | Databases/CouchDB | .170/.171 | 5984 | `couchdb-init` runs `_cluster_setup` single-node once. |
+| Couchbase Server CE 8.0.2 | Databases/Couchbase | .180/.181 | 8107-8110, 11210 | `couchbase-init` initialises the cluster and bucket `dev`, and registers the remapped ports as external alternate addresses. |
+| Garnet 2.1 | Databases/Garnet | .190 | 6380 | Redis protocol; checkpoints to the data folder and recovers on start. |
+| Memcached 1.6 | Databases/Memcached | .200 | 11211 | No volume. |
+| Qdrant v1.20.2 | Databases/Qdrant | .210 | 6333, 6334 | API key `Password123`. |
+| ScyllaDB 2026.3 | Databases/ScyllaDB | .220 | 9043, 8106 | Developer mode; CQL plus Alternator (DynamoDB API). |
+| CloudBeaver 26.2.5 | Databases/CloudBeaver | .230 | 8978 | Auto-configured admin; six seeded connections to the SQL stacks. |
+| TimescaleDB 2.32.0-pg18 | Databases/TimescaleDB | .240 | 5433 | PostgreSQL 18 + TimescaleDB. |
+| Valkey 9.0 | Databases/Valkey | .250 | 6381 | AOF persistence. |
+
+Changes to existing stacks:
+- **PostgreSQL** now uses `pgvector/pgvector:pg18-trixie` (same Debian base as `postgres:18`; tested against a data folder created by `postgres:18`). The image variable is now `PGVECTOR_VERSION`.
+- **EventStoreDb → KurrentDB** (`kurrentplatform/kurrentdb:26.2`): new folder, container `kurrentdb`, new data folder `Databases/KurrentDB`, gRPC on 2113 only (port 1113 is gone), `KURRENTDB_*` settings. The `eventstoredb` alias is kept. The old `Databases/EventStoreDb` volume folder is not touched; the old Docker volumes `eventstore-volume-data` / `eventstore-volume-logs` can be removed with `docker volume rm`.
+- **Prometheus** moved to `Observability/Prometheus`: IPs 172.20.11.30-.32, data under `docker/volumes/Observability/Prometheus`. The alias `prometheus`, port 9090 and the volume names are unchanged, so Docker must forget the old volume definitions once (`docker volume rm prometheus_data alertmanager_data`, which doesn't delete the files).

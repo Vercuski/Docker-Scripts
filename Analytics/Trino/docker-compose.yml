@@ -1,0 +1,42 @@
+services:
+  trino:
+    image: trinodb/trino:${TRINO_VERSION:-484}
+    container_name: trino
+    hostname: trino
+    restart: unless-stopped
+    mem_limit: ${TRINO_MEM_LIMIT:-4g}
+    # Catalog files read these with ${ENV:...}, so credentials stay in .env
+    environment:
+      TRINO_POSTGRES_USER: ${TRINO_POSTGRES_USER:-user@user.com}
+      TRINO_POSTGRES_PASSWORD: ${TRINO_POSTGRES_PASSWORD:-Password123}
+      TRINO_POSTGRES_DATABASE: ${TRINO_POSTGRES_DATABASE:-postgres}
+      TRINO_MSSQL_USER: ${TRINO_MSSQL_USER:-sa}
+      TRINO_MSSQL_PASSWORD: ${TRINO_MSSQL_PASSWORD:-Password123}
+      TRINO_MSSQL_DATABASE: ${TRINO_MSSQL_DATABASE:-master}
+      TRINO_MYSQL_USER: ${TRINO_MYSQL_USER:-root}
+      TRINO_MYSQL_PASSWORD: ${TRINO_MYSQL_PASSWORD:-Password123}
+      TRINO_MONGO_USER: ${TRINO_MONGO_USER:-user}
+      TRINO_MONGO_PASSWORD: ${TRINO_MONGO_PASSWORD:-Password123}
+      TRINO_CLICKHOUSE_USER: ${TRINO_CLICKHOUSE_USER:-admin}
+      TRINO_CLICKHOUSE_PASSWORD: ${TRINO_CLICKHOUSE_PASSWORD:-Password123}
+      TRINO_CASSANDRA_DC: ${TRINO_CASSANDRA_DC:-datacenter1}
+    volumes:
+      # Replaces the image's default catalogs with the ones in this folder
+      - ./etc/catalog:/etc/trino/catalog:ro
+    healthcheck:
+      test: ["CMD", "/usr/lib/trino/bin/health-check"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${TRINO_IP:-172.20.1.40}
+        aliases:
+          - trino
+    ports:
+      - "${TRINO_PORT:-8094}:8080" # Web UI + client protocol (8080 is used by CockroachDB)
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

@@ -1,0 +1,53 @@
+# KurrentDB (the renamed EventStoreDB), single insecure node for local development.
+# Clients: KurrentDB.Client (or EventStore.Client.Grpc.*) with
+#   kurrentdb://localhost:2113?tls=false        (from the host)
+#   kurrentdb://kurrentdb:2113?tls=false        (from GroupNetwork; the old alias eventstoredb also works)
+# Admin UI: http://localhost:2113
+services:
+  kurrentdb:
+    image: kurrentplatform/kurrentdb:${KURRENTDB_VERSION:-26.2}
+    container_name: kurrentdb
+    restart: unless-stopped
+    environment:
+      KURRENTDB_CLUSTER_SIZE: 1
+      KURRENTDB_INSECURE: "true"
+      KURRENTDB_NODE_IP: 0.0.0.0
+      KURRENTDB_RUN_PROJECTIONS: ${KURRENTDB_RUN_PROJECTIONS:-All}
+      KURRENTDB_START_STANDARD_PROJECTIONS: ${KURRENTDB_START_STANDARD_PROJECTIONS:-true}
+      KURRENTDB_ENABLE_ATOM_PUB_OVER_HTTP: ${KURRENTDB_ENABLE_ATOM_PUB_OVER_HTTP:-true}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:2113/health/live || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+    volumes:
+      - kurrentdb_data:/var/lib/kurrentdb
+      - kurrentdb_logs:/var/log/kurrentdb
+    networks:
+      GroupNetwork:
+        ipv4_address: ${KURRENTDB_IP:-172.20.6.40}
+        aliases:
+          - kurrentdb
+          - eventstoredb
+    ports:
+      - "${KURRENTDB_HTTP_PORT:-2113}:2113" # gRPC + HTTP API + admin UI
+volumes:
+  kurrentdb_data:
+    name: kurrentdb_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/KurrentDB/data
+  kurrentdb_logs:
+    name: kurrentdb_logs
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/KurrentDB/logs
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

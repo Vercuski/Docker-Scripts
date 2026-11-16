@@ -20,28 +20,57 @@ set "ROOT=%ROOT:/=\%"
 set "ROOT_FWD=%ROOT:\=/%"
 set "V=%ROOT%\docker\volumes"
 echo Creating volume folders under %V%
+call :mk Analytics\ApacheFlink\checkpoints
+call :mk Analytics\ApacheFlink\savepoints
+call :mk Analytics\ApacheFlink\jobs
 call :mk Analytics\ApacheSpark\data
 call :mk Analytics\ApacheSpark\apps
 call :mk Analytics\ApacheSpark\logs
+call :mk Analytics\JupyterLab\work
 call :mk Analytics\Seq\data
+
+call :mk Authentication\Authelia\data
+call :mk Authentication\Authentik\data
+call :mk Authentication\Authentik\certs
+call :mk Authentication\Authentik\templates
+call :mk Authentication\Zitadel\bootstrap
 
 call :mk CloudEmulators\Azurite\data
 call :mk CloudEmulators\AzureCosmosDb\data
+call :mk CloudEmulators\Floci\data
+call :mk CloudEmulators\GcpFirestore\data
+call :mk CloudEmulators\LocalStack\data
+call :mk CloudEmulators\LowkeyVault\data
 
 call :mk CodeAnalysis\SonarQube\data
 call :mk CodeAnalysis\SonarQube\extensions
 call :mk CodeAnalysis\SonarQube\logs
+call :mk CodeAnalysis\DependencyTrack\data
+call :mk CodeAnalysis\DefectDojo\media
+call :mk CodeAnalysis\DefectDojo\valkey
+call :mk CodeAnalysis\Trivy\cache
 
 call :mk Containerization\DockerRegistry\data
+call :mk Containerization\Harbor\core
+call :mk Containerization\Harbor\registry-config
+call :mk Containerization\Harbor\registry
+call :mk Containerization\Harbor\job_logs
+call :mk Containerization\Harbor\trivy
+call :mk Containerization\Harbor\redis
+call :mk Containerization\Zot\data
 
 call :mk Databases\ApacheCassandra
 call :mk Databases\ClickHouse\data
 call :mk Databases\ClickHouse\logs
+call :mk Databases\CloudBeaver\workspace
 call :mk Databases\CockroachDB\data
-call :mk Databases\EventStoreDb\data
-call :mk Databases\EventStoreDb\logs
+call :mk Databases\Couchbase\data
+call :mk Databases\CouchDB\data
+call :mk Databases\Garnet\data
 call :mk Databases\InfluxDb\config
 call :mk Databases\InfluxDb\data
+call :mk Databases\KurrentDB\data
+call :mk Databases\KurrentDB\logs
 call :mk Databases\MariaDB\Backup
 call :mk Databases\MariaDB\Data
 call :mk Databases\Milvus\milvus
@@ -60,9 +89,12 @@ call :mk Databases\Oracle\Data
 call :mk Databases\Oracle\Backup
 call :mk Databases\PostgreSQL\Data
 call :mk Databases\PostgreSQL\pgadmin4data
-call :mk Databases\Prometheus\prometheus_data
-call :mk Databases\Prometheus\alertmanager
+call :mk Databases\Qdrant\storage
+call :mk Databases\RavenDB\data
 call :mk Databases\Redis\cache
+call :mk Databases\ScyllaDB\data
+call :mk Databases\TimescaleDB\data
+call :mk Databases\Valkey\data
 
 call :mk Documentation\Mediawiki\html
 
@@ -76,6 +108,8 @@ call :mk Messaging\RabbitMQ\log
 
 call :mk Observability\OpenTelemetry\tempo
 call :mk Observability\OpenTelemetry\loki
+call :mk Observability\Prometheus\prometheus_data
+call :mk Observability\Prometheus\alertmanager
 
 call :mk Orchestration\Rancher\data
 call :mk Orchestration\Portainer\data

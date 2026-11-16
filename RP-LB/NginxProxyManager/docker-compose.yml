@@ -25,6 +25,8 @@ services:
     volumes:
       - npmdata:/data
       - npmletsencrypt:/etc/letsencrypt
+      # nginx snippets for proxy hosts' Advanced tab, e.g. Authelia forward-auth (see snippets/ and Authentication/Authelia)
+      - ./snippets:/snippets:ro
     networks:
       GroupNetwork:
         ipv4_address: ${NPM_IP:-172.20.14.20}

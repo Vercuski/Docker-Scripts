@@ -1,0 +1,44 @@
+# Google Cloud Firestore emulator (native mode). Data lives in memory. To keep it, call the export endpoint
+# (see ReadMe.md); on start the newest export in the data folder is imported again.
+services:
+  firestore-emulator:
+    image: gcr.io/google.com/cloudsdktool/google-cloud-cli:${GCLOUD_EMULATORS_VERSION:-593.0.0-emulators}
+    container_name: firestore-emulator
+    restart: unless-stopped
+    # Runs the emulator's Java process directly (what "gcloud emulators firestore start" launches) so the newest
+    # export can be passed to --import-data. The emulator's own --export-on-exit doesn't fire when Docker stops it.
+    entrypoint:
+      - sh
+      - -c
+      - |
+        mkdir -p /data/export
+        LATEST=$$(ls -1d /data/export/*/ 2>/dev/null | sort | tail -n 1)
+        IMPORT=""
+        if [ -n "$$LATEST" ]; then
+          IMPORT="--import-data=$$(ls "$$LATEST"*.overall_export_metadata)"
+          echo "Importing $$IMPORT"
+        fi
+        exec java -Duser.language=en -cp /google-cloud-sdk/platform/cloud-firestore-emulator/cloud-firestore-emulator.jar \
+          com.google.cloud.datastore.emulator.firestore.CloudFirestore start --host=0.0.0.0 --port=8080 \
+          --database-mode=firestore-native --database-edition=standard $$IMPORT
+    volumes:
+      - firestore_data:/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${FIRESTORE_EMULATOR_IP:-172.20.3.80}
+        aliases:
+          - firestore-emulator
+    ports:
+      - "${FIRESTORE_EMULATOR_PORT:-8096}:8080" # gRPC + REST (8080 is used by CockroachDB)
+volumes:
+  firestore_data:
+    name: firestore_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/CloudEmulators/GcpFirestore/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

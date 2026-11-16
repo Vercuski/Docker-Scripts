@@ -1,0 +1,138 @@
+# Ory Kratos + Ory Hydra + the Kratos self-service UI, backed by the PostgreSQL stack.
+# Kratos stores identities and runs login/registration/recovery flows; Hydra is the OAuth2/OIDC server and
+# hands login and consent to the self-service UI. Config files: ./kratos and ./hydra.
+x-kratos-env: &kratos-env
+  DSN: ${KRATOS_DSN:-postgres://user%40user.com:Password123@postgresql:5432/kratos?sslmode=disable}
+  SECRETS_COOKIE: ${KRATOS_COOKIE_SECRET:-LocalDevOnly-kratos-cookie-secret}
+  SECRETS_CIPHER: ${KRATOS_CIPHER_SECRET:-LocalDevOnlyKratosCipher32Chars0}
+  COURIER_SMTP_CONNECTION_URI: ${KRATOS_SMTP_URI:-smtp://mailpit:1025/?disable_starttls=true}
+  COURIER_SMTP_FROM_ADDRESS: ${KRATOS_SMTP_FROM:-kratos@localhost}
+x-hydra-env: &hydra-env
+  DSN: ${HYDRA_DSN:-postgres://user%40user.com:Password123@postgresql:5432/hydra?sslmode=disable}
+  SECRETS_SYSTEM: ${HYDRA_SYSTEM_SECRET:-LocalDevOnly-hydra-system-secret}
+services:
+  # One-shot: creates the kratos and hydra databases in the PostgreSQL stack if they don't exist yet
+  ory-db-init:
+    image: ${ORY_DB_INIT_IMAGE:-postgres:18}
+    container_name: ory-db-init
+    restart: "no"
+    environment:
+      PGHOST: postgresql
+      PGUSER: ${ORY_DB_USER:-user@user.com}
+      PGPASSWORD: ${ORY_DB_PASSWORD:-Password123}
+    command:
+      - sh
+      - -c
+      - |
+        for i in $$(seq 30); do pg_isready -q -d postgres && break; echo "waiting for postgresql (start Databases/PostgreSQL)"; sleep 2; done
+        for db in kratos hydra; do
+          psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$$db'" | grep -q 1 \
+            && echo "database $$db exists" \
+            || psql -d postgres -c "CREATE DATABASE \"$$db\"" || exit 1
+        done
+    networks:
+      GroupNetwork:
+        ipv4_address: ${ORY_DB_INIT_IP:-172.20.2.60}
+        aliases:
+          - ory-db-init
+  # One-shot: applies Kratos database migrations
+  kratos-migrate:
+    image: oryd/kratos:${ORY_VERSION:-v26.2.0}
+    container_name: kratos-migrate
+    restart: "no"
+    command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
+    depends_on:
+      ory-db-init:
+        condition: service_completed_successfully
+    environment: *kratos-env
+    volumes:
+      - ./kratos:/etc/config/kratos:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${KRATOS_MIGRATE_IP:-172.20.2.61}
+        aliases:
+          - kratos-migrate
+  kratos:
+    image: oryd/kratos:${ORY_VERSION:-v26.2.0}
+    container_name: kratos
+    restart: unless-stopped
+    # --dev allows plain HTTP; --watch-courier sends mail from the same process
+    command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
+    depends_on:
+      kratos-migrate:
+        condition: service_completed_successfully
+    environment: *kratos-env
+    volumes:
+      - ./kratos:/etc/config/kratos:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${KRATOS_IP:-172.20.2.62}
+        aliases:
+          - kratos
+    ports:
+      - "${KRATOS_PUBLIC_PORT:-4433}:4433" # Public API (browser flows, sessions)
+      - "${KRATOS_ADMIN_PORT:-4434}:4434" # Admin API (identities) - never expose beyond localhost
+  # One-shot: applies Hydra database migrations
+  hydra-migrate:
+    image: oryd/hydra:${ORY_VERSION:-v26.2.0}
+    container_name: hydra-migrate
+    restart: "no"
+    command: migrate -c /etc/config/hydra/hydra.yml sql up -e --yes
+    depends_on:
+      ory-db-init:
+        condition: service_completed_successfully
+    environment: *hydra-env
+    volumes:
+      - ./hydra:/etc/config/hydra:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${HYDRA_MIGRATE_IP:-172.20.2.63}
+        aliases:
+          - hydra-migrate
+  hydra:
+    image: oryd/hydra:${ORY_VERSION:-v26.2.0}
+    container_name: hydra
+    restart: unless-stopped
+    # --dev allows an HTTP issuer
+    command: serve -c /etc/config/hydra/hydra.yml all --dev
+    depends_on:
+      hydra-migrate:
+        condition: service_completed_successfully
+    environment: *hydra-env
+    volumes:
+      - ./hydra:/etc/config/hydra:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${HYDRA_IP:-172.20.2.64}
+        aliases:
+          - hydra
+    ports:
+      - "${HYDRA_PUBLIC_PORT:-4444}:4444" # Public: /oauth2/auth, /oauth2/token, /.well-known/openid-configuration
+      - "${HYDRA_ADMIN_PORT:-4445}:4445" # Admin API (clients, login/consent) - never expose beyond localhost
+  kratos-ui:
+    image: oryd/kratos-selfservice-ui-node:${ORY_VERSION:-v26.2.0}
+    container_name: kratos-ui
+    restart: unless-stopped
+    depends_on:
+      - kratos
+      - hydra
+    environment:
+      PORT: 4455
+      KRATOS_PUBLIC_URL: http://kratos:4433/
+      KRATOS_BROWSER_URL: http://127.0.0.1:${KRATOS_PUBLIC_PORT:-4433}/
+      KRATOS_ADMIN_URL: http://kratos:4434
+      HYDRA_ADMIN_URL: http://hydra:4445
+      COOKIE_SECRET: ${ORY_UI_COOKIE_SECRET:-LocalDevOnly-ui-cookie-secret}
+      CSRF_COOKIE_NAME: ory_csrf_ui
+      CSRF_COOKIE_SECRET: ${ORY_UI_CSRF_SECRET:-LocalDevOnly-ui-csrf-secret}
+    networks:
+      GroupNetwork:
+        ipv4_address: ${ORY_UI_IP:-172.20.2.65}
+        aliases:
+          - kratos-ui
+    ports:
+      - "${ORY_UI_PORT:-4455}:4455" # Login, registration, settings, consent pages
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

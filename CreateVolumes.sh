@@ -11,28 +11,57 @@ set -euo pipefail
 ROOT="${1:-${ROOT_VOLUME_DIR:-$HOME}}"
 ROOT="${ROOT%/}"
 echo "Creating volume folders under $ROOT/docker/volumes"
+mkdir -p "$ROOT/docker/volumes/Analytics/ApacheFlink/checkpoints"
+mkdir -p "$ROOT/docker/volumes/Analytics/ApacheFlink/savepoints"
+mkdir -p "$ROOT/docker/volumes/Analytics/ApacheFlink/jobs"
 mkdir -p "$ROOT/docker/volumes/Analytics/ApacheSpark/data"
 mkdir -p "$ROOT/docker/volumes/Analytics/ApacheSpark/apps"
 mkdir -p "$ROOT/docker/volumes/Analytics/ApacheSpark/logs"
+mkdir -p "$ROOT/docker/volumes/Analytics/JupyterLab/work"
 mkdir -p "$ROOT/docker/volumes/Analytics/Seq/data"
+
+mkdir -p "$ROOT/docker/volumes/Authentication/Authelia/data"
+mkdir -p "$ROOT/docker/volumes/Authentication/Authentik/data"
+mkdir -p "$ROOT/docker/volumes/Authentication/Authentik/certs"
+mkdir -p "$ROOT/docker/volumes/Authentication/Authentik/templates"
+mkdir -p "$ROOT/docker/volumes/Authentication/Zitadel/bootstrap"
 
 mkdir -p "$ROOT/docker/volumes/CloudEmulators/Azurite/data"
 mkdir -p "$ROOT/docker/volumes/CloudEmulators/AzureCosmosDb/data"
+mkdir -p "$ROOT/docker/volumes/CloudEmulators/Floci/data"
+mkdir -p "$ROOT/docker/volumes/CloudEmulators/GcpFirestore/data"
+mkdir -p "$ROOT/docker/volumes/CloudEmulators/LocalStack/data"
+mkdir -p "$ROOT/docker/volumes/CloudEmulators/LowkeyVault/data"
 
 mkdir -p "$ROOT/docker/volumes/CodeAnalysis/SonarQube/data"
 mkdir -p "$ROOT/docker/volumes/CodeAnalysis/SonarQube/extensions"
 mkdir -p "$ROOT/docker/volumes/CodeAnalysis/SonarQube/logs"
+mkdir -p "$ROOT/docker/volumes/CodeAnalysis/DependencyTrack/data"
+mkdir -p "$ROOT/docker/volumes/CodeAnalysis/DefectDojo/media"
+mkdir -p "$ROOT/docker/volumes/CodeAnalysis/DefectDojo/valkey"
+mkdir -p "$ROOT/docker/volumes/CodeAnalysis/Trivy/cache"
 
 mkdir -p "$ROOT/docker/volumes/Containerization/DockerRegistry/data"
+mkdir -p "$ROOT/docker/volumes/Containerization/Harbor/core"
+mkdir -p "$ROOT/docker/volumes/Containerization/Harbor/registry-config"
+mkdir -p "$ROOT/docker/volumes/Containerization/Harbor/registry"
+mkdir -p "$ROOT/docker/volumes/Containerization/Harbor/job_logs"
+mkdir -p "$ROOT/docker/volumes/Containerization/Harbor/trivy"
+mkdir -p "$ROOT/docker/volumes/Containerization/Harbor/redis"
+mkdir -p "$ROOT/docker/volumes/Containerization/Zot/data"
 
 mkdir -p "$ROOT/docker/volumes/Databases/ApacheCassandra"
 mkdir -p "$ROOT/docker/volumes/Databases/ClickHouse/data"
 mkdir -p "$ROOT/docker/volumes/Databases/ClickHouse/logs"
+mkdir -p "$ROOT/docker/volumes/Databases/CloudBeaver/workspace"
 mkdir -p "$ROOT/docker/volumes/Databases/CockroachDB/data"
-mkdir -p "$ROOT/docker/volumes/Databases/EventStoreDb/data"
-mkdir -p "$ROOT/docker/volumes/Databases/EventStoreDb/logs"
+mkdir -p "$ROOT/docker/volumes/Databases/Couchbase/data"
+mkdir -p "$ROOT/docker/volumes/Databases/CouchDB/data"
+mkdir -p "$ROOT/docker/volumes/Databases/Garnet/data"
 mkdir -p "$ROOT/docker/volumes/Databases/InfluxDb/config"
 mkdir -p "$ROOT/docker/volumes/Databases/InfluxDb/data"
+mkdir -p "$ROOT/docker/volumes/Databases/KurrentDB/data"
+mkdir -p "$ROOT/docker/volumes/Databases/KurrentDB/logs"
 mkdir -p "$ROOT/docker/volumes/Databases/MariaDB/Backup"
 mkdir -p "$ROOT/docker/volumes/Databases/MariaDB/Data"
 mkdir -p "$ROOT/docker/volumes/Databases/Milvus/milvus"
@@ -51,9 +80,12 @@ mkdir -p "$ROOT/docker/volumes/Databases/Oracle/Data"
 mkdir -p "$ROOT/docker/volumes/Databases/Oracle/Backup"
 mkdir -p "$ROOT/docker/volumes/Databases/PostgreSQL/Data"
 mkdir -p "$ROOT/docker/volumes/Databases/PostgreSQL/pgadmin4data"
-mkdir -p "$ROOT/docker/volumes/Databases/Prometheus/prometheus_data"
-mkdir -p "$ROOT/docker/volumes/Databases/Prometheus/alertmanager"
+mkdir -p "$ROOT/docker/volumes/Databases/Qdrant/storage"
+mkdir -p "$ROOT/docker/volumes/Databases/RavenDB/data"
 mkdir -p "$ROOT/docker/volumes/Databases/Redis/cache"
+mkdir -p "$ROOT/docker/volumes/Databases/ScyllaDB/data"
+mkdir -p "$ROOT/docker/volumes/Databases/TimescaleDB/data"
+mkdir -p "$ROOT/docker/volumes/Databases/Valkey/data"
 
 mkdir -p "$ROOT/docker/volumes/Documentation/Mediawiki/html"
 
@@ -67,6 +99,8 @@ mkdir -p "$ROOT/docker/volumes/Messaging/RabbitMQ/log"
 
 mkdir -p "$ROOT/docker/volumes/Observability/OpenTelemetry/tempo"
 mkdir -p "$ROOT/docker/volumes/Observability/OpenTelemetry/loki"
+mkdir -p "$ROOT/docker/volumes/Observability/Prometheus/prometheus_data"
+mkdir -p "$ROOT/docker/volumes/Observability/Prometheus/alertmanager"
 
 mkdir -p "$ROOT/docker/volumes/Orchestration/Rancher/data"
 mkdir -p "$ROOT/docker/volumes/Orchestration/Portainer/data"
@@ -124,14 +158,22 @@ if [ "$(uname -s)" = "Linux" ] && [ "${SKIP_CHOWN:-0}" != "1" ]; then
   if [ "$(id -u)" -ne 0 ]; then SUDO="sudo"; echo "Setting folder ownership for non-root images (sudo)"; fi
   own() { local ids="$1"; shift; for d in "$@"; do $SUDO chown -R "$ids" "$ROOT/docker/volumes/$d"; done; }
 
+  own 9999:9999   Analytics/ApacheFlink/checkpoints Analytics/ApacheFlink/savepoints Analytics/ApacheFlink/jobs  # flink
   own 185:185     Analytics/ApacheSpark/data Analytics/ApacheSpark/apps Analytics/ApacheSpark/logs  # spark
+  own 185:100     Analytics/JupyterLab/work                                                       # jovyan runs as spark's UID
+  own 1000:1000   Authentication/Authentik/data Authentication/Authentik/certs Authentication/Authentik/templates  # authentik
+  own 1000:0      CodeAnalysis/DependencyTrack/data                                               # dtrack
+  own 1001:1337   CodeAnalysis/DefectDojo/media                                                   # defectdojo
   own 1000:1000   CodeAnalysis/SonarQube/data CodeAnalysis/SonarQube/extensions CodeAnalysis/SonarQube/logs
-  own 1000:1000   Databases/EventStoreDb/data Databases/EventStoreDb/logs
+  own 1654:1654   Databases/Garnet/data                                                          # garnet
+  own 1001:1001   Databases/KurrentDB/data Databases/KurrentDB/logs                               # kurrent
   own 54321:54321 Databases/Oracle/Data Databases/Oracle/Backup                                   # oracle
   own 5050:5050   Databases/PostgreSQL/pgadmin4data                                               # pgadmin
-  own 65534:65534 Databases/Prometheus/prometheus_data Databases/Prometheus/alertmanager          # nobody
+  own 999:999     Databases/RavenDB/data                                                         # ravendb
+  own 998:1000    Databases/ScyllaDB/data                                                        # scylla
   own 1000:1000   Messaging/Kafka/Kafka/data                                                      # apache/kafka appuser
   own 10001:10001 Observability/OpenTelemetry/tempo Observability/OpenTelemetry/loki
+  own 65534:65534 Observability/Prometheus/prometheus_data Observability/Prometheus/alertmanager  # nobody
   own 1000:0      Search/ElasticSearch/esdata01 Search/ElasticSearch/kibanadata
   own 1000:1000   Search/OpenSearch/node1 Search/OpenSearch/node2
   own 100:1000    Security/Vault/data                                                             # vault

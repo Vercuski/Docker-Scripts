@@ -1,0 +1,48 @@
+# Lowkey Vault: Azure Key Vault emulator (secrets, keys, certificates) with a simulated managed identity endpoint.
+# The vault content is exported to the data folder after every change and imported again on start.
+services:
+  lowkey-vault:
+    image: nagyesta/lowkey-vault:${LOWKEY_VAULT_VERSION:-7.4.0}
+    container_name: lowkey-vault
+    restart: unless-stopped
+    # On first start Lowkey Vault creates its default vaults. Once an export exists, automatic vault registration is
+    # turned off (--LOWKEY_VAULT_NAMES=-) and the export is imported instead; otherwise the import fails with
+    # "Vault is already created".
+    entrypoint:
+      - sh
+      - -c
+      - |
+        NAMES=""
+        [ -s /import/export.json ] && NAMES="--LOWKEY_VAULT_NAMES=-"
+        exec java $${JAVA_OPTS} -jar /lowkey-vault.jar $$NAMES $${LOWKEY_ARGS}
+    environment:
+      # RELAXED_PORTS: the vault answers on any port, so the host port mapping and the container port can differ.
+      # ALIASES: the default vault (https://localhost) also answers as https://lowkey-vault for containers on GroupNetwork.
+      LOWKEY_ARGS: >-
+        --LOWKEY_VAULT_RELAXED_PORTS=true
+        --LOWKEY_VAULT_ALIASES=localhost=lowkey-vault:<port>
+        --LOWKEY_IMPORT_LOCATION=/import/export.json
+        --LOWKEY_EXPORT_LOCATION=/import/export.json
+        ${LOWKEY_VAULT_EXTRA_ARGS:-}
+    volumes:
+      - lowkey_vault_data:/import
+    networks:
+      GroupNetwork:
+        ipv4_address: ${LOWKEY_VAULT_IP:-172.20.3.100}
+        aliases:
+          - lowkey-vault
+    ports:
+      - "${LOWKEY_VAULT_PORT:-8446}:8443" # Key Vault API, HTTPS (8443 is used by Nginx UI)
+      - "${LOWKEY_VAULT_METADATA_PORT:-8097}:8080" # Managed identity token endpoint, /ping, default certificate
+volumes:
+  lowkey_vault_data:
+    name: lowkey_vault_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/CloudEmulators/LowkeyVault/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

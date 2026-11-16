@@ -1,0 +1,84 @@
+# Couchbase Server Community Edition, single node with the data, index, query and search services.
+# couchbase-init runs once: names the node by its static IP (Couchbase rejects short host names), initialises the cluster, creates the bucket and publishes the
+# remapped host ports as alternate addresses.
+#   From the host:            couchbase://localhost       (SDK switches to the external ports automatically)
+#   From GroupNetwork:        couchbase://couchbase
+#   Web console:              http://localhost:8107
+services:
+  couchbase:
+    image: couchbase/server:${COUCHBASE_VERSION:-community-8.0.2}
+    container_name: couchbase
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:8091/ui/index.html"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - couchbase_data:/opt/couchbase/var
+    networks:
+      GroupNetwork:
+        ipv4_address: ${COUCHBASE_IP:-172.20.6.180}
+        aliases:
+          - couchbase
+    ports:
+      - "${COUCHBASE_MGMT_PORT:-8107}:8091" # Web console / cluster manager
+      - "${COUCHBASE_VIEWS_PORT:-8108}:8092" # Views
+      - "${COUCHBASE_QUERY_PORT:-8109}:8093" # SQL++ query
+      - "${COUCHBASE_SEARCH_PORT:-8110}:8094" # Full-text search
+      - "${COUCHBASE_KV_PORT:-11210}:11210" # Key/value
+
+  couchbase-init:
+    image: couchbase/server:${COUCHBASE_VERSION:-community-8.0.2}
+    container_name: couchbase-init
+    restart: "no"
+    depends_on:
+      couchbase:
+        condition: service_healthy
+    environment:
+      CB_NODE: ${COUCHBASE_IP:-172.20.6.180}
+      CB_USER: ${COUCHBASE_USER:-Administrator}
+      CB_PASSWORD: ${COUCHBASE_PASSWORD:-Password123}
+      CB_BUCKET: ${COUCHBASE_BUCKET:-dev}
+      CB_DATA_RAM: ${COUCHBASE_DATA_RAM_MB:-512}
+      CB_INDEX_RAM: ${COUCHBASE_INDEX_RAM_MB:-256}
+      CB_SEARCH_RAM: ${COUCHBASE_SEARCH_RAM_MB:-256}
+      CB_BUCKET_RAM: ${COUCHBASE_BUCKET_RAM_MB:-256}
+      CB_ALT_PORTS: mgmt=${COUCHBASE_MGMT_PORT:-8107},capi=${COUCHBASE_VIEWS_PORT:-8108},n1ql=${COUCHBASE_QUERY_PORT:-8109},fts=${COUCHBASE_SEARCH_PORT:-8110},kv=${COUCHBASE_KV_PORT:-11210}
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        set -e
+        CLI=/opt/couchbase/bin/couchbase-cli
+        if $$CLI server-list -c couchbase:8091 -u "$$CB_USER" -p "$$CB_PASSWORD" >/dev/null 2>&1; then
+          echo "Cluster already initialised"
+        else
+          $$CLI node-init -c couchbase:8091 --node-init-hostname "$$CB_NODE"
+          $$CLI cluster-init -c couchbase:8091 --cluster-name local-dev \
+            --cluster-username "$$CB_USER" --cluster-password "$$CB_PASSWORD" \
+            --services data,index,query,fts --index-storage-setting default \
+            --cluster-ramsize "$$CB_DATA_RAM" --cluster-index-ramsize "$$CB_INDEX_RAM" --cluster-fts-ramsize "$$CB_SEARCH_RAM"
+        fi
+        if ! $$CLI bucket-list -c couchbase:8091 -u "$$CB_USER" -p "$$CB_PASSWORD" | grep -qx "$$CB_BUCKET"; then
+          $$CLI bucket-create -c couchbase:8091 -u "$$CB_USER" -p "$$CB_PASSWORD" --bucket "$$CB_BUCKET" \
+            --bucket-type couchbase --storage-backend couchstore --bucket-ramsize "$$CB_BUCKET_RAM" --bucket-replica 0 --wait
+        fi
+        # Re-applied every start so a changed host port takes effect
+        $$CLI setting-alternate-address -c couchbase:8091 -u "$$CB_USER" -p "$$CB_PASSWORD" \
+          --set --node "$$CB_NODE" --hostname localhost --ports "$$CB_ALT_PORTS"
+        echo "Couchbase ready: bucket $$CB_BUCKET"
+    networks:
+      GroupNetwork:
+        ipv4_address: ${COUCHBASE_INIT_IP:-172.20.6.181}
+volumes:
+  couchbase_data:
+    name: couchbase_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/Couchbase/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

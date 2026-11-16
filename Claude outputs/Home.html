@@ -476,6 +476,24 @@
                             <td>1.20</td>
                         </tr>
                         <tr>
+                            <td>Analytics</td>
+                            <td>Apache Flink</td>
+                            <td><a href="http://localhost:8093/" target="_blank">:8093</a> UI / REST</td>
+                            <td>1.30 / taskmanager 1.31</td>
+                        </tr>
+                        <tr>
+                            <td>Analytics</td>
+                            <td>Trino</td>
+                            <td><a href="http://localhost:8094/" target="_blank">:8094</a> UI, JDBC</td>
+                            <td>1.40</td>
+                        </tr>
+                        <tr>
+                            <td>Analytics</td>
+                            <td>JupyterLab</td>
+                            <td><a href="http://localhost:8888/lab?token=Password123" target="_blank">:8888</a> lab, :4040 Spark UI</td>
+                            <td>1.50</td>
+                        </tr>
+                        <tr>
                             <td>Authentication</td>
                             <td>Keycloak</td>
                             <td><a href="http://localhost:8280/" target="_blank">:8280</a>, :9001 management</td>
@@ -486,6 +504,30 @@
                             <td>SuperTokens</td>
                             <td>:3567</td>
                             <td>2.20</td>
+                        </tr>
+                        <tr>
+                            <td>Authentication</td>
+                            <td>authentik</td>
+                            <td><a href="http://localhost:8290/" target="_blank">:8290</a> UI, :8445 HTTPS</td>
+                            <td>2.31 / worker 2.32</td>
+                        </tr>
+                        <tr>
+                            <td>Authentication</td>
+                            <td>ZITADEL</td>
+                            <td><a href="http://localhost:8300/ui/console" target="_blank">:8300</a> console, :8301 login</td>
+                            <td>2.41</td>
+                        </tr>
+                        <tr>
+                            <td>Authentication</td>
+                            <td>Authelia</td>
+                            <td><a href="https://auth.dev.localhost:9095/" target="_blank">:9095</a> portal (HTTPS)</td>
+                            <td>2.51</td>
+                        </tr>
+                        <tr>
+                            <td>Authentication</td>
+                            <td>Ory Kratos + Hydra</td>
+                            <td><a href="http://127.0.0.1:4455/registration" target="_blank">:4455</a> UI, :4433/:4434 Kratos, :4444/:4445 Hydra</td>
+                            <td>2.62 / 2.64 / UI 2.65</td>
                         </tr>
                         <tr>
                             <td>Cloud Emulators</td>
@@ -506,16 +548,94 @@
                             <td>3.10</td>
                         </tr>
                         <tr>
+                            <td>Cloud Emulators</td>
+                            <td>Azure Event Hubs</td>
+                            <td>:5674 AMQP, :9094 Kafka, <a href="http://localhost:5301/health" target="_blank">:5301</a> health</td>
+                            <td>3.40</td>
+                        </tr>
+                        <tr>
+                            <td>Cloud Emulators</td>
+                            <td>Floci (AWS)</td>
+                            <td><a href="http://localhost:4566/_floci/ui" target="_blank">:4566</a> all services</td>
+                            <td>3.50</td>
+                        </tr>
+                        <tr>
+                            <td>Cloud Emulators</td>
+                            <td>LocalStack (AWS, token)</td>
+                            <td>:4567 all services</td>
+                            <td>3.60</td>
+                        </tr>
+                        <tr>
+                            <td>Cloud Emulators</td>
+                            <td>GCP Pub/Sub</td>
+                            <td>:8095</td>
+                            <td>3.70</td>
+                        </tr>
+                        <tr>
+                            <td>Cloud Emulators</td>
+                            <td>GCP Firestore</td>
+                            <td>:8096</td>
+                            <td>3.80</td>
+                        </tr>
+                        <tr>
+                            <td>Cloud Emulators</td>
+                            <td>GCP Spanner</td>
+                            <td>:9011 gRPC, :9020 REST</td>
+                            <td>3.90</td>
+                        </tr>
+                        <tr>
+                            <td>Cloud Emulators</td>
+                            <td>Lowkey Vault (Key Vault)</td>
+                            <td>:8446 (https), :8097 token endpoint</td>
+                            <td>3.100</td>
+                        </tr>
+                        <tr>
                             <td>Code Analysis</td>
                             <td>SonarQube</td>
                             <td><a href="http://localhost:9000/" target="_blank">:9000</a></td>
                             <td>4.10</td>
                         </tr>
                         <tr>
+                            <td>Code Analysis</td>
+                            <td>Dependency-Track</td>
+                            <td><a href="http://localhost:8099/" target="_blank">:8099</a> UI, :8098 API</td>
+                            <td>4.21 / UI 4.22</td>
+                        </tr>
+                        <tr>
+                            <td>Code Analysis</td>
+                            <td>Trivy server</td>
+                            <td>:4954</td>
+                            <td>4.30</td>
+                        </tr>
+                        <tr>
+                            <td>Code Analysis</td>
+                            <td>DefectDojo</td>
+                            <td><a href="http://localhost:8102/" target="_blank">:8102</a></td>
+                            <td>4.45 (nginx)</td>
+                        </tr>
+                        <tr>
                             <td>Containerization</td>
                             <td>Docker Registry / UI</td>
                             <td>:5000 API, <a href="http://localhost:5001/" target="_blank">:5001</a> UI</td>
                             <td>5.10 / 5.11</td>
+                        </tr>
+                        <tr>
+                            <td>Containerization</td>
+                            <td>Dozzle</td>
+                            <td><a href="http://localhost:8103/" target="_blank">:8103</a></td>
+                            <td>5.20</td>
+                        </tr>
+                        <tr>
+                            <td>Containerization</td>
+                            <td>zot registry</td>
+                            <td><a href="http://localhost:5002/" target="_blank">:5002</a> API + UI</td>
+                            <td>5.30</td>
+                        </tr>
+                        <tr>
+                            <td>Containerization</td>
+                            <td>Harbor</td>
+                            <td><a href="http://localhost:8104/" target="_blank">:8104</a> UI, API, registry</td>
+                            <td>5.48 (proxy)</td>
                         </tr>
                         <tr>
                             <td>Databases</td>
@@ -537,8 +657,8 @@
                         </tr>
                         <tr>
                             <td>Databases</td>
-                            <td>EventStoreDB</td>
-                            <td><a href="http://localhost:2113/" target="_blank">:2113</a> HTTP, :1113 TCP</td>
+                            <td>KurrentDB</td>
+                            <td><a href="http://localhost:2113/" target="_blank">:2113</a> gRPC + UI</td>
                             <td>6.40</td>
                         </tr>
                         <tr>
@@ -599,16 +719,69 @@
                         </tr>
                         <tr>
                             <td>Databases</td>
-                            <td>Prometheus</td>
-                            <td><a href="http://localhost:9090/" target="_blank">:9090</a>, :9100 node exporter, <a
-                                    href="http://localhost:9093/" target="_blank">:9093</a> Alertmanager</td>
-                            <td>6.140 / 6.141 / 6.142</td>
-                        </tr>
-                        <tr>
-                            <td>Databases</td>
                             <td>Redis</td>
                             <td>:6379</td>
                             <td>6.150</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>RavenDB</td>
+                            <td><a href="http://localhost:8105/" target="_blank">:8105</a> Studio, :38888 TCP</td>
+                            <td>6.160</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>CouchDB</td>
+                            <td><a href="http://localhost:5984/_utils" target="_blank">:5984</a> Fauxton + API</td>
+                            <td>6.170</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>Couchbase CE</td>
+                            <td><a href="http://localhost:8107/" target="_blank">:8107</a> console, :8108-8110 views/query/search, :11210 KV</td>
+                            <td>6.180</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>Garnet</td>
+                            <td>:6380</td>
+                            <td>6.190</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>Memcached</td>
+                            <td>:11211</td>
+                            <td>6.200</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>Qdrant</td>
+                            <td><a href="http://localhost:6333/dashboard" target="_blank">:6333</a> REST + dashboard, :6334 gRPC</td>
+                            <td>6.210</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>ScyllaDB</td>
+                            <td>:9043 CQL, :8106 Alternator (DynamoDB API)</td>
+                            <td>6.220</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>CloudBeaver</td>
+                            <td><a href="http://localhost:8978/" target="_blank">:8978</a></td>
+                            <td>6.230</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>TimescaleDB</td>
+                            <td>:5433</td>
+                            <td>6.240</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>Valkey</td>
+                            <td>:6381</td>
+                            <td>6.250</td>
                         </tr>
                         <tr>
                             <td>Documentation</td>
@@ -665,6 +838,13 @@
                             <td>Tempo / Loki</td>
                             <td>:3200 Tempo, :3100 Loki</td>
                             <td>11.21 / 11.22</td>
+                        </tr>
+                        <tr>
+                            <td>Observability</td>
+                            <td>Prometheus</td>
+                            <td><a href="http://localhost:9090/" target="_blank">:9090</a>, :9100 node exporter, <a
+                                    href="http://localhost:9093/" target="_blank">:9093</a> Alertmanager</td>
+                            <td>11.30 / 11.31 / 11.32</td>
                         </tr>
                         <tr>
                             <td>Orchestration</td>
@@ -792,6 +972,41 @@
                                 class="fa-regular fa-copy"></i></span><br />
                         INFO: <a href="https://datalust.co/seq" target="_blank">https://datalust.co/seq</a><br />
                     </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Apache Flink</font><br />
+                        Web UI: <a href="http://localhost:8093/" target="_blank">http://localhost:8093/</a><br />
+                        SQL client: docker exec -it flink-jobmanager ./bin/sql-client.sh <span style="cursor: pointer"
+                            onclick="ClipBoardText('docker exec -it flink-jobmanager ./bin/sql-client.sh')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Kafka from Flink: kafka:29092 <span style="cursor: pointer" onclick="ClipBoardText('kafka:29092')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        INFO: <a href="https://nightlies.apache.org/flink/flink-docs-stable/"
+                            target="_blank">https://nightlies.apache.org/flink/flink-docs-stable/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Trino</font><br />
+                        Web UI: <a href="http://localhost:8094/" target="_blank">http://localhost:8094/</a> (any username)<br />
+                        JDBC: jdbc:trino://localhost:8094 <span style="cursor: pointer"
+                            onclick="ClipBoardText('jdbc:trino://localhost:8094')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        CLI: docker exec -it trino trino <span style="cursor: pointer"
+                            onclick="ClipBoardText('docker exec -it trino trino')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Catalogs: postgresql, sqlserver, mysql, mongodb, clickhouse, cassandra, tpch, memory<br />
+                        INFO: <a href="https://trino.io/docs/current/" target="_blank">https://trino.io/docs/current/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">JupyterLab</font><br />
+                        Token: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        URL: <a href="http://localhost:8888/lab?token=Password123"
+                            target="_blank">http://localhost:8888/lab</a><br />
+                        Spark master (from notebooks): spark://apachespark:7077 <span style="cursor: pointer"
+                            onclick="ClipBoardText('spark://apachespark:7077')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        INFO: <a href="https://jupyter-docker-stacks.readthedocs.io/"
+                            target="_blank">https://jupyter-docker-stacks.readthedocs.io/</a><br />
+                    </li>
                 </ul>
             </div>
 
@@ -821,6 +1036,50 @@
                         <span class="note">Requires the PostgreSQL <code>supertokens</code> database.</span><br />
                         INFO: <a href="https://supertokens.com/docs"
                             target="_blank">https://supertokens.com/docs</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">authentik</font><br />
+                        Username: akadmin <span style="cursor: pointer" onclick="ClipBoardText('akadmin')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        URL: <a href="http://localhost:8290/" target="_blank">http://localhost:8290/</a><br />
+                        API token: LocalDevOnly-authentik-api-token <span style="cursor: pointer" onclick="ClipBoardText('LocalDevOnly-authentik-api-token')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Requires the PostgreSQL stack; the database is created automatically.</span><br />
+                        INFO: <a href="https://docs.goauthentik.io/" target="_blank">https://docs.goauthentik.io/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">ZITADEL</font><br />
+                        Username: admin@zitadel.localhost <span style="cursor: pointer" onclick="ClipBoardText('admin@zitadel.localhost')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123! <span style="cursor: pointer" onclick="ClipBoardText('Password123!')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Console: <a href="http://localhost:8300/ui/console" target="_blank">http://localhost:8300/ui/console</a><br />
+                        Issuer: http://localhost:8300 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:8300')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Requires the PostgreSQL stack; the database is created automatically.</span><br />
+                        INFO: <a href="https://zitadel.com/docs" target="_blank">https://zitadel.com/docs</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Authelia</font><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Portal: <a href="https://auth.dev.localhost:9095/" target="_blank">https://auth.dev.localhost:9095/</a> (self-signed)<br />
+                        <span class="note">Protect other UIs through Nginx Proxy Manager (see the ReadMe).</span><br />
+                        INFO: <a href="https://www.authelia.com/" target="_blank">https://www.authelia.com/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Ory Kratos + Hydra</font><br />
+                        Register: <a href="http://127.0.0.1:4455/registration" target="_blank">http://127.0.0.1:4455/registration</a><br />
+                        Issuer (Hydra): http://127.0.0.1:4444 <span style="cursor: pointer" onclick="ClipBoardText('http://127.0.0.1:4444')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Kratos public API: http://127.0.0.1:4433 <span style="cursor: pointer" onclick="ClipBoardText('http://127.0.0.1:4433')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Use 127.0.0.1, not localhost. Requires the PostgreSQL stack.</span><br />
+                        INFO: <a href="https://www.ory.sh/docs/" target="_blank">https://www.ory.sh/docs/</a><br />
                     </li>
                 </ul>
             </div>
@@ -877,6 +1136,50 @@
                         INFO: <a href="https://learn.microsoft.com/azure/cosmos-db/emulator-linux"
                             target="_blank">https://learn.microsoft.com/azure/cosmos-db/emulator-linux</a><br />
                     </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Azure Event Hubs emulator</font><br />
+                        Connection String (host): Endpoint=sb://localhost:5674;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true; <span style="cursor: pointer" onclick="ClipBoardText('Endpoint=sb://localhost:5674;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Kafka: localhost:9094 (password: the connection string with port 9094)<br />
+                        <span class="note">Requires the Azurite stack. Event hubs are declared in Config.json.</span><br />
+                        INFO: <a href="https://learn.microsoft.com/azure/event-hubs/overview-emulator"
+                            target="_blank">https://learn.microsoft.com/azure/event-hubs/overview-emulator</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Floci (AWS emulator)</font><br />
+                        Endpoint: http://localhost:4566 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:4566')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Credentials: test / test, region us-east-1<br />
+                        Web console: <a href="http://localhost:4566/_floci/ui" target="_blank">http://localhost:4566/_floci/ui</a><br />
+                        INFO: <a href="https://floci.io/floci/" target="_blank">https://floci.io/floci/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">LocalStack (AWS emulator)</font><br />
+                        Endpoint: http://localhost:4567 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:4567')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Needs LOCALSTACK_AUTH_TOKEN in .env (free account; non-commercial use).</span><br />
+                        INFO: <a href="https://docs.localstack.cloud/aws/" target="_blank">https://docs.localstack.cloud/aws/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Google Cloud emulators</font><br />
+                        PUBSUB_EMULATOR_HOST=localhost:8095 <span style="cursor: pointer" onclick="ClipBoardText('localhost:8095')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        FIRESTORE_EMULATOR_HOST=localhost:8096 <span style="cursor: pointer" onclick="ClipBoardText('localhost:8096')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        SPANNER_EMULATOR_HOST=localhost:9011 <span style="cursor: pointer" onclick="ClipBoardText('localhost:9011')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Project ID: local-project<br />
+                        INFO: <a href="https://cloud.google.com/sdk/gcloud/reference/emulators" target="_blank">https://cloud.google.com/sdk/gcloud/reference/emulators</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Lowkey Vault (Azure Key Vault)</font><br />
+                        Vault URI: https://localhost:8446 <span style="cursor: pointer" onclick="ClipBoardText('https://localhost:8446')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        IDENTITY_ENDPOINT: http://localhost:8097/metadata/identity/oauth2/token <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:8097/metadata/identity/oauth2/token')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Self-signed certificate; set DisableChallengeResourceVerification in the SDK options.</span><br />
+                        INFO: <a href="https://github.com/nagyesta/lowkey-vault" target="_blank">https://github.com/nagyesta/lowkey-vault</a><br />
+                    </li>
                 </ul>
             </div>
 
@@ -896,6 +1199,38 @@
                         INFO: <a href="https://www.sonarsource.com/"
                             target="_blank">https://www.sonarsource.com/</a><br />
                     </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Dependency-Track</font><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: admin (changed on first login)<br />
+                        URL: <a href="http://localhost:8099/" target="_blank">http://localhost:8099/</a><br />
+                        API: http://localhost:8098/api <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:8098/api')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Requires the PostgreSQL stack; the database is created automatically.</span><br />
+                        INFO: <a href="https://docs.dependencytrack.org/" target="_blank">https://docs.dependencytrack.org/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Trivy server</font><br />
+                        Server: http://localhost:4954 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:4954')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Token: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Example: trivy image --server http://localhost:4954 --token Password123 myapp:latest
+                        <span style="cursor: pointer" onclick="ClipBoardText('trivy image --server http://localhost:4954 --token Password123 myapp:latest')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        INFO: <a href="https://trivy.dev/" target="_blank">https://trivy.dev/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">DefectDojo</font><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        URL: <a href="http://localhost:8102/" target="_blank">http://localhost:8102/</a><br />
+                        <span class="note">Requires the PostgreSQL stack; the database is created automatically.</span><br />
+                        INFO: <a href="https://docs.defectdojo.com/" target="_blank">https://docs.defectdojo.com/</a><br />
+                    </li>
                 </ul>
             </div>
 
@@ -911,6 +1246,31 @@
                         <code>docker push localhost:5000/myimage</code><br />
                         INFO: <a href="https://distribution.github.io/distribution/"
                             target="_blank">https://distribution.github.io/distribution/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Dozzle</font><br />
+                        URL: <a href="http://localhost:8103/" target="_blank">http://localhost:8103/</a><br />
+                        <span class="note">Live logs of every container on this Docker host; no login.</span><br />
+                        INFO: <a href="https://dozzle.dev/" target="_blank">https://dozzle.dev/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">zot registry</font><br />
+                        URL: <a href="http://localhost:5002/" target="_blank">http://localhost:5002/</a><br />
+                        Push: docker push localhost:5002/myteam/myapp:1.0 <span style="cursor: pointer" onclick="ClipBoardText('docker push localhost:5002/myteam/myapp:1.0')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        INFO: <a href="https://zotregistry.dev/" target="_blank">https://zotregistry.dev/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Harbor</font><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        URL: <a href="http://localhost:8104/" target="_blank">http://localhost:8104/</a><br />
+                        Login: docker login localhost:8104 -u admin <span style="cursor: pointer" onclick="ClipBoardText('docker login localhost:8104 -u admin')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Requires the PostgreSQL stack; the role and database are created automatically.</span><br />
+                        INFO: <a href="https://goharbor.io/docs/" target="_blank">https://goharbor.io/docs/</a><br />
                     </li>
                 </ul>
             </div>
@@ -936,6 +1296,12 @@
                         Native Port: localhost:19000<br />
                     </li>
                     <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">CloudBeaver</font><br />
+                        URL: <a href="http://localhost:8978/" target="_blank">http://localhost:8978/</a> (cbadmin / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">Log in to see the seeded connections: PostgreSQL, TimescaleDB, SQL Server, MySQL, MariaDB, ClickHouse.</span><br />
+                    </li>
+                    <li>
                         <font style="font-size: 1.2rem; font-weight: bold">CockroachDB</font><br />
                         Username: developer <span style="cursor: pointer" onclick="ClipBoardText('developer')"><i
                                 class="fa-regular fa-copy"></i></span> (insecure mode &mdash; no password)<br />
@@ -947,13 +1313,31 @@
                         CLI: <code>docker exec -it cockroachdb ./cockroach sql --insecure</code><br />
                     </li>
                     <li>
-                        <font style="font-size: 1.2rem; font-weight: bold">Event Store DB</font><br />
-                        Connection String: esdb://localhost:2113?tls=false <span style="cursor: pointer"
-                            onclick="ClipBoardText('esdb://localhost:2113?tls=false')"><i
+                        <font style="font-size: 1.2rem; font-weight: bold">Couchbase Server CE</font><br />
+                        Username: Administrator <span style="cursor: pointer" onclick="ClipBoardText('Administrator')"><i
                                 class="fa-regular fa-copy"></i></span><br />
-                        Management URL (http): <a href="http://localhost:2113/"
-                            target="_blank">http://localhost:2113/</a><br />
-                        TCP Port: localhost:1113<br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Connection String: couchbase://localhost <span style="cursor: pointer" onclick="ClipBoardText('couchbase://localhost')"><i
+                                class="fa-regular fa-copy"></i></span> (bucket <code>dev</code>)<br />
+                        Web Console: <a href="http://localhost:8107/" target="_blank">http://localhost:8107/</a><br />
+                        <span class="note">From other containers: <code>couchbase://couchbase</code>. Services are remapped to 8107-8110.</span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">CouchDB</font><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        API: http://localhost:5984 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:5984')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Fauxton: <a href="http://localhost:5984/_utils" target="_blank">http://localhost:5984/_utils</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Garnet</font><br />
+                        Connection String: localhost:6380,password=Password123 <span style="cursor: pointer" onclick="ClipBoardText('localhost:6380,password=Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Redis protocol (StackExchange.Redis); from other containers <code>garnet:6379</code>.</span><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">InfluxDB</font><br />
@@ -973,6 +1357,13 @@
                             <code>.env</code> instead.</span><br />
                     </li>
                     <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">KurrentDB (formerly EventStoreDB)</font><br />
+                        Connection String: kurrentdb://localhost:2113?tls=false <span style="cursor: pointer" onclick="ClipBoardText('kurrentdb://localhost:2113?tls=false')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Admin UI: <a href="http://localhost:2113/" target="_blank">http://localhost:2113/</a><br />
+                        <span class="note">gRPC only (no TCP 1113). From other containers <code>kurrentdb:2113</code> (or the old <code>eventstoredb</code> alias).</span><br />
+                    </li>
+                    <li>
                         <font style="font-size: 1.2rem; font-weight: bold">MariaDb</font><br />
                         Root Password: Password123 <span style="cursor: pointer"
                             onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
@@ -985,6 +1376,11 @@
                             onclick="ClipBoardText('Server=localhost;Port=3307;User Id=user;Password=Password123;')"><i
                                 class="fa-regular fa-copy"></i></span><br />
                         Adminer URL: <a href="http://localhost:8087/" target="_blank">http://localhost:8087/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Memcached</font><br />
+                        Server: localhost:11211 <span style="cursor: pointer" onclick="ClipBoardText('localhost:11211')"><i
+                                class="fa-regular fa-copy"></i></span> (no authentication, no persistence)<br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Milvus</font><br />
@@ -1080,18 +1476,24 @@
                                 class="fa-regular fa-copy"></i></span><br />
                         pgAdmin: <a href="http://localhost:5050" target="_blank">http://localhost:5050</a>
                         (user@user.com / Password123)<br />
-                        <span class="note">Also hosts the databases for Keycloak, SuperTokens and Backstage (container
+                        <span class="note">Includes pgvector: <code>CREATE EXTENSION vector;</code> per database.</span><br />
+                        <span class="note">Also hosts the databases for Keycloak, SuperTokens, authentik, ZITADEL, Ory, Dependency-Track, DefectDojo, Harbor and Backstage (container
                             name <code>postgresql</code>).</span><br />
                     </li>
                     <li>
-                        <font style="font-size: 1.2rem; font-weight: bold">Prometheus</font><br />
-                        Prometheus DB: <a href="http://localhost:9090/" target="_blank">http://localhost:9090/</a><br />
-                        Node Exporter: <a href="http://localhost:9100/metrics"
-                            target="_blank">http://localhost:9100/metrics</a><br />
-                        Alert Manager: <a href="http://localhost:9093/" target="_blank">http://localhost:9093/</a><br />
-                        <span class="note">Config in <code>prometheus.yml</code> / <code>alertmanager.yml</code>.
-                            Reload: <code>curl -X POST http://localhost:9090/-/reload</code>. Scrapes the OTel collector
-                            and accepts remote write from Tempo.</span><br />
+                        <font style="font-size: 1.2rem; font-weight: bold">Qdrant</font><br />
+                        API Key: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        REST: http://localhost:6333 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:6333')"><i
+                                class="fa-regular fa-copy"></i></span>, gRPC: localhost:6334<br />
+                        Dashboard: <a href="http://localhost:6333/dashboard" target="_blank">http://localhost:6333/dashboard</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">RavenDB</font><br />
+                        URL: http://localhost:8105 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:8105')"><i
+                                class="fa-regular fa-copy"></i></span> (unsecured, no login)<br />
+                        Studio: <a href="http://localhost:8105/" target="_blank">http://localhost:8105/</a><br />
+                        <span class="note">From other containers <code>http://ravendb:8105</code> with <code>Conventions.DisableTopologyUpdates = true</code>.</span><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Redis</font><br />
@@ -1102,6 +1504,23 @@
                                 class="fa-regular fa-copy"></i></span><br />
                         Application: <a href="https://github.com/qishibo/AnotherRedisDesktopManager"
                             target="_blank">Another Redis Desktop Manager</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">ScyllaDB</font><br />
+                        CQL: localhost:9043 <span style="cursor: pointer" onclick="ClipBoardText('localhost:9043')"><i
+                                class="fa-regular fa-copy"></i></span> (no authentication)<br />
+                        Alternator (DynamoDB API): http://localhost:8106 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:8106')"><i
+                                class="fa-regular fa-copy"></i></span> (any access key)<br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">TimescaleDB</font><br />
+                        Connection String: Host=localhost;Port=5433;Database=tsdb;Username=user@user.com;Password=Password123; <span style="cursor: pointer" onclick="ClipBoardText('Host=localhost;Port=5433;Database=tsdb;Username=user@user.com;Password=Password123;')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Valkey</font><br />
+                        Connection String: localhost:6381,password=Password123 <span style="cursor: pointer" onclick="ClipBoardText('localhost:6381,password=Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
                     </li>
                 </ul>
             </div>
@@ -1246,6 +1665,16 @@
                         <font style="font-size: 1.2rem; font-weight: bold">Grafana Loki</font><br />
                         API: <a href="http://localhost:3100/ready" target="_blank">http://localhost:3100/</a><br />
                         <span class="note">Retention 7 days. View in Grafana (Loki data source).</span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Prometheus</font><br />
+                        Prometheus DB: <a href="http://localhost:9090/" target="_blank">http://localhost:9090/</a><br />
+                        Node Exporter: <a href="http://localhost:9100/metrics"
+                            target="_blank">http://localhost:9100/metrics</a><br />
+                        Alert Manager: <a href="http://localhost:9093/" target="_blank">http://localhost:9093/</a><br />
+                        <span class="note">Config in <code>prometheus.yml</code> / <code>alertmanager.yml</code>.
+                            Reload: <code>curl -X POST http://localhost:9090/-/reload</code>. Scrapes the OTel collector
+                            and accepts remote write from Tempo.</span><br />
                     </li>
                 </ul>
                 <div style="margin-top: 1rem;">

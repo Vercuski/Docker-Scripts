@@ -1,0 +1,43 @@
+# ScyllaDB single node in developer mode. CQL works with the DataStax / Cassandra C# drivers;
+# Alternator speaks the DynamoDB API (AWSSDK.DynamoDBv2 with ServiceURL = http://localhost:8106, any credentials).
+# No authentication, like the Cassandra stack.
+services:
+  scylla:
+    image: scylladb/scylla:${SCYLLA_VERSION:-2026.3}
+    container_name: scylla
+    restart: unless-stopped
+    command:
+      - --developer-mode=1
+      - --overprovisioned=1
+      - --smp=${SCYLLA_SMP:-1}
+      - --memory=${SCYLLA_MEMORY:-1G}
+      - --alternator-port=8000
+      - --alternator-write-isolation=always_use_lwt
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'SELECT now() FROM system.local' || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 30s
+    volumes:
+      - scylla_data:/var/lib/scylla
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SCYLLA_IP:-172.20.6.220}
+        aliases:
+          - scylla
+    ports:
+      - "${SCYLLA_CQL_PORT:-9043}:9042" # CQL (9042 is used by the Cassandra stack)
+      - "${SCYLLA_ALTERNATOR_PORT:-8106}:8000" # Alternator (DynamoDB API)
+volumes:
+  scylla_data:
+    name: scylla_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/ScyllaDB/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

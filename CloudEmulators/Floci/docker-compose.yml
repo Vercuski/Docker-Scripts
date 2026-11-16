@@ -1,0 +1,37 @@
+# Floci: MIT-licensed AWS emulator on one port (S3, SQS, SNS, DynamoDB, Lambda, KMS, Secrets Manager, ...).
+# Point AWS SDKs at http://localhost:4566 with any non-empty credentials.
+services:
+  floci:
+    image: floci/floci:${FLOCI_VERSION:-2.5.0}
+    container_name: floci
+    restart: unless-stopped
+    environment:
+      FLOCI_DEFAULT_REGION: ${FLOCI_DEFAULT_REGION:-us-east-1}
+      FLOCI_DEFAULT_ACCOUNT_ID: ${FLOCI_DEFAULT_ACCOUNT_ID:-000000000000}
+      FLOCI_STORAGE_MODE: ${FLOCI_STORAGE_MODE:-hybrid}
+      FLOCI_STORAGE_PERSISTENT_PATH: /app/data
+      # URLs Floci returns (SQS QueueUrl, S3 presigned URLs) use the host port so apps on the host can follow them
+      FLOCI_BASE_URL: http://localhost:${FLOCI_PORT:-4566}
+    volumes:
+      - floci_data:/app/data
+      # Docker-backed services (Lambda, RDS, ElastiCache, ECS, the web console) start sibling containers
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      GroupNetwork:
+        ipv4_address: ${FLOCI_IP:-172.20.3.50}
+        aliases:
+          - floci
+    ports:
+      - "${FLOCI_PORT:-4566}:4566" # All AWS service APIs, web console at /_floci/ui
+volumes:
+  floci_data:
+    name: floci_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/CloudEmulators/Floci/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

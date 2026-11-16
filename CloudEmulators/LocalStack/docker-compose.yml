@@ -1,0 +1,36 @@
+# LocalStack for AWS. Needs LOCALSTACK_AUTH_TOKEN in .env (free account at https://app.localstack.cloud).
+# CloudEmulators/Floci is the token-free alternative on port 4566.
+services:
+  localstack:
+    image: localstack/localstack:${LOCALSTACK_VERSION:-2026.10}
+    container_name: localstack
+    restart: unless-stopped
+    environment:
+      LOCALSTACK_AUTH_TOKEN: ${LOCALSTACK_AUTH_TOKEN:-}
+      PERSISTENCE: ${LOCALSTACK_PERSISTENCE:-0}
+      DEBUG: ${LOCALSTACK_DEBUG:-0}
+      # Host name used in returned URLs (SQS QueueUrl etc.); the host port keeps them usable from the host
+      LOCALSTACK_HOST: localhost:${LOCALSTACK_PORT:-4567}
+    volumes:
+      - localstack_data:/var/lib/localstack
+      # Lambda and other container-backed services start sibling containers
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      GroupNetwork:
+        ipv4_address: ${LOCALSTACK_IP:-172.20.3.60}
+        aliases:
+          - localstack
+    ports:
+      - "${LOCALSTACK_PORT:-4567}:4566" # All AWS service APIs (4566 is used by Floci)
+volumes:
+  localstack_data:
+    name: localstack_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/CloudEmulators/LocalStack/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

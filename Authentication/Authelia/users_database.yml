@@ -1,0 +1,13 @@
+# Users for Authelia's file backend. Authelia re-reads this file when it changes, and writes to it
+# when a user resets their password. Generate a hash with:
+#   docker exec authelia authelia crypto hash generate argon2 --password 'NewPassword'
+users:
+  admin:
+    disabled: false
+    displayname: 'Admin'
+    # Password123
+    password: '$argon2id$v=19$m=65536,t=3,p=4$DrT4iBOcZ2q3n9y+hoGnyQ$k4bgOksVfzX6VroH8jJIg3dVoZS11GWVSu6cuDrjEWg'
+    email: 'admin@example.com'
+    groups:
+      - 'admins'
+      - 'dev'

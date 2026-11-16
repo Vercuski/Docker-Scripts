@@ -1,0 +1,71 @@
+# Authelia: single sign-on portal and forward-auth server for reverse proxies (see RP-LB/NginxProxyManager/snippets),
+# plus a small OpenID Connect provider. Users come from users_database.yml.
+services:
+  # One-shot: generates the self-signed TLS certificate and the OIDC signing key in the data volume (skips existing files)
+  authelia-init:
+    image: ghcr.io/authelia/authelia:${AUTHELIA_VERSION:-4.39}
+    container_name: authelia-init
+    restart: "no"
+    environment:
+      COOKIE_DOMAIN: ${AUTHELIA_COOKIE_DOMAIN:-dev.localhost}
+    entrypoint:
+      - sh
+      - -c
+      - |
+        set -e
+        mkdir -p /data/certs /data/keys
+        if [ ! -f /data/certs/public.crt ]; then
+          authelia crypto certificate rsa generate --directory /data/certs --duration 87600h \
+            --common-name "auth.$$COOKIE_DOMAIN" --sans "auth.$$COOKIE_DOMAIN,*.$$COOKIE_DOMAIN,$$COOKIE_DOMAIN,localhost,authelia"
+        else echo "TLS certificate exists"; fi
+        if [ ! -f /data/keys/private.pem ]; then authelia crypto pair rsa generate --directory /data/keys
+        else echo "OIDC signing key exists"; fi
+    volumes:
+      - authelia_data:/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${AUTHELIA_INIT_IP:-172.20.2.50}
+        aliases:
+          - authelia-init
+  authelia:
+    image: ghcr.io/authelia/authelia:${AUTHELIA_VERSION:-4.39}
+    container_name: authelia
+    restart: unless-stopped
+    # Starting "authelia" directly skips the image entrypoint's chown of /config (the files below are your repo files)
+    command: ["authelia"]
+    depends_on:
+      authelia-init:
+        condition: service_completed_successfully
+    environment:
+      X_AUTHELIA_CONFIG: /config/configuration.yml
+      X_AUTHELIA_CONFIG_FILTERS: template
+      # Read by {{ env "..." }} in configuration.yml
+      COOKIE_DOMAIN: ${AUTHELIA_COOKIE_DOMAIN:-dev.localhost}
+      PORTAL_URL: https://auth.${AUTHELIA_COOKIE_DOMAIN:-dev.localhost}:${AUTHELIA_PORT:-9095}
+      AUTHELIA_SESSION_SECRET: ${AUTHELIA_SESSION_SECRET:-LocalDevOnly-authelia-session-secret-0123456789}
+      AUTHELIA_STORAGE_ENCRYPTION_KEY: ${AUTHELIA_STORAGE_ENCRYPTION_KEY:-LocalDevOnly-authelia-storage-key-0123456789}
+      AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET: ${AUTHELIA_JWT_SECRET:-LocalDevOnly-authelia-jwt-secret-0123456789}
+      AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET: ${AUTHELIA_OIDC_HMAC_SECRET:-LocalDevOnly-authelia-oidc-hmac-secret-0123456789}
+    volumes:
+      - ./configuration.yml:/config/configuration.yml:ro
+      - ./users_database.yml:/config/users_database.yml
+      - authelia_data:/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${AUTHELIA_IP:-172.20.2.51}
+        aliases:
+          - authelia
+    ports:
+      - "${AUTHELIA_PORT:-9095}:9091" # Portal + API over HTTPS (9091 is used by Milvus)
+volumes:
+  authelia_data:
+    name: authelia_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Authentication/Authelia/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

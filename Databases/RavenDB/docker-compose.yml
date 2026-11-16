@@ -1,0 +1,41 @@
+# RavenDB: ACID document database with a first-class .NET client (RavenDB.Client), LINQ queries and Studio UI.
+# Runs unsecured (plain HTTP, no certificates) - local development only. Studio: http://localhost:8105
+services:
+  ravendb:
+    image: ravendb/ravendb:${RAVENDB_VERSION:-7.2-latest}
+    container_name: ravendb
+    restart: unless-stopped
+    environment:
+      RAVEN_Setup_Mode: None
+      RAVEN_License_Eula_Accepted: "true"
+      RAVEN_Security_UnsecuredAccessAllowed: PublicNetwork
+      # The server also calls itself on its public URL, so the container listens on the same port numbers as the
+      # host. Host clients follow the topology to localhost; clients on GroupNetwork use http://ravendb:<port> and
+      # set Conventions.DisableTopologyUpdates = true.
+      RAVEN_ServerUrl: http://0.0.0.0:${RAVENDB_HTTP_PORT:-8105}
+      RAVEN_ServerUrl_Tcp: tcp://0.0.0.0:${RAVENDB_TCP_PORT:-38888}
+      RAVEN_PublicServerUrl: http://localhost:${RAVENDB_HTTP_PORT:-8105}
+      RAVEN_PublicServerUrl_Tcp: tcp://localhost:${RAVENDB_TCP_PORT:-38888}
+      RAVEN_License: ${RAVENDB_LICENSE:-}
+    volumes:
+      - ravendb_data:/var/lib/ravendb/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${RAVENDB_IP:-172.20.6.160}
+        aliases:
+          - ravendb
+    ports:
+      - "${RAVENDB_HTTP_PORT:-8105}:${RAVENDB_HTTP_PORT:-8105}" # HTTP API + Studio (same port inside, see above)
+      - "${RAVENDB_TCP_PORT:-38888}:${RAVENDB_TCP_PORT:-38888}" # TCP (subscriptions, replication)
+volumes:
+  ravendb_data:
+    name: ravendb_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/RavenDB/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

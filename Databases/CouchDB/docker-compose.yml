@@ -1,0 +1,58 @@
+# Apache CouchDB 3 in single-node mode. Fauxton UI: http://localhost:5984/_utils
+# couchdb-init runs the single-node setup once (creates the _users, _replicator and _global_changes system databases).
+services:
+  couchdb:
+    image: couchdb:${COUCHDB_VERSION:-3.5.3}
+    container_name: couchdb
+    restart: unless-stopped
+    environment:
+      COUCHDB_USER: ${COUCHDB_USER:-admin}
+      COUCHDB_PASSWORD: ${COUCHDB_PASSWORD:-Password123}
+    volumes:
+      - couchdb_data:/opt/couchdb/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${COUCHDB_IP:-172.20.6.170}
+        aliases:
+          - couchdb
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:5984/_up"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    ports:
+      - "${COUCHDB_PORT:-5984}:5984" # HTTP API + Fauxton UI
+
+  couchdb-init:
+    image: couchdb:${COUCHDB_VERSION:-3.5.3}
+    container_name: couchdb-init
+    restart: "no"
+    depends_on:
+      couchdb:
+        condition: service_healthy
+    environment:
+      COUCHDB_USER: ${COUCHDB_USER:-admin}
+      COUCHDB_PASSWORD: ${COUCHDB_PASSWORD:-Password123}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if curl -fs -u "$$COUCHDB_USER:$$COUCHDB_PASSWORD" http://couchdb:5984/_users >/dev/null; then
+          echo "System databases already exist"; exit 0
+        fi
+        curl -fsS -u "$$COUCHDB_USER:$$COUCHDB_PASSWORD" -H "Content-Type: application/json" -X POST http://couchdb:5984/_cluster_setup \
+          -d "{\"action\":\"enable_single_node\",\"username\":\"$$COUCHDB_USER\",\"password\":\"$$COUCHDB_PASSWORD\",\"bind_address\":\"0.0.0.0\",\"port\":5984,\"singlenode\":true}"
+    networks:
+      GroupNetwork:
+        ipv4_address: ${COUCHDB_INIT_IP:-172.20.6.171}
+volumes:
+  couchdb_data:
+    name: couchdb_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/CouchDB/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

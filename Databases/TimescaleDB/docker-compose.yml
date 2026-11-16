@@ -1,0 +1,33 @@
+# TimescaleDB: PostgreSQL with hypertables, compression, continuous aggregates and retention policies
+# for time-series data. Any PostgreSQL client (Npgsql, EF Core) works.
+services:
+  timescaledb:
+    image: timescale/timescaledb:${TIMESCALEDB_VERSION:-2.32.0-pg18}
+    container_name: timescaledb
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${TIMESCALEDB_USER:-user@user.com}
+      POSTGRES_PASSWORD: ${TIMESCALEDB_PASSWORD:-Password123}
+      POSTGRES_DB: ${TIMESCALEDB_DB:-tsdb}
+    volumes:
+      # PostgreSQL 18 images keep data under /var/lib/postgresql/<major>/docker, so mount the parent
+      - timescaledb_data:/var/lib/postgresql
+    networks:
+      GroupNetwork:
+        ipv4_address: ${TIMESCALEDB_IP:-172.20.6.240}
+        aliases:
+          - timescaledb
+    ports:
+      - "${TIMESCALEDB_PORT:-5433}:5432" # PostgreSQL protocol (5432 is used by the PostgreSQL stack)
+volumes:
+  timescaledb_data:
+    name: timescaledb_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/TimescaleDB/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

@@ -8,7 +8,7 @@ One OTLP endpoint for all your apps; the collector fans telemetry out to the Gra
 | Metrics | collector -> Prometheus exporter :8889 <- scraped by Prometheus | Grafana (Prometheus data source) |
 | Span metrics / service graph | Tempo metrics-generator -> Prometheus remote write | Grafana (Tempo service graph) |
 
-Start order: `Databases/Prometheus`, `Visualization/Grafana`, then this stack.
+Start order: `Observability/Prometheus`, `Visualization/Grafana`, then this stack.
 
 Point your apps at the collector:<br>
 ```

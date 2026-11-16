@@ -1,0 +1,19 @@
+# Google Cloud Pub/Sub emulator. State is in memory only: topics and subscriptions are lost on restart.
+services:
+  pubsub-emulator:
+    image: gcr.io/google.com/cloudsdktool/google-cloud-cli:${GCLOUD_EMULATORS_VERSION:-593.0.0-emulators}
+    container_name: pubsub-emulator
+    restart: unless-stopped
+    command: >
+      gcloud beta emulators pubsub start --host-port=0.0.0.0:8085 --project=${PUBSUB_PROJECT_ID:-local-project}
+    networks:
+      GroupNetwork:
+        ipv4_address: ${PUBSUB_EMULATOR_IP:-172.20.3.70}
+        aliases:
+          - pubsub-emulator
+    ports:
+      - "${PUBSUB_EMULATOR_PORT:-8095}:8085" # gRPC + REST (8085 is used by Gaia)
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

@@ -1,0 +1,38 @@
+# Garnet: Redis-protocol (RESP) cache server from Microsoft Research, built on .NET. Works with StackExchange.Redis.
+# Data is checkpointed to the data folder (on SAVE/BGSAVE and on shutdown) and recovered on start.
+services:
+  garnet:
+    image: ghcr.io/microsoft/garnet:${GARNET_VERSION:-2.1}
+    container_name: garnet
+    restart: unless-stopped
+    command:
+      - --auth
+      - Password
+      - --password
+      - ${GARNET_PASSWORD:-Password123}
+      - --memory
+      - ${GARNET_MEMORY:-512m}
+      - --checkpointdir
+      - /data
+      - --recover
+    volumes:
+      - garnet_data:/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${GARNET_IP:-172.20.6.190}
+        aliases:
+          - garnet
+    ports:
+      - "${GARNET_PORT:-6380}:6379" # RESP (6379 is used by the Redis stack)
+volumes:
+  garnet_data:
+    name: garnet_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/Garnet/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true
