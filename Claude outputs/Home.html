@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>My Website</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+        integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         * {
             margin: 0;
@@ -28,7 +31,7 @@
             width: 100%;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .header-content {
@@ -67,7 +70,7 @@
         .sidebar {
             width: 250px;
             background: white;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
             position: fixed;
             height: calc(100vh - 60px);
             overflow-y: auto;
@@ -128,7 +131,7 @@
             background: white;
             padding: 2rem;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             min-height: 500px;
         }
 
@@ -138,8 +141,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .page-content h2 {
@@ -286,13 +296,27 @@
         }
 
         @keyframes fadein {
-            from {bottom: 0; opacity: 0;}
-            to {bottom: 30px; opacity: 1;}
+            from {
+                bottom: 0;
+                opacity: 0;
+            }
+
+            to {
+                bottom: 30px;
+                opacity: 1;
+            }
         }
 
         @keyframes fadeout {
-            from {bottom: 30px; opacity: 1;}
-            to {bottom: 0; opacity: 0;}
+            from {
+                bottom: 30px;
+                opacity: 1;
+            }
+
+            to {
+                bottom: 0;
+                opacity: 0;
+            }
         }
 
         /* Mobile styles */
@@ -323,7 +347,7 @@
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background: rgba(0,0,0,0.5);
+                background: rgba(0, 0, 0, 0.5);
                 z-index: 999;
                 -webkit-tap-highlight-color: transparent;
             }
@@ -346,6 +370,7 @@
         }
     </style>
 </head>
+
 <body>
     <header>
         <div class="header-content">
@@ -371,7 +396,6 @@
                     <div class="nav-section-title">Infrastructure</div>
                     <a class="nav-item" onclick="openPage(event, 'Analytics')">Analytics</a>
                     <a class="nav-item" onclick="openPage(event, 'Authentication')">Authentication</a>
-                    <a class="nav-item" onclick="openPage(event, 'Cloud')">Cloud</a>
                     <a class="nav-item" onclick="openPage(event, 'CloudEmulators')">Cloud Emulators</a>
                     <a class="nav-item" onclick="openPage(event, 'Databases')">Databases</a>
                     <a class="nav-item" onclick="openPage(event, 'Email')">Email</a>
@@ -387,7 +411,6 @@
 
                 <div class="nav-section">
                     <div class="nav-section-title">Development</div>
-                    <a class="nav-item" onclick="openPage(event, 'Code')">Code</a>
                     <a class="nav-item" onclick="openPage(event, 'CodeAnalysis')">Code Analysis</a>
                     <a class="nav-item" onclick="openPage(event, 'Containerization')">Containerization</a>
                     <a class="nav-item" onclick="openPage(event, 'IaC')">IaC</a>
@@ -399,19 +422,6 @@
                 <div class="nav-section">
                     <div class="nav-section-title">Resources</div>
                     <a class="nav-item" onclick="openPage(event, 'Documentation')">Documentation</a>
-                    <a class="nav-item" onclick="openPage(event, 'Learning')">Learning</a>
-                    <a class="nav-item" onclick="openPage(event, 'Workflow')">Workflow</a>
-                </div>
-
-                <div class="nav-section">
-                    <div class="nav-section-title">Personal</div>
-                    <a class="nav-item" onclick="openPage(event, 'Social')">Social</a>
-                    <a class="nav-item" onclick="openPage(event, 'Stretches')">Stretches</a>
-                </div>
-
-                <div class="nav-section">
-                    <div class="nav-section-title">Tools</div>
-                    <a class="nav-item" onclick="openPage(event, 'Electronics')">Electronics</a>
                 </div>
             </nav>
         </aside>
@@ -420,76 +430,342 @@
             <div id="Overview" class="page-content active">
                 <h2>Docker-Scripts</h2>
                 <p>
-                    Repo: <a href="https://github.com/Vercuski/Docker-Scripts" target="_blank">https://github.com/Vercuski/Docker-Scripts</a><br />
-                    Local: <code>D:\source\github\Docker-Scripts</code> <span style="cursor: pointer" onclick="ClipBoardText('D:\\source\\github\\Docker-Scripts')"><i class="fa-regular fa-copy"></i></span>
+                    Repo: <a href="https://github.com/Vercuski/Docker-Scripts"
+                        target="_blank">https://github.com/Vercuski/Docker-Scripts</a><br />
+                    Local: <code>D:\source\github\Docker-Scripts</code> <span style="cursor: pointer"
+                        onclick="ClipBoardText('D:\\source\\github\\Docker-Scripts')"><i
+                            class="fa-regular fa-copy"></i></span>
                 </p>
 
                 <h3>Getting started</h3>
                 <p>
-                    1. <code>CreateNetwork.bat</code> / <code>CreateNetwork.sh</code> &mdash; creates <b>GroupNetwork</b> (172.20.0.0/16, gateway 172.20.0.1).<br />
-                    2. <code>CreateVolumes.bat</code> / <code>CreateVolumes.sh</code> &mdash; creates the host folders behind the bind mounts (<code>ROOT_VOLUME_DIR=D:</code>).<br />
-                    3. <code>cd &lt;Category&gt;/&lt;Tool&gt;</code> then <code>docker compose up -d</code> <span style="cursor: pointer" onclick="ClipBoardText('docker compose up -d')"><i class="fa-regular fa-copy"></i></span>
+                    1. <code>CreateNetwork.bat</code> / <code>CreateNetwork.sh</code> &mdash; creates
+                    <b>GroupNetwork</b> (172.20.0.0/16, gateway 172.20.0.1).<br />
+                    2. <code>CreateVolumes.bat</code> / <code>CreateVolumes.sh</code> &mdash; creates the host folders
+                    behind the bind mounts (<code>ROOT_VOLUME_DIR=D:</code>).<br />
+                    3. <code>cd &lt;Category&gt;/&lt;Tool&gt;</code> then <code>docker compose up -d</code> <span
+                        style="cursor: pointer" onclick="ClipBoardText('docker compose up -d')"><i
+                            class="fa-regular fa-copy"></i></span>
                 </p>
                 <p class="note">
-                    Every settable value (image tag, host port, static IP, credentials) lives in each stack's <code>.env</code>; the compose files use <code>${VAR:-default}</code>.
-                    Passwords are usually only applied the first time a data folder is initialised. <code>docker compose config</code> shows the resolved values.
+                    Every settable value (image tag, host port, static IP, credentials) lives in each stack's
+                    <code>.env</code>; the compose files use <code>${VAR:-default}</code>.
+                    Passwords are usually only applied the first time a data folder is initialised.
+                    <code>docker compose config</code> shows the resolved values.
                 </p>
 
                 <h3>Port map</h3>
                 <div class="table-wrap">
-                <table class="port-map">
-                    <tr><th>Category</th><th>Service</th><th>Host endpoints (localhost)</th><th>IP (172.20.x.x)</th></tr>
-                    <tr><td>Analytics</td><td>Apache Spark</td><td><a href="http://localhost:8090/" target="_blank">:8090</a> UI, :7077 master</td><td>1.10 / worker 1.11</td></tr>
-                    <tr><td>Analytics</td><td>Seq</td><td><a href="http://localhost:8089/" target="_blank">:8089</a> UI, :5341 ingest</td><td>1.20</td></tr>
-                    <tr><td>Authentication</td><td>Keycloak</td><td><a href="http://localhost:8280/" target="_blank">:8280</a>, :9001 management</td><td>2.10</td></tr>
-                    <tr><td>Authentication</td><td>SuperTokens</td><td>:3567</td><td>2.20</td></tr>
-                    <tr><td>Cloud Emulators</td><td>Azurite</td><td>:10000 blob, :10001 queue, :10002 table</td><td>3.30</td></tr>
-                    <tr><td>Cloud Emulators</td><td>Azure Service Bus</td><td>:5673 AMQP, :5300 health</td><td>3.20</td></tr>
-                    <tr><td>Cloud Emulators</td><td>Azure Cosmos DB</td><td>:8081 (https), <a href="http://localhost:1234/" target="_blank">:1234</a> explorer</td><td>3.10</td></tr>
-                    <tr><td>Code Analysis</td><td>SonarQube</td><td><a href="http://localhost:9000/" target="_blank">:9000</a></td><td>4.10</td></tr>
-                    <tr><td>Containerization</td><td>Docker Registry / UI</td><td>:5000 API, <a href="http://localhost:5001/" target="_blank">:5001</a> UI</td><td>5.10 / 5.11</td></tr>
-                    <tr><td>Databases</td><td>Apache Cassandra</td><td>:9042</td><td>6.10</td></tr>
-                    <tr><td>Databases</td><td>ClickHouse</td><td><a href="http://localhost:8123/play" target="_blank">:8123</a> HTTP, :19000 native</td><td>6.20</td></tr>
-                    <tr><td>Databases</td><td>CockroachDB</td><td>:26257 SQL, <a href="http://localhost:8080/" target="_blank">:8080</a> UI</td><td>6.30</td></tr>
-                    <tr><td>Databases</td><td>EventStoreDB</td><td><a href="http://localhost:2113/" target="_blank">:2113</a> HTTP, :1113 TCP</td><td>6.40</td></tr>
-                    <tr><td>Databases</td><td>InfluxDB</td><td><a href="http://localhost:8086/" target="_blank">:8086</a></td><td>6.50</td></tr>
-                    <tr><td>Databases</td><td>MariaDB / Adminer</td><td>:3307, <a href="http://localhost:8087/" target="_blank">:8087</a> Adminer</td><td>6.60 / 6.61</td></tr>
-                    <tr><td>Databases</td><td>Milvus</td><td>:19530, :9091 metrics, :9110 MinIO API, <a href="http://localhost:9111/" target="_blank">:9111</a> MinIO console</td><td>6.72 / etcd 6.70 / MinIO 6.71</td></tr>
-                    <tr><td>Databases</td><td>MongoDB / Mongo Express</td><td>:27017, <a href="http://localhost:8088/" target="_blank">:8088</a> Mongo Express</td><td>6.80 / 6.81</td></tr>
-                    <tr><td>Databases</td><td>MSSQL</td><td>:1433</td><td>6.90</td></tr>
-                    <tr><td>Databases</td><td>MySQL / phpMyAdmin</td><td>:3306, <a href="http://localhost:8082/" target="_blank">:8082</a> phpMyAdmin</td><td>6.100 / 6.101</td></tr>
-                    <tr><td>Databases</td><td>Neo4j</td><td><a href="http://localhost:7474/" target="_blank">:7474</a> HTTP, :7473 HTTPS, :7687 Bolt</td><td>6.110</td></tr>
-                    <tr><td>Databases</td><td>Oracle</td><td>:1521</td><td>6.120</td></tr>
-                    <tr><td>Databases</td><td>PostgreSQL / pgAdmin</td><td>:5432, <a href="http://localhost:5050/" target="_blank">:5050</a> pgAdmin</td><td>6.130 / 6.131</td></tr>
-                    <tr><td>Databases</td><td>Prometheus</td><td><a href="http://localhost:9090/" target="_blank">:9090</a>, :9100 node exporter, <a href="http://localhost:9093/" target="_blank">:9093</a> Alertmanager</td><td>6.140 / 6.141 / 6.142</td></tr>
-                    <tr><td>Databases</td><td>Redis</td><td>:6379</td><td>6.150</td></tr>
-                    <tr><td>Documentation</td><td>Backstage</td><td><a href="http://localhost:7007/" target="_blank">:7007</a></td><td>7.10</td></tr>
-                    <tr><td>Documentation</td><td>MediaWiki</td><td><a href="http://localhost:8281/" target="_blank">:8281</a></td><td>7.20</td></tr>
-                    <tr><td>Email</td><td>Mailpit</td><td><a href="http://localhost:8025/" target="_blank">:8025</a> UI, :1025 SMTP</td><td>8.10</td></tr>
-                    <tr><td>IaC</td><td>Terraform / Gaia</td><td><a href="http://localhost:8085/" target="_blank">:8085</a> Gaia</td><td>9.10 / 9.11 / runner 9.12 / mongo 9.13</td></tr>
-                    <tr><td>Messaging</td><td>Kafka / Kafka UI</td><td>:9092, <a href="http://localhost:8084/" target="_blank">:8084</a> Kafka UI</td><td>10.10 / 10.11</td></tr>
-                    <tr><td>Messaging</td><td>RabbitMQ</td><td>:5672 AMQP, <a href="http://localhost:15672/" target="_blank">:15672</a> UI, :15692 metrics</td><td>10.20</td></tr>
-                    <tr><td>Observability</td><td>Aspire Dashboard</td><td><a href="http://localhost:18888/" target="_blank">:18888</a> UI, :18889 OTLP gRPC, :18890 OTLP HTTP</td><td>11.10</td></tr>
-                    <tr><td>Observability</td><td>OTel Collector</td><td>:4317 gRPC, :4318 HTTP, :8889 metrics, :13133 health</td><td>11.20</td></tr>
-                    <tr><td>Observability</td><td>Tempo / Loki</td><td>:3200 Tempo, :3100 Loki</td><td>11.21 / 11.22</td></tr>
-                    <tr><td>Orchestration</td><td>Kubernetes</td><td>:8001 (<code>kubectl proxy</code>)</td><td>&mdash; (host; block 12.10 reserved)</td></tr>
-                    <tr><td>Orchestration</td><td>Rancher</td><td>:8480, <a href="https://localhost:8444/" target="_blank">:8444</a> HTTPS</td><td>12.30</td></tr>
-                    <tr><td>Orchestration</td><td>Portainer</td><td>:9010, <a href="https://localhost:9443/" target="_blank">:9443</a> HTTPS</td><td>12.20</td></tr>
-                    <tr><td>Packages</td><td>ProGet</td><td><a href="http://localhost:8091/" target="_blank">:8091</a>, :8092 HTTPS</td><td>13.10</td></tr>
-                    <tr><td>Proxy / LB</td><td>HAProxy</td><td><a href="http://localhost:8100/" target="_blank">:8100</a> frontend, <a href="http://localhost:8404/" target="_blank">:8404</a> stats</td><td>14.10</td></tr>
-                    <tr><td>Proxy / LB</td><td>Nginx Proxy Manager</td><td>:80, :443, <a href="http://localhost:81/" target="_blank">:81</a> admin</td><td>14.20</td></tr>
-                    <tr><td>Scheduling</td><td>Hangfire</td><td><a href="http://localhost:5010/hangfire" target="_blank">:5010</a></td><td>15.10</td></tr>
-                    <tr><td>Search</td><td>Elasticsearch / Kibana</td><td>:9200 (https), <a href="http://localhost:5601/" target="_blank">:5601</a> Kibana</td><td>es01 16.11 / Kibana 16.12 / setup 16.10 / beats 16.13-16.15</td></tr>
-                    <tr><td>Search</td><td>OpenSearch / Dashboards</td><td>:9201 (https), :9601, <a href="http://localhost:5602/" target="_blank">:5602</a> Dashboards</td><td>16.20 / 16.21 / 16.22</td></tr>
-                    <tr><td>Security</td><td>Vault</td><td><a href="http://localhost:8200/ui" target="_blank">:8200</a></td><td>17.10</td></tr>
-                    <tr><td>SIEM</td><td>Wazuh</td><td><a href="https://localhost:5603/" target="_blank">:5603</a> dashboard (https), :9202 indexer, :55000 API, :1514/:1515 agents, :514/udp syslog</td><td>manager 18.11 / indexer 18.12 / dashboard 18.13 / certs 18.10</td></tr>
-                    <tr><td>Source Control</td><td>Gitea / runner</td><td><a href="http://localhost:3001/" target="_blank">:3001</a>, :2222 SSH</td><td>19.10 / 19.11</td></tr>
-                    <tr><td>Visualization</td><td>Grafana</td><td><a href="http://localhost:3000/" target="_blank">:3000</a></td><td>20.10</td></tr>
-                    <tr><td>Web Servers</td><td>Nginx / Nginx UI</td><td><a href="http://localhost:8180/" target="_blank">:8180</a>, <a href="http://localhost:8181/" target="_blank">:8181</a> UI, :8443 UI HTTPS</td><td>21.20 / 21.21</td></tr>
-                    <tr><td>Web Servers</td><td>Apache</td><td><a href="http://localhost:8083/" target="_blank">:8083</a></td><td>21.10</td></tr>
-                </table>
+                    <table class="port-map">
+                        <tr>
+                            <th>Category</th>
+                            <th>Service</th>
+                            <th>Host endpoints (localhost)</th>
+                            <th>IP (172.20.x.x)</th>
+                        </tr>
+                        <tr>
+                            <td>Analytics</td>
+                            <td>Apache Spark</td>
+                            <td><a href="http://localhost:8090/" target="_blank">:8090</a> UI, :7077 master</td>
+                            <td>1.10 / worker 1.11</td>
+                        </tr>
+                        <tr>
+                            <td>Analytics</td>
+                            <td>Seq</td>
+                            <td><a href="http://localhost:8089/" target="_blank">:8089</a> UI, :5341 ingest</td>
+                            <td>1.20</td>
+                        </tr>
+                        <tr>
+                            <td>Authentication</td>
+                            <td>Keycloak</td>
+                            <td><a href="http://localhost:8280/" target="_blank">:8280</a>, :9001 management</td>
+                            <td>2.10</td>
+                        </tr>
+                        <tr>
+                            <td>Authentication</td>
+                            <td>SuperTokens</td>
+                            <td>:3567</td>
+                            <td>2.20</td>
+                        </tr>
+                        <tr>
+                            <td>Cloud Emulators</td>
+                            <td>Azurite</td>
+                            <td>:10000 blob, :10001 queue, :10002 table</td>
+                            <td>3.30</td>
+                        </tr>
+                        <tr>
+                            <td>Cloud Emulators</td>
+                            <td>Azure Service Bus</td>
+                            <td>:5673 AMQP, :5300 health</td>
+                            <td>3.20</td>
+                        </tr>
+                        <tr>
+                            <td>Cloud Emulators</td>
+                            <td>Azure Cosmos DB</td>
+                            <td>:8081 (https), <a href="http://localhost:1234/" target="_blank">:1234</a> explorer</td>
+                            <td>3.10</td>
+                        </tr>
+                        <tr>
+                            <td>Code Analysis</td>
+                            <td>SonarQube</td>
+                            <td><a href="http://localhost:9000/" target="_blank">:9000</a></td>
+                            <td>4.10</td>
+                        </tr>
+                        <tr>
+                            <td>Containerization</td>
+                            <td>Docker Registry / UI</td>
+                            <td>:5000 API, <a href="http://localhost:5001/" target="_blank">:5001</a> UI</td>
+                            <td>5.10 / 5.11</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>Apache Cassandra</td>
+                            <td>:9042</td>
+                            <td>6.10</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>ClickHouse</td>
+                            <td><a href="http://localhost:8123/play" target="_blank">:8123</a> HTTP, :19000 native</td>
+                            <td>6.20</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>CockroachDB</td>
+                            <td>:26257 SQL, <a href="http://localhost:8080/" target="_blank">:8080</a> UI</td>
+                            <td>6.30</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>EventStoreDB</td>
+                            <td><a href="http://localhost:2113/" target="_blank">:2113</a> HTTP, :1113 TCP</td>
+                            <td>6.40</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>InfluxDB</td>
+                            <td><a href="http://localhost:8086/" target="_blank">:8086</a></td>
+                            <td>6.50</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>MariaDB / Adminer</td>
+                            <td>:3307, <a href="http://localhost:8087/" target="_blank">:8087</a> Adminer</td>
+                            <td>6.60 / 6.61</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>Milvus</td>
+                            <td>:19530, :9091 metrics, :9110 MinIO API, <a href="http://localhost:9111/"
+                                    target="_blank">:9111</a> MinIO console</td>
+                            <td>6.72 / etcd 6.70 / MinIO 6.71</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>MongoDB / Mongo Express</td>
+                            <td>:27017, <a href="http://localhost:8088/" target="_blank">:8088</a> Mongo Express</td>
+                            <td>6.80 / 6.81</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>MSSQL</td>
+                            <td>:1433</td>
+                            <td>6.90</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>MySQL / phpMyAdmin</td>
+                            <td>:3306, <a href="http://localhost:8082/" target="_blank">:8082</a> phpMyAdmin</td>
+                            <td>6.100 / 6.101</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>Neo4j</td>
+                            <td><a href="http://localhost:7474/" target="_blank">:7474</a> HTTP, :7473 HTTPS, :7687 Bolt
+                            </td>
+                            <td>6.110</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>Oracle</td>
+                            <td>:1521</td>
+                            <td>6.120</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>PostgreSQL / pgAdmin</td>
+                            <td>:5432, <a href="http://localhost:5050/" target="_blank">:5050</a> pgAdmin</td>
+                            <td>6.130 / 6.131</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>Prometheus</td>
+                            <td><a href="http://localhost:9090/" target="_blank">:9090</a>, :9100 node exporter, <a
+                                    href="http://localhost:9093/" target="_blank">:9093</a> Alertmanager</td>
+                            <td>6.140 / 6.141 / 6.142</td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>Redis</td>
+                            <td>:6379</td>
+                            <td>6.150</td>
+                        </tr>
+                        <tr>
+                            <td>Documentation</td>
+                            <td>Backstage</td>
+                            <td><a href="http://localhost:7007/" target="_blank">:7007</a></td>
+                            <td>7.10</td>
+                        </tr>
+                        <tr>
+                            <td>Documentation</td>
+                            <td>MediaWiki</td>
+                            <td><a href="http://localhost:8281/" target="_blank">:8281</a></td>
+                            <td>7.20</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td>Mailpit</td>
+                            <td><a href="http://localhost:8025/" target="_blank">:8025</a> UI, :1025 SMTP</td>
+                            <td>8.10</td>
+                        </tr>
+                        <tr>
+                            <td>IaC</td>
+                            <td>Terraform / Gaia</td>
+                            <td><a href="http://localhost:8085/" target="_blank">:8085</a> Gaia</td>
+                            <td>9.10 / 9.11 / runner 9.12 / mongo 9.13</td>
+                        </tr>
+                        <tr>
+                            <td>Messaging</td>
+                            <td>Kafka / Kafka UI</td>
+                            <td>:9092, <a href="http://localhost:8084/" target="_blank">:8084</a> Kafka UI</td>
+                            <td>10.10 / 10.11</td>
+                        </tr>
+                        <tr>
+                            <td>Messaging</td>
+                            <td>RabbitMQ</td>
+                            <td>:5672 AMQP, <a href="http://localhost:15672/" target="_blank">:15672</a> UI, :15692
+                                metrics</td>
+                            <td>10.20</td>
+                        </tr>
+                        <tr>
+                            <td>Observability</td>
+                            <td>Aspire Dashboard</td>
+                            <td><a href="http://localhost:18888/" target="_blank">:18888</a> UI, :18889 OTLP gRPC,
+                                :18890 OTLP HTTP</td>
+                            <td>11.10</td>
+                        </tr>
+                        <tr>
+                            <td>Observability</td>
+                            <td>OTel Collector</td>
+                            <td>:4317 gRPC, :4318 HTTP, :8889 metrics, :13133 health</td>
+                            <td>11.20</td>
+                        </tr>
+                        <tr>
+                            <td>Observability</td>
+                            <td>Tempo / Loki</td>
+                            <td>:3200 Tempo, :3100 Loki</td>
+                            <td>11.21 / 11.22</td>
+                        </tr>
+                        <tr>
+                            <td>Orchestration</td>
+                            <td>Kubernetes</td>
+                            <td>:8001 (<code>kubectl proxy</code>)</td>
+                            <td>&mdash; (host; block 12.10 reserved)</td>
+                        </tr>
+                        <tr>
+                            <td>Orchestration</td>
+                            <td>Rancher</td>
+                            <td>:8480, <a href="https://localhost:8444/" target="_blank">:8444</a> HTTPS</td>
+                            <td>12.30</td>
+                        </tr>
+                        <tr>
+                            <td>Orchestration</td>
+                            <td>Portainer</td>
+                            <td>:9010, <a href="https://localhost:9443/" target="_blank">:9443</a> HTTPS</td>
+                            <td>12.20</td>
+                        </tr>
+                        <tr>
+                            <td>Packages</td>
+                            <td>ProGet</td>
+                            <td><a href="http://localhost:8091/" target="_blank">:8091</a>, :8092 HTTPS</td>
+                            <td>13.10</td>
+                        </tr>
+                        <tr>
+                            <td>Proxy / LB</td>
+                            <td>HAProxy</td>
+                            <td><a href="http://localhost:8100/" target="_blank">:8100</a> frontend, <a
+                                    href="http://localhost:8404/" target="_blank">:8404</a> stats</td>
+                            <td>14.10</td>
+                        </tr>
+                        <tr>
+                            <td>Proxy / LB</td>
+                            <td>Nginx Proxy Manager</td>
+                            <td>:80, :443, <a href="http://localhost:81/" target="_blank">:81</a> admin</td>
+                            <td>14.20</td>
+                        </tr>
+                        <tr>
+                            <td>Scheduling</td>
+                            <td>Hangfire</td>
+                            <td><a href="http://localhost:5010/hangfire" target="_blank">:5010</a></td>
+                            <td>15.10</td>
+                        </tr>
+                        <tr>
+                            <td>Search</td>
+                            <td>Elasticsearch / Kibana</td>
+                            <td>:9200 (https), <a href="http://localhost:5601/" target="_blank">:5601</a> Kibana</td>
+                            <td>es01 16.11 / Kibana 16.12 / setup 16.10 / beats 16.13-16.15</td>
+                        </tr>
+                        <tr>
+                            <td>Search</td>
+                            <td>OpenSearch / Dashboards</td>
+                            <td>:9201 (https), :9601, <a href="http://localhost:5602/" target="_blank">:5602</a>
+                                Dashboards</td>
+                            <td>16.20 / 16.21 / 16.22</td>
+                        </tr>
+                        <tr>
+                            <td>Security</td>
+                            <td>Vault</td>
+                            <td><a href="http://localhost:8200/ui" target="_blank">:8200</a></td>
+                            <td>17.10</td>
+                        </tr>
+                        <tr>
+                            <td>SIEM</td>
+                            <td>Wazuh</td>
+                            <td><a href="https://localhost:5603/" target="_blank">:5603</a> dashboard (https), :9202
+                                indexer, :55000 API, :1514/:1515 agents, :514/udp syslog</td>
+                            <td>manager 18.11 / indexer 18.12 / dashboard 18.13 / certs 18.10</td>
+                        </tr>
+                        <tr>
+                            <td>Source Control</td>
+                            <td>Gitea / runner</td>
+                            <td><a href="http://localhost:3001/" target="_blank">:3001</a>, :2222 SSH</td>
+                            <td>19.10 / 19.11</td>
+                        </tr>
+                        <tr>
+                            <td>Visualization</td>
+                            <td>Grafana</td>
+                            <td><a href="http://localhost:3000/" target="_blank">:3000</a></td>
+                            <td>20.10</td>
+                        </tr>
+                        <tr>
+                            <td>Web Servers</td>
+                            <td>Nginx / Nginx UI</td>
+                            <td><a href="http://localhost:8180/" target="_blank">:8180</a>, <a
+                                    href="http://localhost:8181/" target="_blank">:8181</a> UI, :8443 UI HTTPS</td>
+                            <td>21.20 / 21.21</td>
+                        </tr>
+                        <tr>
+                            <td>Web Servers</td>
+                            <td>Apache</td>
+                            <td><a href="http://localhost:8083/" target="_blank">:8083</a></td>
+                            <td>21.10</td>
+                        </tr>
+                    </table>
                 </div>
-                <p class="note">IPs are on GroupNetwork (172.20.0.0/16) and shown without the <code>172.20.</code> prefix as <i>category.tool</i>: the 3rd octet is the category folder (alphabetical from 1), the 4th is the tool folder&rsquo;s block of 10 (1st tool .10, 2nd .20, &hellip;) with extra containers on consecutive addresses. Full table in <code>README.md</code>.</p>
+                <p class="note">IPs are on GroupNetwork (172.20.0.0/16) and shown without the <code>172.20.</code>
+                    prefix as <i>category.tool</i>: the 3rd octet is the category folder (alphabetical from 1), the 4th
+                    is the tool folder&rsquo;s block of 10 (1st tool .10, 2nd .20, &hellip;) with extra containers on
+                    consecutive addresses. Full table in <code>README.md</code>.</p>
             </div>
 
             <div id="Analytics" class="page-content">
@@ -498,15 +774,22 @@
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Apache Spark</font><br />
                         Spark UI: <a href="http://localhost:8090/" target="_blank">http://localhost:8090/</a><br />
-                        Master URL: spark://localhost:7077 <span style="cursor: pointer" onclick="ClipBoardText('spark://localhost:7077')"><i class="fa-regular fa-copy"></i></span><br />
-                        INFO: <a href="https://spark.apache.org/docs/latest/" target="_blank">https://spark.apache.org/docs/latest/</a><br />
+                        Master URL: spark://localhost:7077 <span style="cursor: pointer"
+                            onclick="ClipBoardText('spark://localhost:7077')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        INFO: <a href="https://spark.apache.org/docs/latest/"
+                            target="_blank">https://spark.apache.org/docs/latest/</a><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Seq</font><br />
-                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
                         URL: <a href="http://localhost:8089/" target="_blank">http://localhost:8089/</a><br />
-                        Ingestion URL: http://localhost:5341 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:5341')"><i class="fa-regular fa-copy"></i></span><br />
+                        Ingestion URL: http://localhost:5341 <span style="cursor: pointer"
+                            onclick="ClipBoardText('http://localhost:5341')"><i
+                                class="fa-regular fa-copy"></i></span><br />
                         INFO: <a href="https://datalust.co/seq" target="_blank">https://datalust.co/seq</a><br />
                     </li>
                 </ul>
@@ -517,45 +800,27 @@
                 <ul>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Keycloak</font><br />
-                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
                         Admin Console: <a href="http://localhost:8280/" target="_blank">http://localhost:8280/</a><br />
-                        Health: <a href="http://localhost:9001/health/ready" target="_blank">http://localhost:9001/health/ready</a><br />
-                        Authority (realm dev): http://localhost:8280/realms/dev <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:8280/realms/dev')"><i class="fa-regular fa-copy"></i></span><br />
-                        <span class="note">Requires the PostgreSQL <code>keycloak</code> database. From containers: <code>http://keycloak:8080</code></span><br />
-                        INFO: <a href="https://www.keycloak.org/documentation" target="_blank">https://www.keycloak.org/documentation</a><br />
+                        Health: <a href="http://localhost:9001/health/ready"
+                            target="_blank">http://localhost:9001/health/ready</a><br />
+                        Authority (realm dev): http://localhost:8280/realms/dev <span style="cursor: pointer"
+                            onclick="ClipBoardText('http://localhost:8280/realms/dev')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Requires the PostgreSQL <code>keycloak</code> database. From containers:
+                            <code>http://keycloak:8080</code></span><br />
+                        INFO: <a href="https://www.keycloak.org/documentation"
+                            target="_blank">https://www.keycloak.org/documentation</a><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">SuperTokens</font><br />
                         Core API: <a href="http://localhost:3567/hello" target="_blank">http://localhost:3567/</a><br />
                         <span class="note">Requires the PostgreSQL <code>supertokens</code> database.</span><br />
-                        INFO: <a href="https://supertokens.com/docs" target="_blank">https://supertokens.com/docs</a><br />
-                    </li>
-                </ul>
-            </div>
-
-            <div id="Cloud" class="page-content">
-                <h2>Cloud</h2>
-                <ul>
-                    <li>
-                        <font style="font-size: 1.2rem; font-weight: bold">Amazon AWS</font><br />
-                        Username: scott.vercuski@gmail.com <span style="cursor: pointer" onclick="ClipBoardText('scott.vercuski@gmail.com')"><i class="fa-regular fa-copy"></i></span><br />
-                        URL: <a href="https://portal.aws.amazon.com" target="_blank">https://portal.aws.amazon.com</a><br />
-                    </li>
-                    <li>
-                        <font style="font-size: 1.2rem; font-weight: bold">Google Cloud</font><br />
-                        Username: Google Sign-In<br />
-                        URL: <a href="https://console.cloud.google.com/" target="_blank">https://console.cloud.google.com/</a><br />
-                    </li>
-                    <li>
-                        <font style="font-size: 1.2rem; font-weight: bold">Microsoft Azure</font><br />
-                        Username: Microsoft Live Sign-In<br />
-                        URL: <a href="https://portal.azure.com/" target="_blank">https://portal.azure.com/</a><br />
-                    </li>
-                    <li>
-                        <font style="font-size: 1.2rem; font-weight: bold">The Linux Foundation</font><br />
-                        Username: Google Sign-In<br />
-                        URL: <a href="https://openprofile.dev/profile" target="_blank">https://openprofile.dev/profile</a><br />
+                        INFO: <a href="https://supertokens.com/docs"
+                            target="_blank">https://supertokens.com/docs</a><br />
                     </li>
                 </ul>
             </div>
@@ -565,54 +830,54 @@
                 <ul>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Azurite (Blob / Queue / Table)</font><br />
-                        Connection String (host): UseDevelopmentStorage=true <span style="cursor: pointer" onclick="ClipBoardText('UseDevelopmentStorage=true')"><i class="fa-regular fa-copy"></i></span><br />
-                        Connection String (container): DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1; <span style="cursor: pointer" onclick="ClipBoardText('DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;')"><i class="fa-regular fa-copy"></i></span><br />
+                        Connection String (host): UseDevelopmentStorage=true <span style="cursor: pointer"
+                            onclick="ClipBoardText('UseDevelopmentStorage=true')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Connection String (container):
+                        DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;
+                        <span style="cursor: pointer"
+                            onclick="ClipBoardText('DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;')"><i
+                                class="fa-regular fa-copy"></i></span><br />
                         Ports: 10000 blob, 10001 queue, 10002 table<br />
                         Application: Azure Storage Explorer ("Attach to a local emulator")<br />
-                        INFO: <a href="https://learn.microsoft.com/azure/storage/common/storage-use-azurite" target="_blank">https://learn.microsoft.com/azure/storage/common/storage-use-azurite</a><br />
+                        INFO: <a href="https://learn.microsoft.com/azure/storage/common/storage-use-azurite"
+                            target="_blank">https://learn.microsoft.com/azure/storage/common/storage-use-azurite</a><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Azure Service Bus Emulator</font><br />
-                        Connection String (host): Endpoint=sb://localhost:5673;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true; <span style="cursor: pointer" onclick="ClipBoardText('Endpoint=sb://localhost:5673;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;')"><i class="fa-regular fa-copy"></i></span><br />
-                        Connection String (container): Endpoint=sb://servicebus-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true; <span style="cursor: pointer" onclick="ClipBoardText('Endpoint=sb://servicebus-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;')"><i class="fa-regular fa-copy"></i></span><br />
-                        Health: <a href="http://localhost:5300/health" target="_blank">http://localhost:5300/health</a><br />
-                        <span class="note">Requires the MSSQL stack. Queues/topics are declared in <code>Config.json</code> (namespace <code>sbemulatorns</code>).</span><br />
-                        INFO: <a href="https://learn.microsoft.com/azure/service-bus-messaging/overview-emulator" target="_blank">https://learn.microsoft.com/azure/service-bus-messaging/overview-emulator</a><br />
+                        Connection String (host):
+                        Endpoint=sb://localhost:5673;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;
+                        <span style="cursor: pointer"
+                            onclick="ClipBoardText('Endpoint=sb://localhost:5673;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Connection String (container):
+                        Endpoint=sb://servicebus-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;
+                        <span style="cursor: pointer"
+                            onclick="ClipBoardText('Endpoint=sb://servicebus-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Health: <a href="http://localhost:5300/health"
+                            target="_blank">http://localhost:5300/health</a><br />
+                        <span class="note">Requires the MSSQL stack. Queues/topics are declared in
+                            <code>Config.json</code> (namespace <code>sbemulatorns</code>).</span><br />
+                        INFO: <a href="https://learn.microsoft.com/azure/service-bus-messaging/overview-emulator"
+                            target="_blank">https://learn.microsoft.com/azure/service-bus-messaging/overview-emulator</a><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Azure Cosmos DB Emulator (vNext)</font><br />
-                        Connection String: AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==; <span style="cursor: pointer" onclick="ClipBoardText('AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==;')"><i class="fa-regular fa-copy"></i></span><br />
+                        Connection String:
+                        AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==;
+                        <span style="cursor: pointer"
+                            onclick="ClipBoardText('AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==;')"><i
+                                class="fa-regular fa-copy"></i></span><br />
                         Endpoint: <a href="https://localhost:8081/" target="_blank">https://localhost:8081/</a><br />
                         Data Explorer: <a href="http://localhost:1234/" target="_blank">http://localhost:1234/</a><br />
-                        <span class="note">Self-signed certificate; NoSQL API, gateway mode only. The Data Explorer always calls <code>localhost:8081</code>, so open it in a browser on the Docker host itself.</span><br />
-                        INFO: <a href="https://learn.microsoft.com/azure/cosmos-db/emulator-linux" target="_blank">https://learn.microsoft.com/azure/cosmos-db/emulator-linux</a><br />
+                        <span class="note">Self-signed certificate; NoSQL API, gateway mode only. The Data Explorer
+                            always calls <code>localhost:8081</code>, so open it in a browser on the Docker host
+                            itself.</span><br />
+                        INFO: <a href="https://learn.microsoft.com/azure/cosmos-db/emulator-linux"
+                            target="_blank">https://learn.microsoft.com/azure/cosmos-db/emulator-linux</a><br />
                     </li>
                 </ul>
-            </div>
-
-            <div id="Code" class="page-content">
-                <h2>Code</h2>
-                <ul>
-                    <li>
-                        <font style="font-size: 1.2rem; font-weight: bold">GitHub</font><br />
-                        Username: Vercuski <span style="cursor: pointer" onclick="ClipBoardText('Vercuski')"><i class="fa-regular fa-copy"></i></span><br />
-                        URL: <a href="https://www.github.com" target="_blank">https://www.github.com</a><br />
-                    </li>
-                    <li>
-                        <font style="font-size: 1.2rem; font-weight: bold">Modular</font><br />
-                        Username: Google Sign-in<br />
-                        URL: <a href="https://developer.modular.com/" target="_blank">https://developer.modular.com/</a><br />
-                    </li>
-                </ul>
-                <div style="margin-top: 2rem;">
-                    <b>Links</b>
-                    <ul style="margin-top: 0.5rem;">
-                        <li><a href="https://github.com/Vercuski" target="_blank">Vercuski Github</a></li>
-                        <li><a href="https://github.com/Vercuski/Docker-Scripts" target="_blank">Docker-Scripts Repo</a></li>
-                        <li><a href="https://github.com/The-Software-Dispensary-LLC" target="_blank">The Software Dispensary Github</a></li>
-                        <li><a href="https://owasp.org/" target="_blank">OWASP</a></li>
-                    </ul>
-                </div>
             </div>
 
             <div id="CodeAnalysis" class="page-content">
@@ -620,11 +885,16 @@
                 <ul>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Sonarqube</font><br />
-                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: Password1234! <span style="cursor: pointer" onclick="ClipBoardText('Password1234!')"><i class="fa-regular fa-copy"></i></span><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password1234! <span style="cursor: pointer"
+                            onclick="ClipBoardText('Password1234!')"><i class="fa-regular fa-copy"></i></span><br />
                         URL: <a href="http://localhost:9000" target="_blank">http://localhost:9000</a><br />
-                        <span class="note">Stores its data in the MSSQL <code>sonar</code> database (login <code>sonarqube</code> / Password123) &mdash; see <code>CreateMSSQLDbScript.sql</code>.</span><br />
-                        INFO: <a href="https://www.sonarsource.com/" target="_blank">https://www.sonarsource.com/</a><br />
+                        <span class="note">Stores its data in the MSSQL <code>sonar</code> database (login
+                            <code>sonarqube</code> / Password123) &mdash; see
+                            <code>CreateMSSQLDbScript.sql</code>.</span><br />
+                        INFO: <a href="https://www.sonarsource.com/"
+                            target="_blank">https://www.sonarsource.com/</a><br />
                     </li>
                 </ul>
             </div>
@@ -634,10 +904,13 @@
                 <ul>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Docker Registry</font><br />
-                        Registry URL: <a href="http://localhost:5000/v2/_catalog" target="_blank">http://localhost:5000</a><br />
+                        Registry URL: <a href="http://localhost:5000/v2/_catalog"
+                            target="_blank">http://localhost:5000</a><br />
                         Registry UI URL: <a href="http://localhost:5001" target="_blank">http://localhost:5001</a><br />
-                        Push: <code>docker tag myimage localhost:5000/myimage</code> then <code>docker push localhost:5000/myimage</code><br />
-                        INFO: <a href="https://distribution.github.io/distribution/" target="_blank">https://distribution.github.io/distribution/</a><br />
+                        Push: <code>docker tag myimage localhost:5000/myimage</code> then
+                        <code>docker push localhost:5000/myimage</code><br />
+                        INFO: <a href="https://distribution.github.io/distribution/"
+                            target="_blank">https://distribution.github.io/distribution/</a><br />
                     </li>
                 </ul>
             </div>
@@ -647,114 +920,188 @@
                 <ul>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Apache Cassandra</font><br />
-                        Connection Info: Server=localhost,9042 <span style="cursor: pointer" onclick="ClipBoardText('localhost:9042')"><i class="fa-regular fa-copy"></i></span><br />
+                        Connection Info: Server=localhost,9042 <span style="cursor: pointer"
+                            onclick="ClipBoardText('localhost:9042')"><i class="fa-regular fa-copy"></i></span><br />
                         Cluster Name: DockerCluster<br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">ClickHouse</font><br />
-                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
                         Database: default_db<br />
-                        HTTP / Play UI: <a href="http://localhost:8123/play" target="_blank">http://localhost:8123/play</a><br />
+                        HTTP / Play UI: <a href="http://localhost:8123/play"
+                            target="_blank">http://localhost:8123/play</a><br />
                         Native Port: localhost:19000<br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">CockroachDB</font><br />
-                        Username: developer <span style="cursor: pointer" onclick="ClipBoardText('developer')"><i class="fa-regular fa-copy"></i></span> (insecure mode &mdash; no password)<br />
-                        Connection String: Host=localhost;Port=26257;Database=myapp_dev;Username=developer; <span style="cursor: pointer" onclick="ClipBoardText('Host=localhost;Port=26257;Database=myapp_dev;Username=developer;')"><i class="fa-regular fa-copy"></i></span><br />
+                        Username: developer <span style="cursor: pointer" onclick="ClipBoardText('developer')"><i
+                                class="fa-regular fa-copy"></i></span> (insecure mode &mdash; no password)<br />
+                        Connection String: Host=localhost;Port=26257;Database=myapp_dev;Username=developer; <span
+                            style="cursor: pointer"
+                            onclick="ClipBoardText('Host=localhost;Port=26257;Database=myapp_dev;Username=developer;')"><i
+                                class="fa-regular fa-copy"></i></span><br />
                         Admin UI: <a href="http://localhost:8080/" target="_blank">http://localhost:8080/</a><br />
                         CLI: <code>docker exec -it cockroachdb ./cockroach sql --insecure</code><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Event Store DB</font><br />
-                        Connection String: esdb://localhost:2113?tls=false <span style="cursor: pointer" onclick="ClipBoardText('esdb://localhost:2113?tls=false')"><i class="fa-regular fa-copy"></i></span><br />
-                        Management URL (http): <a href="http://localhost:2113/" target="_blank">http://localhost:2113/</a><br />
+                        Connection String: esdb://localhost:2113?tls=false <span style="cursor: pointer"
+                            onclick="ClipBoardText('esdb://localhost:2113?tls=false')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Management URL (http): <a href="http://localhost:2113/"
+                            target="_blank">http://localhost:2113/</a><br />
                         TCP Port: localhost:1113<br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">InfluxDB</font><br />
-                        Username: user <span style="cursor: pointer" onclick="ClipBoardText('user')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Username: user <span style="cursor: pointer" onclick="ClipBoardText('user')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
                         Org / Bucket: HomeServer / Home<br />
-                        Management URL (http): <a href="http://localhost:8086/" target="_blank">http://localhost:8086/</a><br />
-                        API Key: ptNBSIW71b8MOJ-nQgogvARVEtgylVyiGJ0Sr4eo4ND3i1MsZKqY7NDZ8hnZoyLmAe1tOPczp-vz1FT36XA2rg== <span style="cursor: pointer" onclick="ClipBoardText('ptNBSIW71b8MOJ-nQgogvARVEtgylVyiGJ0Sr4eo4ND3i1MsZKqY7NDZ8hnZoyLmAe1tOPczp-vz1FT36XA2rg==')"><i class="fa-regular fa-copy"></i></span><br />
-                        <span class="note">A freshly initialised volume uses <code>INFLUXDB_INIT_ADMIN_TOKEN</code> from <code>.env</code> instead.</span><br />
+                        Management URL (http): <a href="http://localhost:8086/"
+                            target="_blank">http://localhost:8086/</a><br />
+                        API Key:
+                        ptNBSIW71b8MOJ-nQgogvARVEtgylVyiGJ0Sr4eo4ND3i1MsZKqY7NDZ8hnZoyLmAe1tOPczp-vz1FT36XA2rg== <span
+                            style="cursor: pointer"
+                            onclick="ClipBoardText('ptNBSIW71b8MOJ-nQgogvARVEtgylVyiGJ0Sr4eo4ND3i1MsZKqY7NDZ8hnZoyLmAe1tOPczp-vz1FT36XA2rg==')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">A freshly initialised volume uses <code>INFLUXDB_INIT_ADMIN_TOKEN</code> from
+                            <code>.env</code> instead.</span><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">MariaDb</font><br />
-                        Root Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
-                        Username: user <span style="cursor: pointer" onclick="ClipBoardText('user')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
-                        Connection String: Server=localhost;Port=3307;User Id=user;Password=Password123; <span style="cursor: pointer" onclick="ClipBoardText('Server=localhost;Port=3307;User Id=user;Password=Password123;')"><i class="fa-regular fa-copy"></i></span><br />
+                        Root Password: Password123 <span style="cursor: pointer"
+                            onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Username: user <span style="cursor: pointer" onclick="ClipBoardText('user')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Connection String: Server=localhost;Port=3307;User Id=user;Password=Password123; <span
+                            style="cursor: pointer"
+                            onclick="ClipBoardText('Server=localhost;Port=3307;User Id=user;Password=Password123;')"><i
+                                class="fa-regular fa-copy"></i></span><br />
                         Adminer URL: <a href="http://localhost:8087/" target="_blank">http://localhost:8087/</a><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Milvus</font><br />
-                        Endpoint: http://localhost:19530 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:19530')"><i class="fa-regular fa-copy"></i></span><br />
-                        Metrics / Health: <a href="http://localhost:9091/healthz" target="_blank">http://localhost:9091/healthz</a><br />
-                        MinIO Console: <a href="http://localhost:9111/" target="_blank">http://localhost:9111/</a> (minioadmin / minioadmin <span style="cursor: pointer" onclick="ClipBoardText('minioadmin')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        Endpoint: http://localhost:19530 <span style="cursor: pointer"
+                            onclick="ClipBoardText('http://localhost:19530')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Metrics / Health: <a href="http://localhost:9091/healthz"
+                            target="_blank">http://localhost:9091/healthz</a><br />
+                        MinIO Console: <a href="http://localhost:9111/" target="_blank">http://localhost:9111/</a>
+                        (minioadmin / minioadmin <span style="cursor: pointer" onclick="ClipBoardText('minioadmin')"><i
+                                class="fa-regular fa-copy"></i></span>)<br />
                         INFO: <a href="https://milvus.io/docs" target="_blank">https://milvus.io/docs</a><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">MongoDb</font><br />
-                        Database Root Username: user <span style="cursor: pointer" onclick="ClipBoardText('user')"><i class="fa-regular fa-copy"></i></span><br />
-                        Database Root Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
-                        Connection String: mongodb://user:Password123@localhost:27017 <span style="cursor: pointer" onclick="ClipBoardText('mongodb://user:Password123@localhost:27017')"><i class="fa-regular fa-copy"></i></span><br />
-                        Management Username: user <span style="cursor: pointer" onclick="ClipBoardText('user')"><i class="fa-regular fa-copy"></i></span><br />
-                        Management Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
-                        Management URL: <a href="http://localhost:8088/" target="_blank">http://localhost:8088/</a><br />
+                        Database Root Username: user <span style="cursor: pointer" onclick="ClipBoardText('user')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Database Root Password: Password123 <span style="cursor: pointer"
+                            onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Connection String: mongodb://user:Password123@localhost:27017 <span style="cursor: pointer"
+                            onclick="ClipBoardText('mongodb://user:Password123@localhost:27017')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Management Username: user <span style="cursor: pointer" onclick="ClipBoardText('user')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Management Password: Password123 <span style="cursor: pointer"
+                            onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Management URL: <a href="http://localhost:8088/"
+                            target="_blank">http://localhost:8088/</a><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">MSSQL</font><br />
-                        Username: sa <span style="cursor: pointer" onclick="ClipBoardText('sa')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
-                        Connection String: Server=localhost,1433;Database=master;User Id=sa;Password=Password123;TrustServerCertificate=True; <span style="cursor: pointer" onclick="ClipBoardText('Server=localhost,1433;Database=master;User Id=sa;Password=Password123;TrustServerCertificate=True;')"><i class="fa-regular fa-copy"></i></span><br />
-                        <span class="note">Also hosts the databases for SonarQube, ProGet, Hangfire and the Service Bus emulator (container name <code>mssqldb</code>).</span><br />
+                        Username: sa <span style="cursor: pointer" onclick="ClipBoardText('sa')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Connection String: Server=localhost,1433;Database=master;User
+                        Id=sa;Password=Password123;TrustServerCertificate=True; <span style="cursor: pointer"
+                            onclick="ClipBoardText('Server=localhost,1433;Database=master;User Id=sa;Password=Password123;TrustServerCertificate=True;')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Also hosts the databases for SonarQube, ProGet, Hangfire and the Service Bus
+                            emulator (container name <code>mssqldb</code>).</span><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">MySQL</font><br />
-                        Username: user <span style="cursor: pointer" onclick="ClipBoardText('user')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
-                        Root Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
-                        Connection String: Server=localhost;Port=3306;Database=db;User Id=user;Password=Password123; <span style="cursor: pointer" onclick="ClipBoardText('Server=localhost;Port=3306;Database=db;User Id=user;Password=Password123;')"><i class="fa-regular fa-copy"></i></span><br />
-                        Management URL (phpMyAdmin): <a href="http://localhost:8082/" target="_blank">http://localhost:8082/</a><br />
+                        Username: user <span style="cursor: pointer" onclick="ClipBoardText('user')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Root Password: Password123 <span style="cursor: pointer"
+                            onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Connection String: Server=localhost;Port=3306;Database=db;User Id=user;Password=Password123;
+                        <span style="cursor: pointer"
+                            onclick="ClipBoardText('Server=localhost;Port=3306;Database=db;User Id=user;Password=Password123;')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Management URL (phpMyAdmin): <a href="http://localhost:8082/"
+                            target="_blank">http://localhost:8082/</a><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Neo4j</font><br />
-                        Username: neo4j <span style="cursor: pointer" onclick="ClipBoardText('neo4j')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
-                        Bolt URL: bolt://localhost:7687 <span style="cursor: pointer" onclick="ClipBoardText('bolt://localhost:7687')"><i class="fa-regular fa-copy"></i></span><br />
-                        Management URL: <a href="http://localhost:7474/" target="_blank">http://localhost:7474/</a><br />
-                        <span class="note">The password only applies to a new data volume &mdash; a volume created from the old compose file keeps its original password (Khelben75 <span style="cursor: pointer" onclick="ClipBoardText('Khelben75')"><i class="fa-regular fa-copy"></i></span>).</span><br />
+                        Username: neo4j <span style="cursor: pointer" onclick="ClipBoardText('neo4j')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Bolt URL: bolt://localhost:7687 <span style="cursor: pointer"
+                            onclick="ClipBoardText('bolt://localhost:7687')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Management URL: <a href="http://localhost:7474/"
+                            target="_blank">http://localhost:7474/</a><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Oracle</font><br />
-                        Username: sys (as sysdba) <span style="cursor: pointer" onclick="ClipBoardText('sys')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
-                        Connect: sys/Password123@//localhost:1521/ORCLCDB as sysdba <span style="cursor: pointer" onclick="ClipBoardText('sys/Password123@//localhost:1521/ORCLCDB as sysdba')"><i class="fa-regular fa-copy"></i></span><br />
+                        Username: sys (as sysdba) <span style="cursor: pointer" onclick="ClipBoardText('sys')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Connect: sys/Password123@//localhost:1521/ORCLCDB as sysdba <span style="cursor: pointer"
+                            onclick="ClipBoardText('sys/Password123@//localhost:1521/ORCLCDB as sysdba')"><i
+                                class="fa-regular fa-copy"></i></span><br />
                         SID / PDB: ORCLCDB / ORCLPDB1<br />
-                        <span class="note">Requires <code>docker login container-registry.oracle.com</code> and accepting the license first.</span><br />
+                        <span class="note">Requires <code>docker login container-registry.oracle.com</code> and
+                            accepting the license first.</span><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">PostgreSQL</font><br />
-                        Username: user@user.com <span style="cursor: pointer" onclick="ClipBoardText('user@user.com')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
-                        Connection String: Host=localhost;Port=5432;Database=postgres;Username=user@user.com;Password=Password123; <span style="cursor: pointer" onclick="ClipBoardText('Host=localhost;Port=5432;Database=postgres;Username=user@user.com;Password=Password123;')"><i class="fa-regular fa-copy"></i></span><br />
-                        pgAdmin: <a href="http://localhost:5050" target="_blank">http://localhost:5050</a> (user@user.com / Password123)<br />
-                        <span class="note">Also hosts the databases for Keycloak, SuperTokens and Backstage (container name <code>postgresql</code>).</span><br />
+                        Username: user@user.com <span style="cursor: pointer"
+                            onclick="ClipBoardText('user@user.com')"><i class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Connection String:
+                        Host=localhost;Port=5432;Database=postgres;Username=user@user.com;Password=Password123; <span
+                            style="cursor: pointer"
+                            onclick="ClipBoardText('Host=localhost;Port=5432;Database=postgres;Username=user@user.com;Password=Password123;')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        pgAdmin: <a href="http://localhost:5050" target="_blank">http://localhost:5050</a>
+                        (user@user.com / Password123)<br />
+                        <span class="note">Also hosts the databases for Keycloak, SuperTokens and Backstage (container
+                            name <code>postgresql</code>).</span><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Prometheus</font><br />
                         Prometheus DB: <a href="http://localhost:9090/" target="_blank">http://localhost:9090/</a><br />
-                        Node Exporter: <a href="http://localhost:9100/metrics" target="_blank">http://localhost:9100/metrics</a><br />
+                        Node Exporter: <a href="http://localhost:9100/metrics"
+                            target="_blank">http://localhost:9100/metrics</a><br />
                         Alert Manager: <a href="http://localhost:9093/" target="_blank">http://localhost:9093/</a><br />
-                        <span class="note">Config in <code>prometheus.yml</code> / <code>alertmanager.yml</code>. Reload: <code>curl -X POST http://localhost:9090/-/reload</code>. Scrapes the OTel collector and accepts remote write from Tempo.</span><br />
+                        <span class="note">Config in <code>prometheus.yml</code> / <code>alertmanager.yml</code>.
+                            Reload: <code>curl -X POST http://localhost:9090/-/reload</code>. Scrapes the OTel collector
+                            and accepts remote write from Tempo.</span><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Redis</font><br />
-                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
-                        Connection String: localhost:6379,password=Password123 <span style="cursor: pointer" onclick="ClipBoardText('localhost:6379,password=Password123')"><i class="fa-regular fa-copy"></i></span><br />
-                        Application: <a href="https://github.com/qishibo/AnotherRedisDesktopManager" target="_blank">Another Redis Desktop Manager</a><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Connection String: localhost:6379,password=Password123 <span style="cursor: pointer"
+                            onclick="ClipBoardText('localhost:6379,password=Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Application: <a href="https://github.com/qishibo/AnotherRedisDesktopManager"
+                            target="_blank">Another Redis Desktop Manager</a><br />
                     </li>
                 </ul>
             </div>
@@ -765,8 +1112,10 @@
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Backstage</font><br />
                         URL: <a href="http://localhost:7007" target="_blank">http://localhost:7007</a><br />
-                        <span class="note">Build the image with <code>SetupBackstage.bat</code>; uses PostgreSQL.</span><br />
-                        INFO: <a href="https://backstage.io/docs/deployment/docker/" target="_blank">https://backstage.io/docs/deployment/docker/</a><br />
+                        <span class="note">Build the image with <code>SetupBackstage.bat</code>; uses
+                            PostgreSQL.</span><br />
+                        INFO: <a href="https://backstage.io/docs/deployment/docker/"
+                            target="_blank">https://backstage.io/docs/deployment/docker/</a><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Mediawiki</font><br />
@@ -775,29 +1124,21 @@
                 </ul>
             </div>
 
-            <div id="Electronics" class="page-content">
-                <h2>Electronics Calculator</h2>
-                <p>Calculate electrical values using Ohm's Law. Enter any two values to calculate the others.</p>
-                <table>
-                    <tr><td>Voltage (V):</td><td><input type="text" id="voltage" style="width: 100px" /> Volts</td></tr>
-                    <tr><td>Current (I):</td><td><input type="text" id="current" style="width: 100px" /> Amps</td></tr>
-                    <tr><td>Resistance (R):</td><td><input type="text" id="resistence" style="width: 100px" /> Ohms</td></tr>
-                    <tr><td>Power (W):</td><td><input type="text" id="power" readonly style="width: 100px" /> Watts</td></tr>
-                </table>
-                <br/>
-                <input type="button" value="Clear" onclick="clearFields()" />
-            </div>
-
             <div id="Email" class="page-content">
                 <h2>Email</h2>
                 <ul>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Mailpit</font><br />
                         Web UI: <a href="http://localhost:8025/" target="_blank">http://localhost:8025/</a><br />
-                        SMTP (host): localhost:1025 <span style="cursor: pointer" onclick="ClipBoardText('localhost:1025')"><i class="fa-regular fa-copy"></i></span> &mdash; no TLS, any username/password accepted<br />
-                        SMTP (container): mailpit:1025 <span style="cursor: pointer" onclick="ClipBoardText('mailpit:1025')"><i class="fa-regular fa-copy"></i></span><br />
-                        REST API: <a href="http://localhost:8025/api/v1/messages" target="_blank">http://localhost:8025/api/v1/messages</a><br />
-                        INFO: <a href="https://mailpit.axllent.org/docs/" target="_blank">https://mailpit.axllent.org/docs/</a><br />
+                        SMTP (host): localhost:1025 <span style="cursor: pointer"
+                            onclick="ClipBoardText('localhost:1025')"><i class="fa-regular fa-copy"></i></span> &mdash;
+                        no TLS, any username/password accepted<br />
+                        SMTP (container): mailpit:1025 <span style="cursor: pointer"
+                            onclick="ClipBoardText('mailpit:1025')"><i class="fa-regular fa-copy"></i></span><br />
+                        REST API: <a href="http://localhost:8025/api/v1/messages"
+                            target="_blank">http://localhost:8025/api/v1/messages</a><br />
+                        INFO: <a href="https://mailpit.axllent.org/docs/"
+                            target="_blank">https://mailpit.axllent.org/docs/</a><br />
                     </li>
                 </ul>
             </div>
@@ -807,14 +1148,19 @@
                 <ul>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Terraform</font><br />
-                        CLI: <code>docker exec -it terraform terraform init</code> <span style="cursor: pointer" onclick="ClipBoardText('docker exec -it terraform terraform init')"><i class="fa-regular fa-copy"></i></span><br />
+                        CLI: <code>docker exec -it terraform terraform init</code> <span style="cursor: pointer"
+                            onclick="ClipBoardText('docker exec -it terraform terraform init')"><i
+                                class="fa-regular fa-copy"></i></span><br />
                         <span class="note">The stack folder is mounted at <code>/infra</code>.</span><br />
-                        INFO: <a href="https://developer.hashicorp.com/terraform/docs" target="_blank">https://developer.hashicorp.com/terraform/docs</a><br />
+                        INFO: <a href="https://developer.hashicorp.com/terraform/docs"
+                            target="_blank">https://developer.hashicorp.com/terraform/docs</a><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Gaia</font><br />
-                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: admin123 <span style="cursor: pointer" onclick="ClipBoardText('admin123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: admin123 <span style="cursor: pointer" onclick="ClipBoardText('admin123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
                         URL: <a href="http://localhost:8085/" target="_blank">http://localhost:8085/</a><br />
                         <span class="note">Gaia is no longer maintained.</span><br />
                     </li>
@@ -826,20 +1172,30 @@
                 <ul>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Kafka (KRaft)</font><br />
-                        Bootstrap Servers (host): localhost:9092 <span style="cursor: pointer" onclick="ClipBoardText('localhost:9092')"><i class="fa-regular fa-copy"></i></span><br />
-                        Bootstrap Servers (container): kafka:29092 <span style="cursor: pointer" onclick="ClipBoardText('kafka:29092')"><i class="fa-regular fa-copy"></i></span><br />
+                        Bootstrap Servers (host): localhost:9092 <span style="cursor: pointer"
+                            onclick="ClipBoardText('localhost:9092')"><i class="fa-regular fa-copy"></i></span><br />
+                        Bootstrap Servers (container): kafka:29092 <span style="cursor: pointer"
+                            onclick="ClipBoardText('kafka:29092')"><i class="fa-regular fa-copy"></i></span><br />
                         Kafka UI: <a href="http://localhost:8084/" target="_blank">http://localhost:8084/</a><br />
                         Application: <a href="https://www.kafkatool.com/" target="_blank">Offset Explorer</a><br />
-                        Documentation URL: <a href="https://kafka.apache.org/documentation/" target="_blank">https://kafka.apache.org/documentation/</a><br />
+                        Documentation URL: <a href="https://kafka.apache.org/documentation/"
+                            target="_blank">https://kafka.apache.org/documentation/</a><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">RabbitMQ</font><br />
-                        Username: guest <span style="cursor: pointer" onclick="ClipBoardText('guest')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: guest <span style="cursor: pointer" onclick="ClipBoardText('guest')"><i class="fa-regular fa-copy"></i></span><br />
-                        AMQP URL: amqp://guest:guest@localhost:5672 <span style="cursor: pointer" onclick="ClipBoardText('amqp://guest:guest@localhost:5672')"><i class="fa-regular fa-copy"></i></span><br />
-                        Management URL: <a href="http://localhost:15672/" target="_blank">http://localhost:15672/</a><br />
-                        Metrics: <a href="http://localhost:15692/metrics" target="_blank">http://localhost:15692/metrics</a><br />
-                        Documentation URL: <a href="https://www.rabbitmq.com/" target="_blank">https://www.rabbitmq.com/</a><br />
+                        Username: guest <span style="cursor: pointer" onclick="ClipBoardText('guest')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: guest <span style="cursor: pointer" onclick="ClipBoardText('guest')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        AMQP URL: amqp://guest:guest@localhost:5672 <span style="cursor: pointer"
+                            onclick="ClipBoardText('amqp://guest:guest@localhost:5672')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Management URL: <a href="http://localhost:15672/"
+                            target="_blank">http://localhost:15672/</a><br />
+                        Metrics: <a href="http://localhost:15692/metrics"
+                            target="_blank">http://localhost:15692/metrics</a><br />
+                        Documentation URL: <a href="https://www.rabbitmq.com/"
+                            target="_blank">https://www.rabbitmq.com/</a><br />
                     </li>
                 </ul>
             </div>
@@ -849,21 +1205,37 @@
                 <ul>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">.NET Aspire Dashboard</font><br />
-                        Dashboard: <a href="http://localhost:18888/" target="_blank">http://localhost:18888/</a> (anonymous access)<br />
-                        OTLP gRPC: http://localhost:18889 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:18889')"><i class="fa-regular fa-copy"></i></span><br />
-                        OTLP HTTP: http://localhost:18890 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:18890')"><i class="fa-regular fa-copy"></i></span><br />
-                        <span class="note">In-memory only &mdash; telemetry is lost when the container restarts.</span><br />
-                        INFO: <a href="https://learn.microsoft.com/dotnet/aspire/fundamentals/dashboard/standalone" target="_blank">https://learn.microsoft.com/dotnet/aspire/fundamentals/dashboard/standalone</a><br />
+                        Dashboard: <a href="http://localhost:18888/" target="_blank">http://localhost:18888/</a>
+                        (anonymous access)<br />
+                        OTLP gRPC: http://localhost:18889 <span style="cursor: pointer"
+                            onclick="ClipBoardText('http://localhost:18889')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        OTLP HTTP: http://localhost:18890 <span style="cursor: pointer"
+                            onclick="ClipBoardText('http://localhost:18890')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">In-memory only &mdash; telemetry is lost when the container
+                            restarts.</span><br />
+                        INFO: <a href="https://learn.microsoft.com/dotnet/aspire/fundamentals/dashboard/standalone"
+                            target="_blank">https://learn.microsoft.com/dotnet/aspire/fundamentals/dashboard/standalone</a><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">OpenTelemetry Collector</font><br />
-                        OTLP gRPC: http://localhost:4317 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:4317')"><i class="fa-regular fa-copy"></i></span><br />
-                        OTLP HTTP: http://localhost:4318 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:4318')"><i class="fa-regular fa-copy"></i></span><br />
-                        Container Endpoint: http://otel-collector:4317 <span style="cursor: pointer" onclick="ClipBoardText('http://otel-collector:4317')"><i class="fa-regular fa-copy"></i></span><br />
+                        OTLP gRPC: http://localhost:4317 <span style="cursor: pointer"
+                            onclick="ClipBoardText('http://localhost:4317')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        OTLP HTTP: http://localhost:4318 <span style="cursor: pointer"
+                            onclick="ClipBoardText('http://localhost:4318')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Container Endpoint: http://otel-collector:4317 <span style="cursor: pointer"
+                            onclick="ClipBoardText('http://otel-collector:4317')"><i
+                                class="fa-regular fa-copy"></i></span><br />
                         Health: <a href="http://localhost:13133/" target="_blank">http://localhost:13133/</a><br />
-                        Prometheus Exporter: <a href="http://localhost:8889/metrics" target="_blank">http://localhost:8889/metrics</a><br />
-                        <span class="note">Start order: Prometheus, Grafana, then this stack. Traces &rarr; Tempo, logs &rarr; Loki, metrics &rarr; Prometheus.</span><br />
-                        INFO: <a href="https://opentelemetry.io/docs/collector/" target="_blank">https://opentelemetry.io/docs/collector/</a><br />
+                        Prometheus Exporter: <a href="http://localhost:8889/metrics"
+                            target="_blank">http://localhost:8889/metrics</a><br />
+                        <span class="note">Start order: Prometheus, Grafana, then this stack. Traces &rarr; Tempo, logs
+                            &rarr; Loki, metrics &rarr; Prometheus.</span><br />
+                        INFO: <a href="https://opentelemetry.io/docs/collector/"
+                            target="_blank">https://opentelemetry.io/docs/collector/</a><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Grafana Tempo</font><br />
@@ -877,7 +1249,9 @@
                     </li>
                 </ul>
                 <div style="margin-top: 1rem;">
-                    <b>App settings</b> <span style="cursor: pointer" onclick="ClipBoardText('OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317\nOTEL_EXPORTER_OTLP_PROTOCOL=grpc\nOTEL_SERVICE_NAME=MyApi')"><i class="fa-regular fa-copy"></i></span><br />
+                    <b>App settings</b> <span style="cursor: pointer"
+                        onclick="ClipBoardText('OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317\nOTEL_EXPORTER_OTLP_PROTOCOL=grpc\nOTEL_SERVICE_NAME=MyApi')"><i
+                            class="fa-regular fa-copy"></i></span><br />
                     <code>OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317</code><br />
                     <code>OTEL_EXPORTER_OTLP_PROTOCOL=grpc</code><br />
                     <code>OTEL_SERVICE_NAME=MyApi</code><br />
@@ -890,24 +1264,38 @@
                 <ul>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Kubernetes</font><br />
-                        Dashboard (via <code>kubectl proxy</code>): <a href="http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/" target="_blank">http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/...</a><br />
-                        Token: <code>kubectl -n kubernetes-dashboard create token admin-user</code> <span style="cursor: pointer" onclick="ClipBoardText('kubectl -n kubernetes-dashboard create token admin-user')"><i class="fa-regular fa-copy"></i></span><br />
-                        <span class="note">The Kubernetes Dashboard project is archived; Headlamp is the recommended replacement. See <code>Orchestration/Kubernetes/notes.txt</code>.</span><br />
+                        Dashboard (via <code>kubectl proxy</code>): <a
+                            href="http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/"
+                            target="_blank">http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/...</a><br />
+                        Token: <code>kubectl -n kubernetes-dashboard create token admin-user</code> <span
+                            style="cursor: pointer"
+                            onclick="ClipBoardText('kubectl -n kubernetes-dashboard create token admin-user')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">The Kubernetes Dashboard project is archived; Headlamp is the recommended
+                            replacement. See <code>Orchestration/Kubernetes/notes.txt</code>.</span><br />
                         INFO: <a href="https://headlamp.dev" target="_blank">https://headlamp.dev</a><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Rancher</font><br />
-                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: Khelben1975! <span style="cursor: pointer" onclick="ClipBoardText('Khelben1975!')"><i class="fa-regular fa-copy"></i></span><br />
-                        Management URL: <a href="https://localhost:8444/" target="_blank">https://localhost:8444/</a> (http 8480)<br />
-                        <span class="note">First start: <code>docker logs rancher 2>&amp;1 | grep "Bootstrap Password:"</code></span><br />
-                        INFO: <a href="https://ranchermanager.docs.rancher.com/" target="_blank">https://ranchermanager.docs.rancher.com/</a><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Management URL: <a href="https://localhost:8444/" target="_blank">https://localhost:8444/</a>
+                        (http 8480)<br />
+                        <span class="note">First start:
+                            <code>docker logs rancher 2>&amp;1 | grep "Bootstrap Password:"</code></span><br />
+                        INFO: <a href="https://ranchermanager.docs.rancher.com/"
+                            target="_blank">https://ranchermanager.docs.rancher.com/</a><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Portainer</font><br />
-                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: Khelben1975! <span style="cursor: pointer" onclick="ClipBoardText('Khelben1975!')"><i class="fa-regular fa-copy"></i></span><br />
-                        Management URL: <a href="https://localhost:9443/" target="_blank">https://localhost:9443/</a> (http <a href="http://localhost:9010/" target="_blank">9010</a>)<br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Management URL: <a href="https://localhost:9443/" target="_blank">https://localhost:9443/</a>
+                        (http <a href="http://localhost:9010/" target="_blank">9010</a>)<br />
                         <span class="note">Create the admin user within 5 minutes of the first start.</span><br />
                         INFO: <a href="https://docs.portainer.io/" target="_blank">https://docs.portainer.io/</a><br />
                     </li>
@@ -919,10 +1307,13 @@
                 <ul>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">ProGet</font><br />
-                        URL: <a href="http://localhost:8091/" target="_blank">http://localhost:8091/</a> (https 8092)<br />
+                        URL: <a href="http://localhost:8091/" target="_blank">http://localhost:8091/</a> (https
+                        8092)<br />
                         NuGet Feed: http://localhost:8091/nuget/&lt;feed&gt;/v3/index.json<br />
-                        <span class="note">Requires the MSSQL <code>Proget</code> login and database (Proget / Password123).</span><br />
-                        INFO: <a href="https://docs.inedo.com/docs/proget/overview" target="_blank">https://docs.inedo.com/docs/proget/overview</a><br />
+                        <span class="note">Requires the MSSQL <code>Proget</code> login and database (Proget /
+                            Password123).</span><br />
+                        INFO: <a href="https://docs.inedo.com/docs/proget/overview"
+                            target="_blank">https://docs.inedo.com/docs/proget/overview</a><br />
                     </li>
                 </ul>
             </div>
@@ -932,16 +1323,20 @@
                 <ul>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Nginx Proxy Manager</font><br />
-                        Username: lumazi <span style="cursor: pointer" onclick="ClipBoardText('lumazi')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: InVault <span style="cursor: pointer" onclick="ClipBoardText('InVault')"><i class="fa-regular fa-copy"></i></span><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
                         Management URL: <a href="http://localhost:81/" target="_blank">http://localhost:81/</a><br />
                         <span class="note">Owns host ports 80 and 443.</span><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">HAProxy</font><br />
-                        Frontend: <a href="http://localhost:8100/" target="_blank">http://localhost:8100/</a> (round-robins Nginx and Apache)<br />
+                        Frontend: <a href="http://localhost:8100/" target="_blank">http://localhost:8100/</a>
+                        (round-robins Nginx and Apache)<br />
                         Stats: <a href="http://localhost:8404/" target="_blank">http://localhost:8404/</a><br />
-                        <span class="note">Edit <code>haproxy.cfg</code>, then <code>docker kill -s HUP haproxy</code> to reload.</span><br />
+                        <span class="note">Edit <code>haproxy.cfg</code>, then <code>docker kill -s HUP haproxy</code>
+                            to reload.</span><br />
                         INFO: <a href="https://docs.haproxy.org/" target="_blank">https://docs.haproxy.org/</a><br />
                     </li>
                 </ul>
@@ -952,9 +1347,15 @@
                 <ul>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Hangfire</font><br />
-                        Hangfire Dashboard: <a href="http://localhost:5010/hangfire" target="_blank">http://localhost:5010/hangfire</a><br />
-                        Connection String: Server=localhost,1433;Database=hangfire;User Id=sa;Password=Password123;TrustServerCertificate=True; <span style="cursor: pointer" onclick="ClipBoardText('Server=localhost,1433;Database=hangfire;User Id=sa;Password=Password123;TrustServerCertificate=True;')"><i class="fa-regular fa-copy"></i></span><br />
-                        <span class="note">Runs your own published host app (<code>./hangfire-app/HangfireServer.dll</code>) on the .NET 10 runtime; requires the MSSQL <code>hangfire</code> database.</span><br />
+                        Hangfire Dashboard: <a href="http://localhost:5010/hangfire"
+                            target="_blank">http://localhost:5010/hangfire</a><br />
+                        Connection String: Server=localhost,1433;Database=hangfire;User
+                        Id=sa;Password=Password123;TrustServerCertificate=True; <span style="cursor: pointer"
+                            onclick="ClipBoardText('Server=localhost,1433;Database=hangfire;User Id=sa;Password=Password123;TrustServerCertificate=True;')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Runs your own published host app
+                            (<code>./hangfire-app/HangfireServer.dll</code>) on the .NET 10 runtime; requires the MSSQL
+                            <code>hangfire</code> database.</span><br />
                         INFO: <a href="https://docs.hangfire.io/" target="_blank">https://docs.hangfire.io/</a><br />
                     </li>
                 </ul>
@@ -965,19 +1366,29 @@
                 <ul>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Elastic Search</font><br />
-                        Username: elastic <span style="cursor: pointer" onclick="ClipBoardText('elastic')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
-                        Elasticsearch (https): <a href="https://localhost:9200/" target="_blank">https://localhost:9200/</a><br />
-                        Kibana URL (http): <a href="http://localhost:5601/" target="_blank">http://localhost:5601/</a><br />
+                        Username: elastic <span style="cursor: pointer" onclick="ClipBoardText('elastic')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Elasticsearch (https): <a href="https://localhost:9200/"
+                            target="_blank">https://localhost:9200/</a><br />
+                        Kibana URL (http): <a href="http://localhost:5601/"
+                            target="_blank">http://localhost:5601/</a><br />
                         <span class="note">Stack version 8.7.1 with Logstash, Filebeat and Metricbeat.</span><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Open Search</font><br />
-                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: Dev!OpenSearch#2026 <span style="cursor: pointer" onclick="ClipBoardText('Dev!OpenSearch#2026')"><i class="fa-regular fa-copy"></i></span><br />
-                        OpenSearch (https): <a href="https://localhost:9201/" target="_blank">https://localhost:9201/</a><br />
-                        Dashboards URL (http): <a href="http://localhost:5602/" target="_blank">http://localhost:5602/</a><br />
-                        <span class="note">The admin password is only applied when the data folders are empty.</span><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Dev!OpenSearch#2026 <span style="cursor: pointer"
+                            onclick="ClipBoardText('Dev!OpenSearch#2026')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        OpenSearch (https): <a href="https://localhost:9201/"
+                            target="_blank">https://localhost:9201/</a><br />
+                        Dashboards URL (http): <a href="http://localhost:5602/"
+                            target="_blank">http://localhost:5602/</a><br />
+                        <span class="note">The admin password is only applied when the data folders are
+                            empty.</span><br />
                     </li>
                 </ul>
             </div>
@@ -988,62 +1399,20 @@
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">HashiCorp Vault</font><br />
                         UI: <a href="http://localhost:8200/ui" target="_blank">http://localhost:8200/ui</a><br />
-                        Address: http://localhost:8200 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:8200')"><i class="fa-regular fa-copy"></i></span> (containers: <code>http://vault:8200</code>)<br />
-                        Unseal (after every start): <code>docker exec vault vault operator unseal &lt;unseal-key&gt;</code> <span style="cursor: pointer" onclick="ClipBoardText('docker exec vault vault operator unseal ')"><i class="fa-regular fa-copy"></i></span><br />
-                        Initialise (first time only): <code>docker exec vault vault operator init -key-shares=1 -key-threshold=1</code><br />
-                        <span class="note">Server mode with file storage &mdash; starts sealed. Keep the unseal key and root token in your password vault, not on this page.</span><br />
-                        INFO: <a href="https://developer.hashicorp.com/vault/docs" target="_blank">https://developer.hashicorp.com/vault/docs</a><br />
-                    </li>
-                </ul>
-            </div>
-
-            <div id="Social" class="page-content">
-                <h2>Social</h2>
-                <ul>
-                    <li>
-                        <font style="font-size: 1.2rem; font-weight: bold">Bluesky</font><br />
-                        Username: scott.vercuski@gmail.com <span style="cursor: pointer" onclick="ClipBoardText('scott.vercuski@gmail.com')"><i class="fa-regular fa-copy"></i></span><br />
-                        URL: <a href="https://bsky.app/" target="_blank">https://bsky.app/</a><br />
-                    </li>
-                    <li>
-                        <font style="font-size: 1.2rem; font-weight: bold">Facebook</font><br />
-                        Username: scott.vercuski@gmail.com <span style="cursor: pointer" onclick="ClipBoardText('scott.vercuski@gmail.com')"><i class="fa-regular fa-copy"></i></span><br />
-                        URL: <a href="https://www.facebook.com/" target="_blank">https://www.facebook.com/</a><br />
-                    </li>
-                    <li>
-                        <font style="font-size: 1.2rem; font-weight: bold">Google Domains</font><br />
-                        Username: Google Sign-in<br />
-                        URL: <a href="https://domains.google.com/" target="_blank">https://domains.google.com/</a><br />
-                    </li>
-                    <li>
-                        <font style="font-size: 1.2rem; font-weight: bold">Gravatar</font><br />
-                        Username: Google Sign-in<br />
-                        URL: <a href="https://gravatar.com" target="_blank">https://gravatar.com</a><br />
-                    </li>
-                    <li>
-                        <font style="font-size: 1.2rem; font-weight: bold">Instagram</font><br />
-                        Username: scott.vercuski <span style="cursor: pointer" onclick="ClipBoardText('scott.vercuski')"><i class="fa-regular fa-copy"></i></span><br />
-                        URL: <a href="https://www.instagram.com/" target="_blank">https://www.instagram.com/</a><br />
-                    </li>
-                    <li>
-                        <font style="font-size: 1.2rem; font-weight: bold">LinkedIn</font><br />
-                        Username: scott.vercuski@gmail.com <span style="cursor: pointer" onclick="ClipBoardText('scott.vercuski@gmail.com')"><i class="fa-regular fa-copy"></i></span><br />
-                        URL: <a href="http://linkedin.com" target="_blank">http://linkedin.com</a><br />
-                    </li>
-                    <li>
-                        <font style="font-size: 1.2rem; font-weight: bold">Mastodon</font><br />
-                        Username: scott.vercuski@gmail.com <span style="cursor: pointer" onclick="ClipBoardText('scott.vercuski@gmail.com')"><i class="fa-regular fa-copy"></i></span><br />
-                        URL: <a href="https://mastodon.social/" target="_blank">https://mastodon.social/</a><br />
-                    </li>
-                    <li>
-                        <font style="font-size: 1.2rem; font-weight: bold">Medium</font><br />
-                        Username: Google Sign-in<br />
-                        URL: <a href="https://www.medium.com" target="_blank">https://www.medium.com</a><br />
-                    </li>
-                    <li>
-                        <font style="font-size: 1.2rem; font-weight: bold">Twitter</font><br />
-                        Username: scott.vercuski@gmail.com <span style="cursor: pointer" onclick="ClipBoardText('scott.vercuski@gmail.com')"><i class="fa-regular fa-copy"></i></span><br />
-                        URL: <a href="https://twitter.com/" target="_blank">https://twitter.com/</a><br />
+                        Address: http://localhost:8200 <span style="cursor: pointer"
+                            onclick="ClipBoardText('http://localhost:8200')"><i class="fa-regular fa-copy"></i></span>
+                        (containers: <code>http://vault:8200</code>)<br />
+                        Unseal (after every start):
+                        <code>docker exec vault vault operator unseal &lt;unseal-key&gt;</code> <span
+                            style="cursor: pointer"
+                            onclick="ClipBoardText('docker exec vault vault operator unseal ')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Initialise (first time only):
+                        <code>docker exec vault vault operator init -key-shares=1 -key-threshold=1</code><br />
+                        <span class="note">Server mode with file storage &mdash; starts sealed. Keep the unseal key and
+                            root token in your password vault, not on this page.</span><br />
+                        INFO: <a href="https://developer.hashicorp.com/vault/docs"
+                            target="_blank">https://developer.hashicorp.com/vault/docs</a><br />
                     </li>
                 </ul>
             </div>
@@ -1054,82 +1423,19 @@
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Gitea + Actions Runner</font><br />
                         URL: <a href="http://localhost:3001/" target="_blank">http://localhost:3001/</a><br />
-                        Clone (SSH): ssh://git@localhost:2222/&lt;owner&gt;/&lt;repo&gt;.git <span style="cursor: pointer" onclick="ClipBoardText('ssh://git@localhost:2222/')"><i class="fa-regular fa-copy"></i></span><br />
-                        Runners: <a href="http://localhost:3001/-/admin/actions/runners" target="_blank">Site Administration &gt; Actions &gt; Runners</a><br />
-                        <span class="note">Admin account is created in the one-time installer. ROOT_URL is <code>http://host.docker.internal:3001/</code> so <code>actions/checkout</code> works from job containers; jobs run on GroupNetwork. Workflows go in <code>.gitea/workflows/</code>.</span><br />
-                        INFO: <a href="https://docs.gitea.com/usage/actions/overview" target="_blank">https://docs.gitea.com/usage/actions/overview</a><br />
+                        Clone (SSH): ssh://git@localhost:2222/&lt;owner&gt;/&lt;repo&gt;.git <span
+                            style="cursor: pointer" onclick="ClipBoardText('ssh://git@localhost:2222/')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Runners: <a href="http://localhost:3001/-/admin/actions/runners" target="_blank">Site
+                            Administration &gt; Actions &gt; Runners</a><br />
+                        <span class="note">Admin account is created in the one-time installer. ROOT_URL is
+                            <code>http://host.docker.internal:3001/</code> so <code>actions/checkout</code> works from
+                            job containers; jobs run on GroupNetwork. Workflows go in
+                            <code>.gitea/workflows/</code>.</span><br />
+                        INFO: <a href="https://docs.gitea.com/usage/actions/overview"
+                            target="_blank">https://docs.gitea.com/usage/actions/overview</a><br />
                     </li>
                 </ul>
-            </div>
-
-            <div id="Stretches" class="page-content">
-                <h2>Stretches</h2>
-                <table>
-                    <tr>
-                        <td valign="top" style="width: 50%">
-                            <b>NECK</b><br/>
-                            <ul style="list-style-type: disc; padding-left: 1.5rem;">
-                                <li><a target="_blank" href="https://exrx.net/Stretches/Sternocleidomastoid/NeckRetraction">Pull Head Back</a></li>
-                                <li><a target="_blank" href="https://exrx.net/Stretches/Splenius/Neck">Lean Head Forward</a></li>
-                            </ul>
-                            <br/>
-                            <b>ARMS</b><br/>
-                            <ul style="list-style-type: disc; padding-left: 1.5rem;">
-                                <li><a target="_blank" href="https://exrx.net/Stretches/Biceps/Doorway">Biceps (Doorway/Wall)</a></li>
-                                <li><a target="_blank" href="https://exrx.net/Stretches/Triceps/Overhead">Triceps (Overhead)</a></li>
-                            </ul>
-                            <br/>
-                            <b>SHOULDERS</b><br/>
-                            <ul style="list-style-type: disc; padding-left: 1.5rem;">
-                                <li><a target="_blank" href="https://exrx.net/Stretches/DeltoidAnterior/Doorway">Anterior Deltoid (Doorway)</a></li>
-                                <li><a target="_blank" href="https://exrx.net/Stretches/DeltoidLateral/SideDelt">Lateral Deltoid (Side)</a></li>
-                                <li><a target="_blank" href="https://exrx.net/Stretches/DeltoidPosterior/RearDelt">Rear Deltoid (High Side)</a></li>
-                            </ul>
-                            <br/>
-                            <b>BACK</b><br/>
-                            <ul style="list-style-type: disc; padding-left: 1.5rem;">
-                                <li><a target="_blank" href="https://exrx.net/Stretches/LatissimusDorsi/Overhead">Lats (Overhead)</a></li>
-                                <li><a target="_blank" href="https://exrx.net/Stretches/TrapeziusUpper/Trap">Traps (Behind Back Wrist Pull)</a></li>
-                                <li><a target="_blank" href="https://exrx.net/Stretches/Rhomboids/Hugging">Rhomboids (Hug)</a></li>
-                            </ul>
-                            <br/>
-                            <b>CHEST</b><br/>
-                            <ul style="list-style-type: disc; padding-left: 1.5rem;">
-                                <li><a target="_blank" href="https://exrx.net/Stretches/ChestGeneral/Doorway">Pecs (Doorway)</a></li>
-                            </ul>
-                        </td>
-                        <td valign="top" style="width: 50%">
-                            <b>ABS/SIDES</b><br/>
-                            <ul style="list-style-type: disc; padding-left: 1.5rem;">
-                                <li><a target="_blank" href="https://exrx.net/Stretches/RectusAbdominis/Prone">Abs (Cobra Pose)</a></li>
-                                <li><a target="_blank" href="https://exrx.net/Stretches/Obliques/Pretzel">Obliques (Pretzel)</a></li>
-                                <li><a target="_blank" href="https://exrx.net/Stretches/ErectorSpinae/Cat">Erector Spinae (Cat Pose)</a></li>
-                            </ul>
-                            <br/>
-                            <b>HIPS</b><br/>
-                            <ul style="list-style-type: disc; padding-left: 1.5rem;">
-                                <li><a target="_blank" href="https://exrx.net/Stretches/GluteusMaximus/Lying">Glutes (Lying Foot on Knee)</a></li>
-                                <li><a target="_blank" href="https://exrx.net/Stretches/HipAbductors/WallIliotibial">Minor Glutes (Lean on Wall)</a></li>
-                                <li><a target="_blank" href="https://exrx.net/Stretches/HipFlexors/Standing">Flexors (Lunge)</a></li>
-                                <li><a target="_blank" href="https://exrx.net/Stretches/HipExternalRotators/SeatedHipExternalRotator">Rotators (Leg Pull Up)</a></li>
-                                <li><a target="_blank" href="https://exrx.net/Stretches/HipAdductors/SeatedGroinFloor">Adductors (Feet Together)</a></li>
-                            </ul>
-                            <br/>
-                            <b>QUADS/HAMS</b><br/>
-                            <ul style="list-style-type: disc; padding-left: 1.5rem;">
-                                <li><a target="_blank" href="https://exrx.net/Stretches/Quadriceps/Standing">Quads (Standing Quad)</a></li>
-                                <li><a target="_blank" href="https://exrx.net/Stretches/Hamstrings/SeatedBenchSingleLeg">Hams (Toe Touch)</a></li>
-                            </ul>
-                            <br/>
-                            <b>CALVES</b><br/>
-                            <ul style="list-style-type: disc; padding-left: 1.5rem;">
-                                <li><a target="_blank" href="https://exrx.net/Stretches/Gastrocnemius/FloorBoard">Calf (Foot Against Wall)</a></li>
-                                <li><a target="_blank" href="https://exrx.net/Stretches/Soleus/FloorBoard">Soleus (Mod Foot Against Wall)</a></li>
-                                <li><a target="_blank" href="https://exrx.net/Stretches/TibialisAnterior/Kneeling">Shin (Kneeling)</a></li>
-                            </ul>
-                        </td>
-                    </tr>
-                </table>
             </div>
 
             <div id="Visualization" class="page-content">
@@ -1137,11 +1443,16 @@
                 <ul>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Grafana</font><br />
-                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span><br />
-                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
-                        Management URL (http): <a href="http://localhost:3000/" target="_blank">http://localhost:3000/</a><br />
-                        <span class="note">Data sources provisioned from <code>provisioning/datasources</code>: Prometheus, Tempo, Loki, InfluxDB.</span><br />
-                        INFO: <a href="https://grafana.com/docs/grafana/latest/" target="_blank">https://grafana.com/docs/grafana/latest/</a><br />
+                        Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Password: Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Management URL (http): <a href="http://localhost:3000/"
+                            target="_blank">http://localhost:3000/</a><br />
+                        <span class="note">Data sources provisioned from <code>provisioning/datasources</code>:
+                            Prometheus, Tempo, Loki, InfluxDB.</span><br />
+                        INFO: <a href="https://grafana.com/docs/grafana/latest/"
+                            target="_blank">https://grafana.com/docs/grafana/latest/</a><br />
                     </li>
                 </ul>
             </div>
@@ -1151,10 +1462,14 @@
                 <ul>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Nginx</font><br />
-                        Nginx URL (http): <a href="http://localhost:8180/" target="_blank">http://localhost:8180/</a> (serves <code>./src</code>)<br />
-                        Nginx UI Username: svercuski <span style="cursor: pointer" onclick="ClipBoardText('svercuski')"><i class="fa-regular fa-copy"></i></span><br />
-                        Nginx UI Password: Khelben <span style="cursor: pointer" onclick="ClipBoardText('Khelben')"><i class="fa-regular fa-copy"></i></span><br />
-                        Nginx UI URL (http): <a href="http://localhost:8181/" target="_blank">http://localhost:8181/</a> (https 8443)<br />
+                        Nginx URL (http): <a href="http://localhost:8180/" target="_blank">http://localhost:8180/</a>
+                        (serves <code>./src</code>)<br />
+                        Nginx UI Username: admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Nginx UI Password: Password123 <span style="cursor: pointer"
+                            onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span><br />
+                        Nginx UI URL (http): <a href="http://localhost:8181/" target="_blank">http://localhost:8181/</a>
+                        (https 8443)<br />
                         INFO: <a href="https://nginx.org/" target="_blank">https://nginx.org/</a><br />
                         INFO: <a href="https://nginxui.com/" target="_blank">https://nginxui.com/</a>
                     </li>
@@ -1162,58 +1477,8 @@
                         <font style="font-size: 1.2rem; font-weight: bold">Apache</font><br />
                         URL (http): <a href="http://localhost:8083/" target="_blank">http://localhost:8083/</a><br />
                         <span class="note">Serves the <code>WebServers/Apache</code> volume folder.</span><br />
-                        INFO: <a href="https://httpd.apache.org/docs/" target="_blank">https://httpd.apache.org/docs/</a><br />
-                    </li>
-                </ul>
-            </div>
-
-            <div id="Workflow" class="page-content">
-                <h2>Workflow</h2>
-                <ul>
-                    <li>
-                        <font style="font-size: 1.2rem; font-weight: bold">JIRA</font><br />
-                        Login: Google Login<br />
-                        JIRA URL: <a href="https://scott-vercuski.atlassian.net/jira/your-work" target="_blank">https://scott-vercuski.atlassian.net/jira/your-work</a><br />
-                        Confluence URL: <a href="https://scott-vercuski.atlassian.net/wiki/home" target="_blank">https://scott-vercuski.atlassian.net/wiki/home</a><br />
-                    </li>
-                </ul>
-            </div>
-
-            <div id="Learning" class="page-content">
-                <h2>Learning Resources</h2>
-                <ul style="list-style-type: none; padding: 0;">
-                    <li style="background: none; border: none; padding: 0.25rem 0;">
-                        DevBlogs (dotnet) @ Microsoft: <a href="https://devblogs.microsoft.com/dotnet/" target="_blank">https://devblogs.microsoft.com/dotnet/</a>
-                    </li>
-                    <li style="background: none; border: none; padding: 0.25rem 0;">
-                        DevBlogs (visualstudio) @ Microsoft: <a href="https://devblogs.microsoft.com/visualstudio/" target="_blank">https://devblogs.microsoft.com/visualstudio/</a>
-                    </li>
-                    <li style="background: none; border: none; padding: 0.25rem 0;">
-                        DevBlogs (devops) @ Microsoft: <a href="https://devblogs.microsoft.com/devops/" target="_blank">https://devblogs.microsoft.com/devops/</a>
-                    </li>
-                    <li style="background: none; border: none; padding: 0.25rem 0;">
-                        DevBlogs (powershell) @ Microsoft: <a href="https://devblogs.microsoft.com/powershell/" target="_blank">https://devblogs.microsoft.com/powershell/</a>
-                    </li>
-                    <li style="background: none; border: none; padding: 0.25rem 0;">
-                        DevBlogs (typescript) @ Microsoft: <a href="https://devblogs.microsoft.com/typescript/" target="_blank">https://devblogs.microsoft.com/typescript/</a>
-                    </li>
-                    <li style="background: none; border: none; padding: 0.25rem 0;">
-                        DevBlogs (c#) @ Microsoft: <a href="https://devblogs.microsoft.com/dotnet/category/csharp/" target="_blank">https://devblogs.microsoft.com/dotnet/category/csharp/</a>
-                    </li>
-                    <li style="background: none; border: none; padding: 0.25rem 0;">
-                        DevBlogs (aspnet core) @ Microsoft: <a href="https://devblogs.microsoft.com/dotnet/category/aspnetcore/" target="_blank">https://devblogs.microsoft.com/dotnet/category/aspnetcore/</a>
-                    </li>
-                    <li style="background: none; border: none; padding: 0.25rem 0;">
-                        DevBlogs (blazor) @ Microsoft: <a href="https://devblogs.microsoft.com/dotnet/category/blazor/" target="_blank">https://devblogs.microsoft.com/dotnet/category/blazor/</a>
-                    </li>
-                    <li style="background: none; border: none; padding: 0.25rem 0;">
-                        DevBlogs (Entity Framework) @ Microsoft: <a href="https://devblogs.microsoft.com/dotnet/category/entity-framework/" target="_blank">https://devblogs.microsoft.com/dotnet/category/entity-framework/</a>
-                    </li>
-                    <li style="background: none; border: none; padding: 0.25rem 0;">
-                        DevBlogs (MAUI) @ Microsoft: <a href="https://devblogs.microsoft.com/dotnet/category/maui/" target="_blank">https://devblogs.microsoft.com/dotnet/category/maui/</a>
-                    </li>
-                    <li style="background: none; border: none; padding: 0.25rem 0;">
-                        DevBlogs (Azure SQL) @ Microsoft: <a href="https://devblogs.microsoft.com/azure-sql/" target="_blank">https://devblogs.microsoft.com/azure-sql/</a>
+                        INFO: <a href="https://httpd.apache.org/docs/"
+                            target="_blank">https://httpd.apache.org/docs/</a><br />
                     </li>
                 </ul>
             </div>
@@ -1312,10 +1577,11 @@
             x.className = "show";
             var currentDateTime = new Date().toLocaleString();
             x.innerHTML = "Text Copied To Clipboard - " + currentDateTime;
-            setTimeout(function() {
+            setTimeout(function () {
                 x.className = x.className.replace("show", "");
             }, 7000);
         }
     </script>
 </body>
+
 </html>
