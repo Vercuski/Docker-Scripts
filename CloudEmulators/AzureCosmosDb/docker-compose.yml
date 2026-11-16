@@ -19,7 +19,7 @@ services:
       - "${COSMOSDB_EXPLORER_PORT:-1234}:1234" # Data Explorer
     networks:
       GroupNetwork:
-        ipv4_address: ${COSMOSDB_EMULATOR_IP:-192.168.16.102}
+        ipv4_address: ${COSMOSDB_EMULATOR_IP:-172.20.3.10}
         aliases:
           - cosmosdb-emulator
 volumes:
@@ -29,7 +29,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/CloudEmulators/AzureCosmosDb/data
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/CloudEmulators/AzureCosmosDb/data
 networks:
   GroupNetwork:
     driver: bridge

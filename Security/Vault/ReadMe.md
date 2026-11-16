@@ -19,4 +19,4 @@ Containers on GroupNetwork reach Vault at `http://vault:8200`.
 Want a throwaway in-memory Vault instead (auto-unsealed, root token `root`)? Replace `command` with
 `["server", "-dev", "-dev-root-token-id=root", "-dev-listen-address=0.0.0.0:8200"]` and remove the config volume.
 
-Linux hosts: the container runs as the non-root `vault` user - `chown` the data folder to match if it cannot write.
+Linux hosts: the container runs as the non-root `vault` user - `CreateVolumes.sh` chowns the data folder to `100:1000` to match.

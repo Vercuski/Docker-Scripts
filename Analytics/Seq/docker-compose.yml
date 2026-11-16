@@ -20,7 +20,7 @@ services:
       - seq_data:/data
     networks:
       GroupNetwork:
-        ipv4_address: ${SEQ_IP:-192.168.16.191}
+        ipv4_address: ${SEQ_IP:-172.20.1.20}
         aliases:
           - seq
 volumes:
@@ -30,7 +30,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Analytics/Seq/data
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Analytics/Seq/data
 networks:
   GroupNetwork:
     driver: bridge

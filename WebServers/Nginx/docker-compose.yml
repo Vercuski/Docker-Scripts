@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     networks:
       GroupNetwork:
-        ipv4_address: ${NGINX_IP:-192.168.16.130}
+        ipv4_address: ${NGINX_IP:-172.20.21.20}
         aliases:
           - nginx
     ports:
@@ -19,7 +19,7 @@ services:
     restart: unless-stopped
     networks:
       GroupNetwork:
-        ipv4_address: ${NGINX_UI_IP:-192.168.16.131}
+        ipv4_address: ${NGINX_UI_IP:-172.20.21.21}
         aliases:
           - nginxui
     ports:
@@ -38,21 +38,21 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/WebServers/Nginx-UI
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/WebServers/Nginx-UI
   nginx_conf:
     name: nginx_conf
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/WebServers/Nginx/Nginx
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/WebServers/Nginx/Nginx
   nginx_www:
     name: nginx_www
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/WebServers/Nginx/www
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/WebServers/Nginx/www
 networks:
   GroupNetwork:
     driver: bridge

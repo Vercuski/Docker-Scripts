@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     networks:
       GroupNetwork:
-        ipv4_address: ${BACKSTAGE_IP:-192.168.16.30}
+        ipv4_address: ${BACKSTAGE_IP:-172.20.7.10}
         aliases:
           - backstage
     environment:

@@ -29,7 +29,7 @@ services:
       - "${GITEA_SSH_PORT:-2222}:22" # git over SSH
     networks:
       GroupNetwork:
-        ipv4_address: ${GITEA_IP:-192.168.16.225}
+        ipv4_address: ${GITEA_IP:-172.20.19.10}
         aliases:
           - gitea
   runner:
@@ -52,7 +52,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       GroupNetwork:
-        ipv4_address: ${GITEA_RUNNER_IP:-192.168.16.226}
+        ipv4_address: ${GITEA_RUNNER_IP:-172.20.19.11}
         aliases:
           - gitea-runner
 volumes:
@@ -62,14 +62,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/SourceControl/Gitea/data
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SourceControl/Gitea/data
   gitea_runner_data:
     name: gitea_runner_data
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/SourceControl/Gitea/runner
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SourceControl/Gitea/runner
 networks:
   GroupNetwork:
     driver: bridge

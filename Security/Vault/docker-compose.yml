@@ -17,7 +17,7 @@ services:
       - "${VAULT_PORT:-8200}:8200" # API + web UI
     networks:
       GroupNetwork:
-        ipv4_address: ${VAULT_IP:-192.168.16.230}
+        ipv4_address: ${VAULT_IP:-172.20.17.10}
         aliases:
           - vault
 volumes:
@@ -27,7 +27,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Security/Vault/data
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Security/Vault/data
 networks:
   GroupNetwork:
     driver: bridge

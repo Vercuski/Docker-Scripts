@@ -23,4 +23,4 @@ Config files in this folder: `otel-collector-config.yaml`, `tempo.yaml`, `loki.y
 (`retention_period`), Tempo 14 days (default `block_retention`). Want the Aspire Dashboard too? See the commented
 `otlp/aspire` exporter in the collector config.
 
-Linux hosts: Tempo and Loki run as UID 10001 - `sudo chown -R 10001:10001` the two volume folders if they fail to write.
+Linux hosts: Tempo and Loki run as UID 10001 - `CreateVolumes.sh` sets that ownership on the two volume folders.

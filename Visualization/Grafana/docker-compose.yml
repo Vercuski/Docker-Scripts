@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     networks:
       GroupNetwork:
-        ipv4_address: ${GRAFANA_IP:-192.168.16.110}
+        ipv4_address: ${GRAFANA_IP:-172.20.20.10}
         aliases:
           - grafana
     environment:
@@ -24,7 +24,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Visualization/Grafana/storage
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Visualization/Grafana/storage
 networks:
   GroupNetwork:
     driver: bridge

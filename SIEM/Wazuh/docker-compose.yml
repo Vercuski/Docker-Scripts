@@ -1,0 +1,263 @@
+# Wazuh SIEM / XDR - single-node: manager + indexer + dashboard (based on wazuh/wazuh-docker single-node)
+# First start generates TLS certificates (wazuh-certs one-shot), then the other services start.
+services:
+  wazuh-certs:
+    image: wazuh/wazuh-certs-generator:${WAZUH_CERTS_GENERATOR_VERSION:-0.0.4}
+    container_name: wazuh-certs
+    hostname: wazuh-certs-generator
+    # One-shot job: creates the root CA and node certificates once, then exits.
+    # Delete the certs folder to regenerate (then restart the whole stack).
+    restart: "no"
+    entrypoint:
+      - bash
+      - -c
+      - |
+        if [ -f /certificates/root-ca.pem ]; then echo "Certificates already exist - skipping"; exit 0; fi
+        /entrypoint.sh || exit 1
+        [ -f /certificates/root-ca.pem ] || { echo "ERROR: certificates were not created"; exit 1; }
+        chmod 755 /certificates
+    environment:
+      CERT_TOOL_VERSION: "${WAZUH_CERT_TOOL_VERSION:-4.14}"
+    volumes:
+      - wazuh_certs:/certificates
+      - ./config/certs.yml:/config/certs.yml:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${WAZUH_CERTS_IP:-172.20.18.10}
+        aliases:
+          - wazuh-certs
+
+  wazuh.manager:
+    image: wazuh/wazuh-manager:${WAZUH_VERSION:-4.14.8}
+    container_name: wazuh-manager
+    hostname: wazuh.manager
+    restart: unless-stopped
+    depends_on:
+      wazuh-certs:
+        condition: service_completed_successfully
+      wazuh.indexer:
+        condition: service_healthy
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: ${WAZUH_MANAGER_NOFILE:-655360}
+        hard: ${WAZUH_MANAGER_NOFILE:-655360}
+    ports:
+      - "${WAZUH_AGENT_PORT:-1514}:1514"          # agent events (TCP)
+      - "${WAZUH_ENROLLMENT_PORT:-1515}:1515"     # agent enrollment (TCP)
+      - "${WAZUH_SYSLOG_PORT:-514}:514/udp"       # syslog collector
+      - "${WAZUH_API_PORT:-55000}:55000"          # Wazuh server REST API
+    environment:
+      INDEXER_URL: "https://wazuh.indexer:9200"
+      INDEXER_USERNAME: "${WAZUH_INDEXER_USERNAME:-admin}"
+      INDEXER_PASSWORD: "${WAZUH_INDEXER_PASSWORD:-SecretPassword}"
+      FILEBEAT_SSL_VERIFICATION_MODE: "full"
+      SSL_CERTIFICATE_AUTHORITIES: "/etc/ssl/wazuh/root-ca-manager.pem"
+      SSL_CERTIFICATE: "/etc/ssl/wazuh/wazuh.manager.pem"
+      SSL_KEY: "/etc/ssl/wazuh/wazuh.manager-key.pem"
+      API_USERNAME: "${WAZUH_API_USERNAME:-wazuh-wui}"
+      API_PASSWORD: "${WAZUH_API_PASSWORD:-MyS3cr37P450r.*-}"
+      TZ: "${TZ:-America/New_York}"
+    volumes:
+      - wazuh_certs:/etc/ssl/wazuh:ro
+      - wazuh_api_configuration:/var/ossec/api/configuration
+      - wazuh_etc:/var/ossec/etc
+      - wazuh_logs:/var/ossec/logs
+      - wazuh_queue:/var/ossec/queue
+      - wazuh_var_multigroups:/var/ossec/var/multigroups
+      - wazuh_integrations:/var/ossec/integrations
+      - wazuh_active_response:/var/ossec/active-response/bin
+      - wazuh_agentless:/var/ossec/agentless
+      - wazuh_wodles:/var/ossec/wodles
+      - wazuh_filebeat_etc:/etc/filebeat
+      - wazuh_filebeat_var:/var/lib/filebeat
+      - ./config/wazuh_manager.conf:/wazuh-config-mount/etc/ossec.conf
+    networks:
+      GroupNetwork:
+        ipv4_address: ${WAZUH_MANAGER_IP:-172.20.18.11}
+        aliases:
+          - wazuh.manager
+
+  wazuh.indexer:
+    image: wazuh/wazuh-indexer:${WAZUH_VERSION:-4.14.8}
+    container_name: wazuh-indexer
+    hostname: wazuh.indexer
+    restart: unless-stopped
+    depends_on:
+      wazuh-certs:
+        condition: service_completed_successfully
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: ${WAZUH_INDEXER_NOFILE:-65536}
+        hard: ${WAZUH_INDEXER_NOFILE:-65536}
+    ports:
+      - "${WAZUH_INDEXER_PORT:-9202}:9200"        # OpenSearch-compatible REST API (HTTPS)
+    environment:
+      OPENSEARCH_JAVA_OPTS: "${WAZUH_INDEXER_JAVA_OPTS:--Xms1g -Xmx1g}"
+      TZ: "${TZ:-America/New_York}"
+    volumes:
+      - wazuh_certs:/usr/share/wazuh-indexer/config/certs:ro
+      - wazuh_indexer_data:/var/lib/wazuh-indexer
+      - ./config/wazuh.indexer.yml:/usr/share/wazuh-indexer/config/opensearch.yml:ro
+      - ./config/internal_users.yml:/usr/share/wazuh-indexer/config/opensearch-security/internal_users.yml:ro
+    healthcheck:
+      # 401 = up and enforcing auth
+      test: ["CMD-SHELL", "curl -sk -o /dev/null -w '%{http_code}' https://localhost:9200 | grep -q 401"]
+      interval: 10s
+      timeout: 10s
+      retries: 60
+      start_period: 30s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${WAZUH_INDEXER_IP:-172.20.18.12}
+        aliases:
+          - wazuh.indexer
+
+  wazuh.dashboard:
+    image: wazuh/wazuh-dashboard:${WAZUH_VERSION:-4.14.8}
+    container_name: wazuh-dashboard
+    hostname: wazuh.dashboard
+    restart: unless-stopped
+    depends_on:
+      wazuh.indexer:
+        condition: service_healthy
+      wazuh.manager:
+        condition: service_started
+    ports:
+      - "${WAZUH_DASHBOARD_PORT:-5603}:5601"      # web UI (HTTPS)
+    environment:
+      INDEXER_USERNAME: "${WAZUH_INDEXER_USERNAME:-admin}"
+      INDEXER_PASSWORD: "${WAZUH_INDEXER_PASSWORD:-SecretPassword}"
+      WAZUH_API_URL: "https://wazuh.manager"
+      DASHBOARD_USERNAME: "${WAZUH_DASHBOARD_USERNAME:-kibanaserver}"
+      DASHBOARD_PASSWORD: "${WAZUH_DASHBOARD_PASSWORD:-kibanaserver}"
+      API_USERNAME: "${WAZUH_API_USERNAME:-wazuh-wui}"
+      API_PASSWORD: "${WAZUH_API_PASSWORD:-MyS3cr37P450r.*-}"
+      TZ: "${TZ:-America/New_York}"
+    volumes:
+      - wazuh_certs:/usr/share/wazuh-dashboard/certs:ro
+      - ./config/opensearch_dashboards.yml:/usr/share/wazuh-dashboard/config/opensearch_dashboards.yml:ro
+      # wazuh.yml (API connection) is generated here from API_USERNAME/API_PASSWORD on first start
+      - wazuh_dashboard_config:/usr/share/wazuh-dashboard/data/wazuh/config
+      - wazuh_dashboard_custom:/usr/share/wazuh-dashboard/plugins/wazuh/public/assets/custom
+    networks:
+      GroupNetwork:
+        ipv4_address: ${WAZUH_DASHBOARD_IP:-172.20.18.13}
+        aliases:
+          - wazuh.dashboard
+
+volumes:
+  wazuh_certs:
+    name: wazuh_certs
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SIEM/Wazuh/certs
+  wazuh_api_configuration:
+    name: wazuh_api_configuration
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SIEM/Wazuh/manager/api_configuration
+  wazuh_etc:
+    name: wazuh_etc
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SIEM/Wazuh/manager/etc
+  wazuh_logs:
+    name: wazuh_logs
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SIEM/Wazuh/manager/logs
+  wazuh_queue:
+    name: wazuh_queue
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SIEM/Wazuh/manager/queue
+  wazuh_var_multigroups:
+    name: wazuh_var_multigroups
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SIEM/Wazuh/manager/var_multigroups
+  wazuh_integrations:
+    name: wazuh_integrations
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SIEM/Wazuh/manager/integrations
+  wazuh_active_response:
+    name: wazuh_active_response
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SIEM/Wazuh/manager/active_response
+  wazuh_agentless:
+    name: wazuh_agentless
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SIEM/Wazuh/manager/agentless
+  wazuh_wodles:
+    name: wazuh_wodles
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SIEM/Wazuh/manager/wodles
+  wazuh_filebeat_etc:
+    name: wazuh_filebeat_etc
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SIEM/Wazuh/manager/filebeat_etc
+  wazuh_filebeat_var:
+    name: wazuh_filebeat_var
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SIEM/Wazuh/manager/filebeat_var
+  wazuh_indexer_data:
+    name: wazuh_indexer_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SIEM/Wazuh/indexer/data
+  wazuh_dashboard_config:
+    name: wazuh_dashboard_config
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SIEM/Wazuh/dashboard/config
+  wazuh_dashboard_custom:
+    name: wazuh_dashboard_custom
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SIEM/Wazuh/dashboard/custom
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

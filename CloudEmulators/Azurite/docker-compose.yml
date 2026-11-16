@@ -15,7 +15,7 @@ services:
       - "${AZURITE_TABLE_PORT:-10002}:10002"
     networks:
       GroupNetwork:
-        ipv4_address: ${AZURITE_IP:-192.168.16.100}
+        ipv4_address: ${AZURITE_IP:-172.20.3.30}
         aliases:
           - azurite
 volumes:
@@ -25,7 +25,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/CloudEmulators/Azurite/data
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/CloudEmulators/Azurite/data
 networks:
   GroupNetwork:
     driver: bridge

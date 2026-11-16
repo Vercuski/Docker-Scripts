@@ -30,7 +30,7 @@ services:
       - kafka_data:/var/lib/kafka/data
     networks:
       GroupNetwork:
-        ipv4_address: ${KAFKA_IP:-192.168.16.70}
+        ipv4_address: ${KAFKA_IP:-172.20.10.10}
         aliases:
           - kafka
   kafka-ui:
@@ -48,7 +48,7 @@ services:
       DYNAMIC_CONFIG_ENABLED: "true"
     networks:
       GroupNetwork:
-        ipv4_address: ${KAFKA_UI_IP:-192.168.16.73}
+        ipv4_address: ${KAFKA_UI_IP:-172.20.10.11}
         aliases:
           - kafka-ui
 volumes:
@@ -58,7 +58,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Messaging/Kafka/Kafka/data/
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Messaging/Kafka/Kafka/data/
 networks:
   GroupNetwork:
     driver: bridge

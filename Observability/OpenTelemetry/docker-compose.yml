@@ -18,7 +18,7 @@ services:
       - "${OTEL_HEALTH_PORT:-13133}:13133" # Health check
     networks:
       GroupNetwork:
-        ipv4_address: ${OTEL_COLLECTOR_IP:-192.168.16.121}
+        ipv4_address: ${OTEL_COLLECTOR_IP:-172.20.11.20}
         aliases:
           - otel-collector
   tempo:
@@ -33,7 +33,7 @@ services:
       - "${TEMPO_PORT:-3200}:3200" # Tempo HTTP API (query)
     networks:
       GroupNetwork:
-        ipv4_address: ${TEMPO_IP:-192.168.16.122}
+        ipv4_address: ${TEMPO_IP:-172.20.11.21}
         aliases:
           - tempo
   loki:
@@ -48,7 +48,7 @@ services:
       - "${LOKI_PORT:-3100}:3100" # Loki HTTP API (push/query)
     networks:
       GroupNetwork:
-        ipv4_address: ${LOKI_IP:-192.168.16.123}
+        ipv4_address: ${LOKI_IP:-172.20.11.22}
         aliases:
           - loki
 volumes:
@@ -58,14 +58,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Observability/OpenTelemetry/tempo
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Observability/OpenTelemetry/tempo
   loki_data:
     name: loki_data
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Observability/OpenTelemetry/loki
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Observability/OpenTelemetry/loki
 networks:
   GroupNetwork:
     driver: bridge

@@ -10,7 +10,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: "${MONGO_ROOT_PASSWORD:-Password123}"
     networks:
       GroupNetwork:
-        ipv4_address: ${MONGO_IP:-192.168.16.13}
+        ipv4_address: ${MONGO_IP:-172.20.6.80}
         aliases:
           - mongodb
     volumes:
@@ -31,7 +31,7 @@ services:
       ME_CONFIG_MONGODB_URL: "mongodb://${MONGO_ROOT_USERNAME:-user}:${MONGO_ROOT_PASSWORD:-Password123}@mongodb:27017/?authSource=admin"
     networks:
       GroupNetwork:
-        ipv4_address: ${MONGO_EXPRESS_IP:-192.168.16.24}
+        ipv4_address: ${MONGO_EXPRESS_IP:-172.20.6.81}
         aliases:
           - mongoexpress
 volumes:
@@ -41,7 +41,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/MongoDb/data
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/MongoDb/data
 networks:
   GroupNetwork:
     driver: bridge

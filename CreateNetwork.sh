@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-docker network create -d bridge GroupNetwork --subnet=192.168.16.0/24 --gateway=192.168.16.1
+docker network create -d bridge GroupNetwork --subnet=172.20.0.0/16 --gateway=172.20.0.1

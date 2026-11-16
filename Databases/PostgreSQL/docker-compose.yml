@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-Password123}"
     networks:
       GroupNetwork:
-        ipv4_address: ${POSTGRES_IP:-192.168.16.17}
+        ipv4_address: ${POSTGRES_IP:-172.20.6.130}
         aliases:
           - postgresql
     logging:
@@ -34,7 +34,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_PASSWORD:-Password123}"
     networks:
       GroupNetwork:
-        ipv4_address: ${PGADMIN_IP:-192.168.16.18}
+        ipv4_address: ${PGADMIN_IP:-172.20.6.131}
         aliases:
           - pgadmin4
     ports:
@@ -48,14 +48,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/PostgreSQL/Data
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/PostgreSQL/Data
   pgadmin4_data:
     name: pgadmin4_data
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/PostgreSQL/pgadmin4data
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/PostgreSQL/pgadmin4data
 networks:
   GroupNetwork:
     driver: bridge

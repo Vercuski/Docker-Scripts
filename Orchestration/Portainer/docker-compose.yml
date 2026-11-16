@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     networks:
       GroupNetwork:
-        ipv4_address: ${PORTAINER_IP:-192.168.16.92} # .91 is Rancher
+        ipv4_address: ${PORTAINER_IP:-172.20.12.20}
         aliases:
           - portainer
     ports:
@@ -21,7 +21,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Orchestration/Portainer/data
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Orchestration/Portainer/data
 networks:
   GroupNetwork:
     driver: bridge

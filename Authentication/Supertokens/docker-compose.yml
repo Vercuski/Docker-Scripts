@@ -10,7 +10,7 @@ services:
       POSTGRESQL_CONNECTION_URI: "${SUPERTOKENS_DB_URI:-postgresql://user%40user.com:Password123@postgresql:5432/supertokens}"
     networks:
       GroupNetwork:
-        ipv4_address: ${SUPERTOKENS_IP:-192.168.16.211}
+        ipv4_address: ${SUPERTOKENS_IP:-172.20.2.20}
         aliases:
           - supertokens
 networks:

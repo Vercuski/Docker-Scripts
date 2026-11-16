@@ -23,7 +23,7 @@ services:
       - "${KEYCLOAK_MANAGEMENT_PORT:-9001}:9000" # /health and /metrics (9000 is used by SonarQube)
     networks:
       GroupNetwork:
-        ipv4_address: ${KEYCLOAK_IP:-192.168.16.212}
+        ipv4_address: ${KEYCLOAK_IP:-172.20.2.10}
         aliases:
           - keycloak
 networks:

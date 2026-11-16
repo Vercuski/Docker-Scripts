@@ -21,7 +21,7 @@ services:
       start_period: 10m
     networks:
       GroupNetwork:
-        ipv4_address: ${ORACLE_IP:-192.168.16.25}
+        ipv4_address: ${ORACLE_IP:-172.20.6.120}
         aliases:
           - oracle
 volumes:
@@ -31,14 +31,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Oracle/Data
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/Oracle/Data
   oracle-backup:
     name: oracle-backup
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Oracle/Backup
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/Oracle/Backup
 networks:
   GroupNetwork:
     driver: bridge

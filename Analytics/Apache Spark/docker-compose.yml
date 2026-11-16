@@ -12,7 +12,7 @@ services:
       - spark_logs:/opt/spark/spark-events
     networks:
       GroupNetwork:
-        ipv4_address: ${SPARK_MASTER_IP:-192.168.16.190}
+        ipv4_address: ${SPARK_MASTER_IP:-172.20.1.10}
         aliases:
           - apachespark
     environment:
@@ -36,7 +36,7 @@ services:
       - spark_apps:/opt/spark/apps
     networks:
       GroupNetwork:
-        ipv4_address: ${SPARK_WORKER_IP:-192.168.16.192}
+        ipv4_address: ${SPARK_WORKER_IP:-172.20.1.11}
         aliases:
           - apachespark-worker
 volumes:
@@ -46,21 +46,21 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Analytics/ApacheSpark/logs
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Analytics/ApacheSpark/logs
   spark_apps:
     name: spark_apps
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Analytics/ApacheSpark/apps
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Analytics/ApacheSpark/apps
   spark_data:
     name: spark_data
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Analytics/ApacheSpark/data
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Analytics/ApacheSpark/data
 networks:
   GroupNetwork:
     driver: bridge

@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     networks:
       GroupNetwork:
-        ipv4_address: ${NEO4J_IP:-192.168.16.16}
+        ipv4_address: ${NEO4J_IP:-172.20.6.110}
         aliases:
           - neo4j
     command: neo4j
@@ -45,25 +45,25 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Neo4J/data
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/Neo4J/data
   neo4j_logs:
     name: neo4j_logs
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Neo4J/logs
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/Neo4J/logs
   neo4j_import:
     name: neo4j_import
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Neo4J/import
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/Neo4J/import
   neo4j_plugins:
     name: neo4j_plugins
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Neo4J/plugins
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/Neo4J/plugins

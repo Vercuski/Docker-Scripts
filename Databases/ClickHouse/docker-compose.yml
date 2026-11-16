@@ -20,7 +20,7 @@ services:
         hard: ${CLICKHOUSE_NOFILE_LIMIT:-262144}
     networks:
       GroupNetwork:
-        ipv4_address: ${CLICKHOUSE_IP:-192.168.16.29}
+        ipv4_address: ${CLICKHOUSE_IP:-172.20.6.20}
         aliases:
           - clickhouse
 volumes:
@@ -30,14 +30,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/ClickHouse/data
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/ClickHouse/data
   clickhouse_logs:
     name: clickhouse_logs
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/ClickHouse/logs
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/ClickHouse/logs
 networks:
   GroupNetwork:
     driver: bridge

@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     networks:
       GroupNetwork:
-        ipv4_address: ${APACHE_IP:-192.168.16.132}
+        ipv4_address: ${APACHE_IP:-172.20.21.10}
         aliases:
           - apache
     ports:
@@ -19,7 +19,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/WebServers/Apache
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/WebServers/Apache
 networks:
   GroupNetwork:
     driver: bridge

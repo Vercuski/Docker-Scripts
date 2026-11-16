@@ -26,7 +26,7 @@ services:
       - ${OPENSEARCH_PA_PORT:-9601}:9600 # Performance Analyzer
     networks:
       GroupNetwork:
-        ipv4_address: ${OPENSEARCH_NODE1_IP:-192.168.16.156} # .154/.155 are Filebeat/Logstash
+        ipv4_address: ${OPENSEARCH_NODE1_IP:-172.20.16.20}
         aliases:
           - opensearch-node1
   opensearch-node2:
@@ -52,7 +52,7 @@ services:
       - opensearch-data2:/usr/share/opensearch/data
     networks:
       GroupNetwork:
-        ipv4_address: ${OPENSEARCH_NODE2_IP:-192.168.16.157}
+        ipv4_address: ${OPENSEARCH_NODE2_IP:-172.20.16.21}
         aliases:
           - opensearch-node2
   opensearch-dashboards:
@@ -69,7 +69,7 @@ services:
       OPENSEARCH_HOSTS: '["https://opensearch-node1:9200","https://opensearch-node2:9200"]'
     networks:
       GroupNetwork:
-        ipv4_address: ${OPENSEARCH_DASHBOARDS_IP:-192.168.16.158}
+        ipv4_address: ${OPENSEARCH_DASHBOARDS_IP:-172.20.16.22}
         aliases:
           - opensearchdashboard
 
@@ -80,14 +80,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Search/OpenSearch/node1/
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Search/OpenSearch/node1/
   opensearch-data2:
     name: opensearch-data2
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Search/OpenSearch/node2/
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Search/OpenSearch/node2/
 
 networks:
   GroupNetwork:

@@ -18,7 +18,7 @@ services:
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "${INFLUXDB_INIT_ADMIN_TOKEN:-API_TOKEN}"
     networks:
       GroupNetwork:
-        ipv4_address: ${INFLUXDB_IP:-192.168.16.12}
+        ipv4_address: ${INFLUXDB_IP:-172.20.6.50}
         aliases:
           - influxdb
     volumes:
@@ -31,14 +31,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/InfluxDb/config/
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/InfluxDb/config/
   InfluxDB_Data:
     name: InfluxDB_Data
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/InfluxDb/data/
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/InfluxDb/data/
 networks:
   GroupNetwork:
     driver: bridge

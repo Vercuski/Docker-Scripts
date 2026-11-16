@@ -9,7 +9,7 @@ services:
       - "${RANCHER_HTTPS_PORT:-8444}:443/tcp"
     networks:
       GroupNetwork:
-        ipv4_address: ${RANCHER_IP:-192.168.16.91}
+        ipv4_address: ${RANCHER_IP:-172.20.12.30}
         aliases:
           - rancher
     volumes:
@@ -22,7 +22,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Orchestration/Rancher/data
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Orchestration/Rancher/data
 networks:
   GroupNetwork:
     driver: bridge

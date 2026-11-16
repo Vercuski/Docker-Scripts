@@ -17,7 +17,7 @@ services:
       - "${MAILPIT_SMTP_PORT:-1025}:1025" # SMTP
     networks:
       GroupNetwork:
-        ipv4_address: ${MAILPIT_IP:-192.168.16.140}
+        ipv4_address: ${MAILPIT_IP:-172.20.8.10}
         aliases:
           - mailpit
 volumes:
@@ -27,7 +27,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Email/Mailpit/data
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Email/Mailpit/data
 networks:
   GroupNetwork:
     driver: bridge

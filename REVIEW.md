@@ -62,7 +62,7 @@ Your uncommitted work in progress (Seq, MSSQL, SuperTokens, README) was kept and
 
 ## Host port map (after the changes)
 
-80/81/443 NPM · 1113/2113 EventStore · 1433 MSSQL · 1521 Oracle · 3000 Grafana · 3306 MySQL · 3307 MariaDB · 3567 SuperTokens · 5000/5001 Registry/UI · 5010 Hangfire · 5050 pgAdmin · 5341/8089 Seq · 5432 Postgres · 5601 Kibana · 5602 OpenSearch Dashboards · 5672/15672/15692 RabbitMQ · 6379 Redis · 7007 Backstage · 7077/8090 Spark · 7473/7474/7687 Neo4j · 8080/26257 CockroachDB · 8081 MediaWiki · 8082 phpMyAdmin · 8083 Apache · 8084 Kafka UI · 8085 Gaia · 8086 InfluxDB · 8087 Adminer · 8088 mongo-express · 8091/8092 ProGet · 8100/8404 HAProxy · 8123/19000 ClickHouse · 8180/8181/8443 Nginx/Nginx UI · 8480/8444 Rancher · 9000 SonarQube · 9010/9443 Portainer · 9042 Cassandra · 9090 Prometheus · 9091/19530 Milvus · 9092 Kafka · 9093 Alertmanager · 9100 node-exporter · 9110/9111 MinIO (Milvus) · 9200 Elasticsearch · 9201/9601 OpenSearch · 27017 MongoDB
+80/81/443 NPM · 1113/2113 EventStore · 1433 MSSQL · 1521 Oracle · 3000 Grafana · 3306 MySQL · 3307 MariaDB · 3567 SuperTokens · 5000/5001 Registry/UI · 5010 Hangfire · 5050 pgAdmin · 5341/8089 Seq · 5432 Postgres · 5601 Kibana · 5602 OpenSearch Dashboards · 5672/15672/15692 RabbitMQ · 6379 Redis · 7007 Backstage · 7077/8090 Spark · 7473/7474/7687 Neo4j · 8080/26257 CockroachDB · 8081 MediaWiki · 8082 phpMyAdmin · 8083 Apache · 8084 Kafka UI · 8085 Gaia · 8086 InfluxDB · 8087 Adminer · 8088 mongo-express · 8091/8092 ProGet · 8100/8404 HAProxy · 8123/19000 ClickHouse · 8180/8181/8443 Nginx/Nginx UI · 8480/8444 Rancher · 9000 SonarQube · 9010/9443 Portainer · 9042 Cassandra · 9090 Prometheus · 9091/19530 Milvus · 9092 Kafka · 9093 Alertmanager · 9100 node-exporter · 9110/9111 MinIO (Milvus) · 9200 Elasticsearch · 9201/9601 OpenSearch · 27017 MongoDB · 514/udp, 1514/1515, 55000 Wazuh manager · 5603 Wazuh dashboard · 9202 Wazuh indexer
 
 ## Suggested new stacks
 
@@ -134,3 +134,23 @@ Verification:
 - Gitea 1.27 accepted the shared runner token and the runner registered with `runner-config.yaml`.
 - Mailpit started with the configured settings.
 - All image tags were confirmed to exist in their registries.
+
+## New stack added (2026-10-07): SIEM/Wazuh
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| Wazuh 4.14.8 (manager, indexer, dashboard) | SIEM/Wazuh | .240 certs (one-shot), .241 manager, .242 indexer, .243 dashboard | 5603 dashboard (HTTPS), 9202 indexer, 1514/1515 agents, 514/udp syslog, 55000 API | Based on upstream `wazuh-docker` v4.14.8 single-node. The cert generator runs once inside the stack and skips when certificates exist. Default credentials are the Wazuh defaults (indexer passwords are bcrypt hashes in `config/internal_users.yml`). |
+
+Differences from upstream: certificates live in a bind volume (`SIEM/Wazuh/certs`) mounted as a folder instead of per-file mounts; `wazuh.yml` for the dashboard is generated from `.env` rather than mounted; the dashboard moved off 443 (Nginx Proxy Manager) and the indexer off 9200 (Elasticsearch); `restart: unless-stopped` instead of `always`; the indexer has a healthcheck that gates the manager and dashboard.
+
+Verification: `docker compose config` passes; the full stack was started from empty volumes (cert generation, indexer green, Filebeat TLS to the indexer, API login, dashboard login and stored-API check, alerts indexed), then `down`/`up` again to confirm persistence and the cert-skip path. All image tags were pulled successfully.
+
+## OS-agnostic volumes (2026-11)
+
+Goal: every stack runs unchanged on Windows (Docker Desktop) and native Linux/macOS.
+
+- `ROOT_VOLUME_DIR=D:` removed from all 44 `.env` files (left as a commented per-stack override). It is now a per-machine environment variable set by the `CreateVolumes` scripts, so no file in the repo hard-codes a Windows drive.
+- `CreateVolumes.bat`: optional root argument (default `%ROOT_VOLUME_DIR%`, then `D:`), skips folders that already exist, saves `ROOT_VOLUME_DIR` with `setx` using forward slashes (`D:` resolves to `D:/docker/volumes/...` exactly as before).
+- `CreateVolumes.sh`: optional root argument (default `$ROOT_VOLUME_DIR`, then `$HOME`), saves an idempotent `export` block to `~/.bashrc` / `~/.zshenv` / `~/.profile`, and on native Linux chowns the folders of images that run as a fixed non-root UID (Docker Desktop ignores ownership). `SKIP_CHOWN=1` / `SKIP_PERSIST=1` opt out.
+- Compose files: `${ROOT_VOLUME_DIR:?error}` now reads `${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}` so the failure says what to do.
+- Checked: all 84 bind paths match `CreateVolumes.sh` and `CreateVolumes.bat` with identical case; all files are stored LF in git; no other Windows paths in compose or mounted config files. `/var/run/docker.sock` mounts (Portainer, Gitea runner, Terraform runner, Beats) work on both Docker Desktop and Linux.

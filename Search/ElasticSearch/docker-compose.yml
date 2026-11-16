@@ -59,7 +59,7 @@ services:
       retries: 120
     networks:
       GroupNetwork:
-        ipv4_address: ${ES_SETUP_IP:-192.168.16.150}
+        ipv4_address: ${ES_SETUP_IP:-172.20.16.10}
         aliases:
           - elasticsearchmain
   es01:
@@ -109,7 +109,7 @@ services:
       retries: 120
     networks:
       GroupNetwork:
-        ipv4_address: ${ES_IP:-192.168.16.151}
+        ipv4_address: ${ES_IP:-172.20.16.11}
         aliases:
           - es01
   kibana:
@@ -147,7 +147,7 @@ services:
       retries: 120
     networks:
       GroupNetwork:
-        ipv4_address: ${KIBANA_IP:-192.168.16.152}
+        ipv4_address: ${KIBANA_IP:-172.20.16.12}
         aliases:
           - kibana
   metricbeat01:
@@ -177,7 +177,7 @@ services:
       - LOGSTASH_HOSTS=http://logstash01:9600
     networks:
       GroupNetwork:
-        ipv4_address: ${METRICBEAT_IP:-192.168.16.153}
+        ipv4_address: ${METRICBEAT_IP:-172.20.16.13}
         aliases:
           - metricbeat
   filebeat01:
@@ -204,7 +204,7 @@ services:
       - LOGSTASH_HOSTS=http://logstash01:9600
     networks:
       GroupNetwork:
-        ipv4_address: ${FILEBEAT_IP:-192.168.16.154}
+        ipv4_address: ${FILEBEAT_IP:-172.20.16.14}
         aliases:
           - filebeat
   logstash01:
@@ -231,7 +231,7 @@ services:
       - ELASTIC_HOSTS=https://es01:9200
     networks:
       GroupNetwork:
-        ipv4_address: ${LOGSTASH_IP:-192.168.16.155}
+        ipv4_address: ${LOGSTASH_IP:-172.20.16.15}
         aliases:
           - logstash
 volumes:
@@ -241,42 +241,42 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Search/ElasticSearch/certs
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Search/ElasticSearch/certs
   esdata01:
     name: esdata01
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Search/ElasticSearch/esdata01
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Search/ElasticSearch/esdata01
   kibanadata:
     name: kibanadata
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Search/ElasticSearch/kibanadata
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Search/ElasticSearch/kibanadata
   metricbeatdata01:
     name: metricbeatdata01
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Search/ElasticSearch/metricbeatdata01
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Search/ElasticSearch/metricbeatdata01
   filebeatdata01:
     name: filebeatdata01
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Search/ElasticSearch/filebeatdata01
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Search/ElasticSearch/filebeatdata01
   logstashdata01:
     name: logstashdata01
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Search/ElasticSearch/logstashdata01
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Search/ElasticSearch/logstashdata01
 networks:
   GroupNetwork:
     driver: bridge

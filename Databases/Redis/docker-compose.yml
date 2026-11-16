@@ -8,7 +8,7 @@ services:
     command: redis-server --save ${REDIS_SAVE:-20 1} --requirepass ${REDIS_PASSWORD:-Password123}
     networks:
       GroupNetwork:
-        ipv4_address: ${REDIS_IP:-192.168.16.19}
+        ipv4_address: ${REDIS_IP:-172.20.6.150}
         aliases:
           - redis
     volumes:
@@ -20,7 +20,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Redis/cache
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/Redis/cache
 networks:
   GroupNetwork:
     driver: bridge

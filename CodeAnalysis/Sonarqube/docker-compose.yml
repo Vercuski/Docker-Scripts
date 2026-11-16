@@ -18,7 +18,7 @@ services:
       - "${SONARQUBE_PORT:-9000}:9000"
     networks:
       GroupNetwork:
-        ipv4_address: ${SONARQUBE_IP:-192.168.16.170}
+        ipv4_address: ${SONARQUBE_IP:-172.20.4.10}
         aliases:
           - sonarqube
 volumes:
@@ -28,21 +28,21 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/CodeAnalysis/SonarQube/data/
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/CodeAnalysis/SonarQube/data/
   sonarqube_extensions:
     name: sonarqube_extensions
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/CodeAnalysis/SonarQube/extensions/
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/CodeAnalysis/SonarQube/extensions/
   sonarqube_logs:
     name: sonarqube_logs
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/CodeAnalysis/SonarQube/logs/
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/CodeAnalysis/SonarQube/logs/
 networks:
   GroupNetwork:
     driver: bridge

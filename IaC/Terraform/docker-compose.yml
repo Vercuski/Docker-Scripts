@@ -8,7 +8,7 @@ services:
     entrypoint: ["/bin/sh", "-c", "sleep infinity"]
     networks:
       GroupNetwork:
-        ipv4_address: ${TERRAFORM_IP:-192.168.16.50}
+        ipv4_address: ${TERRAFORM_IP:-172.20.9.10}
         aliases:
           - terraform
     volumes:
@@ -24,7 +24,7 @@ services:
       - mongo
     networks:
       GroupNetwork:
-        ipv4_address: ${GAIA_IP:-192.168.16.51}
+        ipv4_address: ${GAIA_IP:-172.20.9.11}
         aliases:
           - gaia
     ports:
@@ -44,7 +44,7 @@ services:
       GAIA_RUNNER_API_PASSWORD: "${GAIA_RUNNER_API_PASSWORD:-123456}"
     networks:
       GroupNetwork:
-        ipv4_address: ${GAIA_RUNNER_IP:-192.168.16.52}
+        ipv4_address: ${GAIA_RUNNER_IP:-172.20.9.12}
         aliases:
           - gaiarunner
     volumes:
@@ -57,7 +57,7 @@ services:
     restart: unless-stopped
     networks:
       GroupNetwork:
-        ipv4_address: ${GAIA_MONGO_IP:-192.168.16.53}
+        ipv4_address: ${GAIA_MONGO_IP:-172.20.9.13}
         aliases:
           - gaia-mongo
     volumes:
@@ -69,7 +69,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/IaC/Terraform/data
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/IaC/Terraform/data
 networks:
   GroupNetwork:
     driver: bridge

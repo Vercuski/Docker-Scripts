@@ -12,7 +12,7 @@ services:
       - "${MYSQL_PORT:-3306}:3306"
     networks:
       GroupNetwork:
-        ipv4_address: ${MYSQL_IP:-192.168.16.15}
+        ipv4_address: ${MYSQL_IP:-172.20.6.100}
         aliases:
           - mysqldb
     volumes:
@@ -30,7 +30,7 @@ services:
       - "${PHPMYADMIN_PORT:-8082}:80"
     networks:
       GroupNetwork:
-        ipv4_address: ${PHPMYADMIN_IP:-192.168.16.20}
+        ipv4_address: ${PHPMYADMIN_IP:-172.20.6.101}
         aliases:
           - phpmyadmin
 volumes:
@@ -40,7 +40,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/MySQL
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/MySQL
 networks:
   GroupNetwork:
     driver: bridge

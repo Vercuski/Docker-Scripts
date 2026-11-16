@@ -1,88 +1,135 @@
 @echo off
-REM Creates the host folders used by the bind-mounted volumes. Must match ROOT_VOLUME_DIR in each .env (D:).
-mkdir D:\docker\volumes\Analytics\ApacheSpark\data
-mkdir D:\docker\volumes\Analytics\ApacheSpark\apps
-mkdir D:\docker\volumes\Analytics\ApacheSpark\logs
-mkdir D:\docker\volumes\Analytics\Seq\data
+REM Creates the host folders behind the bind-mounted volumes and sets ROOT_VOLUME_DIR for docker compose.
+REM
+REM Usage: CreateVolumes.bat [root]      e.g.  CreateVolumes.bat D:   or   CreateVolumes.bat C:\dev
+REM   root defaults to %ROOT_VOLUME_DIR% if already set, otherwise D:
+REM   Set SKIP_PERSIST=1 to skip saving ROOT_VOLUME_DIR as a user environment variable.
+setlocal
 
-mkdir D:\docker\volumes\CloudEmulators\Azurite\data
-mkdir D:\docker\volumes\CloudEmulators\AzureCosmosDb\data
+if not "%~1"=="" (
+    set "ROOT=%~1"
+) else if defined ROOT_VOLUME_DIR (
+    set "ROOT=%ROOT_VOLUME_DIR%"
+) else (
+    set "ROOT=D:"
+)
+REM Drop a trailing slash, use backslashes for mkdir and forward slashes for compose
+if "%ROOT:~-1%"=="\" set "ROOT=%ROOT:~0,-1%"
+if "%ROOT:~-1%"=="/" set "ROOT=%ROOT:~0,-1%"
+set "ROOT=%ROOT:/=\%"
+set "ROOT_FWD=%ROOT:\=/%"
+set "V=%ROOT%\docker\volumes"
+echo Creating volume folders under %V%
+call :mk Analytics\ApacheSpark\data
+call :mk Analytics\ApacheSpark\apps
+call :mk Analytics\ApacheSpark\logs
+call :mk Analytics\Seq\data
 
-mkdir D:\docker\volumes\CodeAnalysis\SonarQube\data
-mkdir D:\docker\volumes\CodeAnalysis\SonarQube\extensions
-mkdir D:\docker\volumes\CodeAnalysis\SonarQube\logs
+call :mk CloudEmulators\Azurite\data
+call :mk CloudEmulators\AzureCosmosDb\data
 
-mkdir D:\docker\volumes\Containerization\DockerRegistry\data
+call :mk CodeAnalysis\SonarQube\data
+call :mk CodeAnalysis\SonarQube\extensions
+call :mk CodeAnalysis\SonarQube\logs
 
-mkdir D:\docker\volumes\Databases\ApacheCassandra
-mkdir D:\docker\volumes\Databases\ClickHouse\data
-mkdir D:\docker\volumes\Databases\ClickHouse\logs
-mkdir D:\docker\volumes\Databases\CockroachDB\data
-mkdir D:\docker\volumes\Databases\EventStoreDb\data
-mkdir D:\docker\volumes\Databases\EventStoreDb\logs
-mkdir D:\docker\volumes\Databases\InfluxDb\config
-mkdir D:\docker\volumes\Databases\InfluxDb\data
-mkdir D:\docker\volumes\Databases\MariaDB\Backup
-mkdir D:\docker\volumes\Databases\MariaDB\Data
-mkdir D:\docker\volumes\Databases\Milvus\milvus
-mkdir D:\docker\volumes\Databases\Milvus\etcd
-mkdir D:\docker\volumes\Databases\Milvus\minio
-mkdir D:\docker\volumes\Databases\MongoDb\data
-mkdir D:\docker\volumes\Databases\MSSQL\data
-mkdir D:\docker\volumes\Databases\MSSQL\log
-mkdir D:\docker\volumes\Databases\MSSQL\secrets
-mkdir D:\docker\volumes\Databases\MySQL
-mkdir D:\docker\volumes\Databases\Neo4J\data
-mkdir D:\docker\volumes\Databases\Neo4J\logs
-mkdir D:\docker\volumes\Databases\Neo4J\import
-mkdir D:\docker\volumes\Databases\Neo4J\plugins
-mkdir D:\docker\volumes\Databases\Oracle\Data
-mkdir D:\docker\volumes\Databases\Oracle\Backup
-mkdir D:\docker\volumes\Databases\PostgreSQL\Data
-mkdir D:\docker\volumes\Databases\PostgreSQL\pgadmin4data
-mkdir D:\docker\volumes\Databases\Prometheus\prometheus_data
-mkdir D:\docker\volumes\Databases\Prometheus\alertmanager
-mkdir D:\docker\volumes\Databases\Redis\cache
+call :mk Containerization\DockerRegistry\data
 
-mkdir D:\docker\volumes\Documentation\Mediawiki\html
+call :mk Databases\ApacheCassandra
+call :mk Databases\ClickHouse\data
+call :mk Databases\ClickHouse\logs
+call :mk Databases\CockroachDB\data
+call :mk Databases\EventStoreDb\data
+call :mk Databases\EventStoreDb\logs
+call :mk Databases\InfluxDb\config
+call :mk Databases\InfluxDb\data
+call :mk Databases\MariaDB\Backup
+call :mk Databases\MariaDB\Data
+call :mk Databases\Milvus\milvus
+call :mk Databases\Milvus\etcd
+call :mk Databases\Milvus\minio
+call :mk Databases\MongoDb\data
+call :mk Databases\MSSQL\data
+call :mk Databases\MSSQL\log
+call :mk Databases\MSSQL\secrets
+call :mk Databases\MySQL
+call :mk Databases\Neo4J\data
+call :mk Databases\Neo4J\logs
+call :mk Databases\Neo4J\import
+call :mk Databases\Neo4J\plugins
+call :mk Databases\Oracle\Data
+call :mk Databases\Oracle\Backup
+call :mk Databases\PostgreSQL\Data
+call :mk Databases\PostgreSQL\pgadmin4data
+call :mk Databases\Prometheus\prometheus_data
+call :mk Databases\Prometheus\alertmanager
+call :mk Databases\Redis\cache
 
-mkdir D:\docker\volumes\Email\Mailpit\data
+call :mk Documentation\Mediawiki\html
 
-mkdir D:\docker\volumes\IaC\Terraform\data
+call :mk Email\Mailpit\data
 
-mkdir D:\docker\volumes\Messaging\Kafka\Kafka\data\
-mkdir D:\docker\volumes\Messaging\RabbitMQ\data
-mkdir D:\docker\volumes\Messaging\RabbitMQ\log
+call :mk IaC\Terraform\data
 
-mkdir D:\docker\volumes\Observability\OpenTelemetry\tempo
-mkdir D:\docker\volumes\Observability\OpenTelemetry\loki
+call :mk Messaging\Kafka\Kafka\data
+call :mk Messaging\RabbitMQ\data
+call :mk Messaging\RabbitMQ\log
 
-mkdir D:\docker\volumes\Orchestration\Rancher\data
-mkdir D:\docker\volumes\Orchestration\Portainer\data
+call :mk Observability\OpenTelemetry\tempo
+call :mk Observability\OpenTelemetry\loki
 
-mkdir D:\docker\volumes\Packages\ProGet\packages
-mkdir D:\docker\volumes\Packages\ProGet\ssl
+call :mk Orchestration\Rancher\data
+call :mk Orchestration\Portainer\data
 
-mkdir D:\docker\volumes\RP-LB\NginxProxyManager\data
-mkdir D:\docker\volumes\RP-LB\NginxProxyManager\letsencrypt
+call :mk Packages\ProGet\packages
+call :mk Packages\ProGet\ssl
 
-mkdir D:\docker\volumes\Search\OpenSearch\node1\
-mkdir D:\docker\volumes\Search\OpenSearch\node2\
-mkdir D:\docker\volumes\Search\ElasticSearch\certs
-mkdir D:\docker\volumes\Search\ElasticSearch\esdata01
-mkdir D:\docker\volumes\Search\ElasticSearch\kibanadata
-mkdir D:\docker\volumes\Search\ElasticSearch\metricbeatdata01
-mkdir D:\docker\volumes\Search\ElasticSearch\filebeatdata01
-mkdir D:\docker\volumes\Search\ElasticSearch\logstashdata01
+call :mk RP-LB\NginxProxyManager\data
+call :mk RP-LB\NginxProxyManager\letsencrypt
 
-mkdir D:\docker\volumes\Security\Vault\data
+call :mk Search\OpenSearch\node1
+call :mk Search\OpenSearch\node2
+call :mk Search\ElasticSearch\certs
+call :mk Search\ElasticSearch\esdata01
+call :mk Search\ElasticSearch\kibanadata
+call :mk Search\ElasticSearch\metricbeatdata01
+call :mk Search\ElasticSearch\filebeatdata01
+call :mk Search\ElasticSearch\logstashdata01
 
-mkdir D:\docker\volumes\SourceControl\Gitea\data
-mkdir D:\docker\volumes\SourceControl\Gitea\runner
+call :mk Security\Vault\data
 
-mkdir D:\docker\volumes\Visualization\Grafana\storage
+call :mk SIEM\Wazuh\certs
+call :mk SIEM\Wazuh\manager\api_configuration
+call :mk SIEM\Wazuh\manager\etc
+call :mk SIEM\Wazuh\manager\logs
+call :mk SIEM\Wazuh\manager\queue
+call :mk SIEM\Wazuh\manager\var_multigroups
+call :mk SIEM\Wazuh\manager\integrations
+call :mk SIEM\Wazuh\manager\active_response
+call :mk SIEM\Wazuh\manager\agentless
+call :mk SIEM\Wazuh\manager\wodles
+call :mk SIEM\Wazuh\manager\filebeat_etc
+call :mk SIEM\Wazuh\manager\filebeat_var
+call :mk SIEM\Wazuh\indexer\data
+call :mk SIEM\Wazuh\dashboard\config
+call :mk SIEM\Wazuh\dashboard\custom
 
-mkdir D:\docker\volumes\WebServers\Nginx\www
-mkdir D:\docker\volumes\WebServers\Nginx\Nginx
-mkdir D:\docker\volumes\WebServers\Nginx-UI
-mkdir D:\docker\volumes\WebServers\Apache
+call :mk SourceControl\Gitea\data
+call :mk SourceControl\Gitea\runner
+
+call :mk Visualization\Grafana\storage
+
+call :mk WebServers\Nginx\www
+call :mk WebServers\Nginx\Nginx
+call :mk WebServers\Nginx-UI
+call :mk WebServers\Apache
+
+if not "%SKIP_PERSIST%"=="1" (
+    setx ROOT_VOLUME_DIR "%ROOT_FWD%" >nul
+    echo ROOT_VOLUME_DIR=%ROOT_FWD% saved as a user environment variable - open a new terminal before running docker compose.
+)
+endlocal
+goto :eof
+
+:mk
+if not exist "%V%\%~1" mkdir "%V%\%~1"
+exit /b

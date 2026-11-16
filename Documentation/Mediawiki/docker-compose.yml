@@ -11,7 +11,7 @@ services:
       - mediawiki_data:/var/www/html/
     networks:
       GroupNetwork:
-        ipv4_address: ${MEDIAWIKI_IP:-192.168.16.31}
+        ipv4_address: ${MEDIAWIKI_IP:-172.20.7.20}
         aliases:
           - mediawiki
 volumes:
@@ -21,7 +21,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Documentation/Mediawiki/html/
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Documentation/Mediawiki/html/
 networks:
   GroupNetwork:
     driver: bridge

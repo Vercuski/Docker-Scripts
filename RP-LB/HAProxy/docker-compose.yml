@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     networks:
       GroupNetwork:
-        ipv4_address: ${HAPROXY_IP:-192.168.16.160}
+        ipv4_address: ${HAPROXY_IP:-172.20.14.10}
         aliases:
           - haproxy
     ports:

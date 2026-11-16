@@ -18,7 +18,7 @@ services:
       - rabbitmq_log:/var/log/rabbitmq
     networks:
       GroupNetwork:
-        ipv4_address: ${RABBITMQ_IP:-192.168.16.72}
+        ipv4_address: ${RABBITMQ_IP:-172.20.10.20}
         aliases:
           - rabbitmq
 volumes:
@@ -28,14 +28,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Messaging/RabbitMQ/data/
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Messaging/RabbitMQ/data/
   rabbitmq_log:
     name: rabbitmq_log
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Messaging/RabbitMQ/log/
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Messaging/RabbitMQ/log/
 networks:
   GroupNetwork:
     driver: bridge

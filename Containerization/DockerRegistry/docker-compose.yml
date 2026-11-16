@@ -13,7 +13,7 @@ services:
       - registry_data:/data
     networks:
       GroupNetwork:
-        ipv4_address: ${REGISTRY_IP:-192.168.16.180}
+        ipv4_address: ${REGISTRY_IP:-172.20.5.10}
         aliases:
           - dockerregistry
   registry-ui:
@@ -39,7 +39,7 @@ services:
       - CATALOG_ELEMENTS_LIMIT=${REGISTRY_UI_CATALOG_LIMIT:-1000}
     networks:
       GroupNetwork:
-        ipv4_address: ${REGISTRY_UI_IP:-192.168.16.181}
+        ipv4_address: ${REGISTRY_UI_IP:-172.20.5.11}
         aliases:
           - dockerregistryui
 volumes:
@@ -49,7 +49,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Containerization/DockerRegistry/data/
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Containerization/DockerRegistry/data/
 networks:
   GroupNetwork:
     driver: bridge

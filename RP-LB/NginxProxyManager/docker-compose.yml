@@ -27,7 +27,7 @@ services:
       - npmletsencrypt:/etc/letsencrypt
     networks:
       GroupNetwork:
-        ipv4_address: ${NPM_IP:-192.168.16.161}
+        ipv4_address: ${NPM_IP:-172.20.14.20}
         aliases:
           - nginxproxymanager
 
@@ -38,14 +38,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/RP-LB/NginxProxyManager/data
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/RP-LB/NginxProxyManager/data
   npmletsencrypt:
     name: npmletsencrypt
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/RP-LB/NginxProxyManager/letsencrypt
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/RP-LB/NginxProxyManager/letsencrypt
 
 networks:
   GroupNetwork:

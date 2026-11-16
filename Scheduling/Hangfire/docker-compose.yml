@@ -18,7 +18,7 @@ services:
     command: ["dotnet", "HangfireServer.dll"]
     networks:
       GroupNetwork:
-        ipv4_address: ${HANGFIRE_IP:-192.168.16.210}
+        ipv4_address: ${HANGFIRE_IP:-172.20.15.10}
         aliases:
           - hangfire
 

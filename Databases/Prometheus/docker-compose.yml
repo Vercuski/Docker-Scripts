@@ -15,7 +15,7 @@ services:
       - '--web.enable-remote-write-receiver'
     networks:
       GroupNetwork:
-        ipv4_address: ${PROMETHEUS_IP:-192.168.16.26}
+        ipv4_address: ${PROMETHEUS_IP:-172.20.6.140}
         aliases:
           - prometheus
     ports:
@@ -36,7 +36,7 @@ services:
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     networks:
       GroupNetwork:
-        ipv4_address: ${NODE_EXPORTER_IP:-192.168.16.27}
+        ipv4_address: ${NODE_EXPORTER_IP:-172.20.6.141}
         aliases:
           - node-exporter
     ports:
@@ -53,7 +53,7 @@ services:
       - '--storage.path=/alertmanager'
     networks:
       GroupNetwork:
-        ipv4_address: ${ALERTMANAGER_IP:-192.168.16.28}
+        ipv4_address: ${ALERTMANAGER_IP:-172.20.6.142}
         aliases:
           - alertmanager
     ports:
@@ -65,14 +65,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/alertmanager
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/Prometheus/alertmanager
   prometheus_data:
     name: prometheus_data
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Prometheus/prometheus_data
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/Prometheus/prometheus_data
 networks:
   GroupNetwork:
     driver: bridge

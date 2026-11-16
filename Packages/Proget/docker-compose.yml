@@ -12,7 +12,7 @@ services:
       - "${PROGET_HTTPS_PORT:-8092}:443"
     networks:
       GroupNetwork:
-        ipv4_address: ${PROGET_IP:-192.168.16.200}
+        ipv4_address: ${PROGET_IP:-172.20.13.10}
         aliases:
           - proget
     volumes:
@@ -25,14 +25,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Packages/ProGet/packages
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Packages/ProGet/packages
   Proget_SSL:
     name: Proget_SSL
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${ROOT_VOLUME_DIR:?error}/docker/volumes/Packages/ProGet/ssl
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Packages/ProGet/ssl
 networks:
   GroupNetwork:
     driver: bridge

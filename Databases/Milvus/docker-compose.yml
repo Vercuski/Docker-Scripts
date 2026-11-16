@@ -9,11 +9,11 @@ services:
       - ETCD_QUOTA_BACKEND_BYTES=${MILVUS_ETCD_QUOTA_BACKEND_BYTES:-4294967296}
       - ETCD_SNAPSHOT_COUNT=${MILVUS_ETCD_SNAPSHOT_COUNT:-50000}
     volumes:
-      - ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Milvus/etcd:/etcd
+      - ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/Milvus/etcd:/etcd
     command: etcd -advertise-client-urls=http://etcd:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
     networks:
       GroupNetwork:
-        ipv4_address: ${MILVUS_ETCD_IP:-192.168.16.40}
+        ipv4_address: ${MILVUS_ETCD_IP:-172.20.6.70}
         aliases:
           - milvus-etcd
     healthcheck:
@@ -34,11 +34,11 @@ services:
       - "${MILVUS_MINIO_API_PORT:-9110}:9000" # MinIO S3 API
     networks:
       GroupNetwork:
-        ipv4_address: ${MILVUS_MINIO_IP:-192.168.16.41}
+        ipv4_address: ${MILVUS_MINIO_IP:-172.20.6.71}
         aliases:
           - milvus-minio
     volumes:
-      - ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Milvus/minio:/minio_data
+      - ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/Milvus/minio:/minio_data
     command: minio server /minio_data --console-address ":9001"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
@@ -59,11 +59,11 @@ services:
       MINIO_ADDRESS: minio:9000
     networks:
       GroupNetwork:
-        ipv4_address: ${MILVUS_IP:-192.168.16.42}
+        ipv4_address: ${MILVUS_IP:-172.20.6.72}
         aliases:
           - milvus-standalone
     volumes:
-      - ${ROOT_VOLUME_DIR:?error}/docker/volumes/Databases/Milvus/milvus:/var/lib/milvus
+      - ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Databases/Milvus/milvus:/var/lib/milvus
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
       interval: 30s
