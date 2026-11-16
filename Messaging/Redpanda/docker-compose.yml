@@ -1,0 +1,73 @@
+# Redpanda: Kafka-API compatible broker (Confluent.Kafka works unchanged) with a built-in Schema Registry and
+# HTTP proxy, single node in dev-container mode. Console: http://localhost:8116
+#   From the host:        localhost:19092          From GroupNetwork: redpanda:9092
+services:
+  redpanda:
+    image: redpandadata/redpanda:${REDPANDA_VERSION:-v26.2.7}
+    container_name: redpanda
+    restart: unless-stopped
+    command:
+      - redpanda
+      - start
+      - --mode=dev-container
+      - --smp=${REDPANDA_SMP:-1}
+      - --memory=${REDPANDA_MEMORY:-1G}
+      - --kafka-addr=internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr=internal://redpanda:9092,external://localhost:${REDPANDA_KAFKA_PORT:-19092}
+      - --pandaproxy-addr=internal://0.0.0.0:8082,external://0.0.0.0:18082
+      - --advertise-pandaproxy-addr=internal://redpanda:8082,external://localhost:${REDPANDA_HTTP_PROXY_PORT:-18082}
+      - --schema-registry-addr=internal://0.0.0.0:8081,external://0.0.0.0:18081
+      - --rpc-addr=redpanda:33145
+      - --advertise-rpc-addr=redpanda:33145
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -E 'Healthy:.+true' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    volumes:
+      - redpanda_data:/var/lib/redpanda/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${REDPANDA_IP:-172.20.10.60}
+        aliases:
+          - redpanda
+    ports:
+      # The external Kafka listener advertises localhost:<host port>, so the container listens on 19092 and the
+      # mapping only changes the host side
+      - "${REDPANDA_KAFKA_PORT:-19092}:19092" # Kafka API
+      - "${REDPANDA_SCHEMA_REGISTRY_PORT:-18081}:18081" # Schema Registry
+      - "${REDPANDA_HTTP_PROXY_PORT:-18082}:18082" # HTTP proxy
+      - "${REDPANDA_ADMIN_PORT:-9644}:9644" # Admin API
+  redpanda-console:
+    image: redpandadata/console:${REDPANDA_CONSOLE_VERSION:-v3.14.0}
+    container_name: redpanda-console
+    restart: unless-stopped
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKERS: redpanda:9092
+      SCHEMAREGISTRY_ENABLED: "true"
+      SCHEMAREGISTRY_URLS: http://redpanda:8081
+      REDPANDA_ADMINAPI_ENABLED: "true"
+      REDPANDA_ADMINAPI_URLS: http://redpanda:9644
+    networks:
+      GroupNetwork:
+        ipv4_address: ${REDPANDA_CONSOLE_IP:-172.20.10.61}
+        aliases:
+          - redpanda-console
+    ports:
+      - "${REDPANDA_CONSOLE_PORT:-8116}:8080"
+volumes:
+  redpanda_data:
+    name: redpanda_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Messaging/Redpanda/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

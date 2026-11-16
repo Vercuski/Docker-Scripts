@@ -1,0 +1,38 @@
+# smtp4dev: fake SMTP server for development, written in .NET. Catches every message (nothing is delivered) and
+# shows it in a web UI; also serves the mailbox over IMAP/POP3 so mail clients and tests can read it.
+# UI: http://localhost:8115 - SMTP: localhost:2525 (from other containers: smtp4dev:25)
+services:
+  smtp4dev:
+    image: rnwood/smtp4dev:${SMTP4DEV_VERSION:-3.16.1}
+    container_name: smtp4dev
+    restart: unless-stopped
+    environment:
+      ServerOptions__Urls: http://*:80
+      ServerOptions__HostName: smtp4dev
+      ServerOptions__Database: /smtp4dev/database.db
+      ServerOptions__NumberOfMessagesToKeep: ${SMTP4DEV_MAX_MESSAGES:-1000}
+      ServerOptions__TlsMode: None
+    volumes:
+      - smtp4dev_data:/smtp4dev
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SMTP4DEV_IP:-172.20.8.20}
+        aliases:
+          - smtp4dev
+    ports:
+      - "${SMTP4DEV_UI_PORT:-8115}:80" # Web UI + API
+      - "${SMTP4DEV_SMTP_PORT:-2525}:25" # SMTP
+      - "${SMTP4DEV_IMAP_PORT:-1143}:143" # IMAP
+      - "${SMTP4DEV_POP3_PORT:-1110}:110" # POP3
+volumes:
+  smtp4dev_data:
+    name: smtp4dev_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Email/Smtp4dev/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

@@ -1,0 +1,40 @@
+# OpenAPI viewers for local APIs:
+#   Swagger UI  http://localhost:8113  - interactive "try it out" console, several specs in a dropdown (API_SPEC_URLS)
+#   Redoc       http://localhost:8114  - three-panel reference docs for one spec (API_SPEC_URL)
+# Spec files in ./specs are served by both; specs from running apps are fetched by the browser (CORS required).
+services:
+  swagger-ui:
+    image: swaggerapi/swagger-ui:${SWAGGER_UI_VERSION:-v5.35.0}
+    container_name: swagger-ui
+    restart: unless-stopped
+    environment:
+      URLS: '${API_SPEC_URLS:-[{"url":"specs/sample-todo-api.yaml","name":"Sample Todo API (./specs)"},{"url":"http://localhost:5000/openapi/v1.json","name":"Local ASP.NET app (:5000)"}]}'
+    volumes:
+      - ./specs:/usr/share/nginx/html/specs:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SWAGGER_UI_IP:-172.20.7.90}
+        aliases:
+          - swagger-ui
+    ports:
+      - "${SWAGGER_UI_PORT:-8113}:8080"
+  redoc:
+    image: redocly/redoc:${REDOC_VERSION:-3.1.0}
+    container_name: redoc
+    restart: unless-stopped
+    environment:
+      SPEC_URL: ${API_SPEC_URL:-specs/sample-todo-api.yaml}
+      PAGE_TITLE: API reference
+    volumes:
+      - ./specs:/usr/share/nginx/html/specs:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${REDOC_IP:-172.20.7.91}
+        aliases:
+          - redoc
+    ports:
+      - "${REDOC_PORT:-8114}:80"
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

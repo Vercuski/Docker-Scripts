@@ -1,0 +1,40 @@
+# Apache Pulsar in standalone mode (broker, bookie and metadata store in one JVM) for local development.
+#   pulsar://localhost:6650 (from GroupNetwork: pulsar://pulsar:6650), admin REST: http://localhost:8117
+# .NET clients: DotPulsar (official) or Pulsar.Client. CLI: docker exec -it pulsar bin/pulsar-admin topics list public/default
+services:
+  pulsar:
+    image: apachepulsar/pulsar:${PULSAR_VERSION:-5.0.1}
+    container_name: pulsar
+    hostname: pulsar
+    restart: unless-stopped
+    command: ["bin/pulsar", "standalone", "--no-functions-worker", "--no-stream-storage"]
+    environment:
+      PULSAR_MEM: ${PULSAR_MEM:--Xms512m -Xmx512m -XX:MaxDirectMemorySize=512m}
+    healthcheck:
+      test: ["CMD-SHELL", "bin/pulsar-admin brokers healthcheck || exit 1"]
+      interval: 15s
+      timeout: 15s
+      retries: 20
+      start_period: 30s
+    volumes:
+      - pulsar_data:/pulsar/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${PULSAR_IP:-172.20.10.70}
+        aliases:
+          - pulsar
+    ports:
+      - "${PULSAR_PORT:-6650}:6650" # binary protocol
+      - "${PULSAR_HTTP_PORT:-8117}:8080" # admin REST API
+volumes:
+  pulsar_data:
+    name: pulsar_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Messaging/Pulsar/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

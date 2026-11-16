@@ -1,0 +1,94 @@
+# Atlantis: runs terraform/tofu plan and apply from pull-request comments on the Gitea stack. UI: http://localhost:4141
+# atlantis-init logs in to Gitea with YOUR admin account (set in .env), creates the "atlantis" bot user and an API
+# token if they don't exist yet, and stores the token in the data volume; Atlantis reads it on start.
+# Requires the Gitea stack (installer completed, webhooks to private addresses allowed - see SourceControl/Gitea).
+services:
+  atlantis-init:
+    image: ghcr.io/runatlantis/atlantis:${ATLANTIS_VERSION:-v0.49.0}
+    container_name: atlantis-init
+    restart: "no"
+    environment:
+      ADMIN_USER: ${ATLANTIS_GITEA_ADMIN_USER:-gitea_admin}
+      ADMIN_PASSWORD: ${ATLANTIS_GITEA_ADMIN_PASSWORD:-Password123}
+      BOT_USER: ${ATLANTIS_GITEA_BOT_USER:-atlantis}
+      BOT_PASSWORD: ${ATLANTIS_GITEA_BOT_PASSWORD:-Password123}
+      BOT_EMAIL: ${ATLANTIS_GITEA_BOT_EMAIL:-atlantis@dev.localhost}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        API=http://gitea:3000/api/v1
+        TOKEN_FILE=/atlantis-data/gitea-token
+        for i in $$(seq 60); do curl -fs http://gitea:3000/api/healthz >/dev/null && break; echo "waiting for gitea (start SourceControl/Gitea)"; sleep 2; done
+        if [ -s "$$TOKEN_FILE" ] && curl -fs -H "Authorization: token $$(cat $$TOKEN_FILE)" "$$API/user" >/dev/null; then
+          echo "Gitea token for $$BOT_USER is valid"; exit 0
+        fi
+        code=$$(curl -s -o /dev/null -w '%{http_code}' -u "$$ADMIN_USER:$$ADMIN_PASSWORD" "$$API/users/$$BOT_USER")
+        if [ "$$code" = 404 ]; then
+          curl -fsS -o /dev/null -u "$$ADMIN_USER:$$ADMIN_PASSWORD" -H "Content-Type: application/json" -X POST "$$API/admin/users" \
+            -d "{\"username\":\"$$BOT_USER\",\"email\":\"$$BOT_EMAIL\",\"password\":\"$$BOT_PASSWORD\",\"must_change_password\":false}"
+          echo "created Gitea user $$BOT_USER"
+        elif [ "$$code" != 200 ]; then
+          echo "Gitea admin login failed (HTTP $$code): finish the Gitea installer, then set ATLANTIS_GITEA_ADMIN_USER/PASSWORD in .env"
+          exit 1
+        fi
+        curl -fsS -u "$$BOT_USER:$$BOT_PASSWORD" -H "Content-Type: application/json" -X POST "$$API/users/$$BOT_USER/tokens" \
+          -d "{\"name\":\"atlantis-$$(date +%Y%m%d%H%M%S)\",\"scopes\":[\"write:repository\",\"write:issue\",\"read:user\"]}" \
+          | sed -n 's/.*"sha1":"\([^"]*\)".*/\1/p' > "$$TOKEN_FILE"
+        [ -s "$$TOKEN_FILE" ] || { echo "could not create a token for $$BOT_USER"; exit 1; }
+        echo "stored a new Gitea token for $$BOT_USER"
+    volumes:
+      - atlantis_data:/atlantis-data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${ATLANTIS_INIT_IP:-172.20.9.30}
+  atlantis:
+    image: ghcr.io/runatlantis/atlantis:${ATLANTIS_VERSION:-v0.49.0}
+    container_name: atlantis
+    restart: unless-stopped
+    depends_on:
+      atlantis-init:
+        condition: service_completed_successfully
+    # Gitea puts its public address (localhost / host.docker.internal on its host port) in clone URLs; inside this
+    # container that address is wrong, so git is told to fetch those URLs from http://gitea:3000 on GroupNetwork.
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        export ATLANTIS_GITEA_TOKEN="$$(cat /atlantis-data/gitea-token)"
+        for h in localhost 127.0.0.1 host.docker.internal; do
+          git config --global --add "url.http://$$ATLANTIS_GITEA_USER:$$ATLANTIS_GITEA_TOKEN@gitea:3000/.insteadOf" \
+            "http://$$ATLANTIS_GITEA_USER:$$ATLANTIS_GITEA_TOKEN@$$h:$$GITEA_HOST_PORT/"
+        done
+        exec docker-entrypoint.sh server
+    environment:
+      ATLANTIS_ATLANTIS_URL: http://localhost:${ATLANTIS_PORT:-4141}
+      ATLANTIS_PORT: 4141
+      ATLANTIS_DATA_DIR: /atlantis-data
+      ATLANTIS_GITEA_BASE_URL: http://gitea:3000
+      ATLANTIS_GITEA_USER: ${ATLANTIS_GITEA_BOT_USER:-atlantis}
+      ATLANTIS_GITEA_WEBHOOK_SECRET: ${ATLANTIS_WEBHOOK_SECRET:-Password123}
+      ATLANTIS_REPO_ALLOWLIST: ${ATLANTIS_REPO_ALLOWLIST:-*}
+      ATLANTIS_DEFAULT_TF_DISTRIBUTION: ${ATLANTIS_TF_DISTRIBUTION:-terraform}
+      GITEA_HOST_PORT: ${ATLANTIS_GITEA_HOST_PORT:-3001}
+    volumes:
+      - atlantis_data:/atlantis-data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${ATLANTIS_IP:-172.20.9.31}
+        aliases:
+          - atlantis
+    ports:
+      - "${ATLANTIS_PORT:-4141}:4141"
+volumes:
+  atlantis_data:
+    name: atlantis_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/IaC/Atlantis/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

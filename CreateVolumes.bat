@@ -96,15 +96,26 @@ call :mk Databases\ScyllaDB\data
 call :mk Databases\TimescaleDB\data
 call :mk Databases\Valkey\data
 
+call :mk Documentation\BookStack\config
 call :mk Documentation\Mediawiki\html
+call :mk Documentation\Outline\data
+call :mk Documentation\Structurizr\workspace
+call :mk Documentation\WikiJs\data
 
 call :mk Email\Mailpit\data
+call :mk Email\Smtp4dev\data
 
-call :mk IaC\Terraform\data
+call :mk IaC\Atlantis\data
+call :mk IaC\Semaphore\data
 
+call :mk Messaging\Artemis\instance
 call :mk Messaging\Kafka\Kafka\data
+call :mk Messaging\Mosquitto\data
+call :mk Messaging\NATS\data
+call :mk Messaging\Pulsar\data
 call :mk Messaging\RabbitMQ\data
 call :mk Messaging\RabbitMQ\log
+call :mk Messaging\Redpanda\data
 
 call :mk Observability\OpenTelemetry\tempo
 call :mk Observability\OpenTelemetry\loki

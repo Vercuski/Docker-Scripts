@@ -1,0 +1,28 @@
+# Dex: minimal OIDC provider so Outline has a login out of the box (Outline has no local accounts).
+# The issuer is the browser-facing URL; Outline calls the token/userinfo endpoints at http://outline-dex:5556.
+# The image renders this file with gomplate, so the getenv calls below read the container environment (docker-compose.yml / .env).
+issuer: http://localhost:{{ getenv "DEX_PORT" "5556" }}/dex
+
+storage:
+  type: memory   # clients and users below are static, so nothing needs persisting
+
+web:
+  http: 0.0.0.0:{{ getenv "DEX_PORT" "5556" }}
+
+oauth2:
+  skipApprovalScreen: true
+
+staticClients:
+  - id: outline
+    name: Outline
+    secret: {{ getenv "OIDC_CLIENT_SECRET" "Password123" }}
+    redirectURIs:
+      - {{ getenv "OUTLINE_URL" "http://localhost:3002" }}/auth/oidc.callback
+
+enablePasswordDB: true
+staticPasswords:
+  # Password123 - generate another hash with: htpasswd -bnBC 10 "" NewPassword | tr -d ':\n'
+  - email: admin@example.com
+    hash: "$2b$10$Jo0valoAO7w62yRHtqtaKeMJBHkkaUntnDbaWnMpXrl5APt5m7nvu"
+    username: admin
+    userID: 4489d681-91c3-4b2c-a2c4-34f7dc46d723

@@ -15,3 +15,6 @@ SELECT content FROM items ORDER BY embedding <=> '[...]' LIMIT 5;
 
 It is a drop-in replacement for `postgres:18` (same Debian trixie base), so an existing data folder keeps working.
 Changing the PostgreSQL major version on existing data requires `pg_upgrade`.
+
+The server runs with `wal_level=logical` (set in `.env`) so Debezium (Messaging/Debezium) can stream changes.
+It only adds detail to the write-ahead log; existing data is unaffected, but restart the stack once for it to apply.

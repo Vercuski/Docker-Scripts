@@ -16,3 +16,6 @@ Note: data written by the old ZooKeeper-based setup is not compatible with KRaft
 
 Use the "Offset Explorer" application to view the kafka queue properties<br>
 https://www.kafkatool.com/<br>
+
+Kafka UI is also configured for two optional companion stacks, shown once they are running: the **Debezium** Kafka
+Connect cluster (Messaging/Debezium) and **Apicurio Registry** as schema registry (Messaging/Apicurio).<br>

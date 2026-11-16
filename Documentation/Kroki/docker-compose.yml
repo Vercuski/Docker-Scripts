@@ -1,0 +1,57 @@
+# Kroki: one HTTP API that renders PlantUML, C4-PlantUML, Graphviz, D2, Structurizr DSL, Mermaid, BPMN, Excalidraw and more
+# to SVG/PNG/PDF. The main container covers most formats; Mermaid, BPMN and Excalidraw run as companion containers.
+#   POST http://localhost:8000/plantuml/svg   (body = diagram source)
+#   GET  http://localhost:8000/mermaid/svg/<deflate+base64url source>
+# No volumes: stateless.
+services:
+  kroki:
+    image: yuzutech/kroki:${KROKI_VERSION:-0.36.0}
+    container_name: kroki
+    restart: unless-stopped
+    depends_on:
+      - kroki-mermaid
+      - kroki-bpmn
+      - kroki-excalidraw
+    environment:
+      KROKI_MERMAID_HOST: kroki-mermaid
+      KROKI_BPMN_HOST: kroki-bpmn
+      KROKI_EXCALIDRAW_HOST: kroki-excalidraw
+      KROKI_MAX_BODY_SIZE: ${KROKI_MAX_BODY:-1048576}
+    networks:
+      GroupNetwork:
+        ipv4_address: ${KROKI_IP:-172.20.7.70}
+        aliases:
+          - kroki
+    ports:
+      - "${KROKI_PORT:-8000}:8000"
+  kroki-mermaid:
+    image: yuzutech/kroki-mermaid:${KROKI_VERSION:-0.36.0}
+    container_name: kroki-mermaid
+    restart: unless-stopped
+    networks:
+      GroupNetwork:
+        ipv4_address: ${KROKI_MERMAID_IP:-172.20.7.71}
+        aliases:
+          - kroki-mermaid
+  kroki-bpmn:
+    image: yuzutech/kroki-bpmn:${KROKI_VERSION:-0.36.0}
+    container_name: kroki-bpmn
+    restart: unless-stopped
+    networks:
+      GroupNetwork:
+        ipv4_address: ${KROKI_BPMN_IP:-172.20.7.72}
+        aliases:
+          - kroki-bpmn
+  kroki-excalidraw:
+    image: yuzutech/kroki-excalidraw:${KROKI_VERSION:-0.36.0}
+    container_name: kroki-excalidraw
+    restart: unless-stopped
+    networks:
+      GroupNetwork:
+        ipv4_address: ${KROKI_EXCALIDRAW_IP:-172.20.7.73}
+        aliases:
+          - kroki-excalidraw
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

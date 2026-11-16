@@ -1,0 +1,71 @@
+# Apicurio Registry 3: stores and versions Avro / Protobuf / JSON Schema (plus OpenAPI and AsyncAPI) artifacts.
+# Kafka serializers can use its Confluent-compatible API (http://apicurio-registry:8080/apis/ccompat/v7), so
+# Confluent.SchemaRegistry.Serdes work unchanged. UI: http://localhost:8120   API: http://localhost:8119/apis/registry/v3
+# Requires the PostgreSQL stack; apicurio-db-init creates the apicurio role and database.
+services:
+  apicurio-db-init:
+    image: ${APICURIO_DB_INIT_IMAGE:-postgres:18}
+    container_name: apicurio-db-init
+    restart: "no"
+    environment:
+      PGHOST: postgresql
+      PGUSER: ${APICURIO_DB_ADMIN_USER:-user@user.com}
+      PGPASSWORD: ${APICURIO_DB_ADMIN_PASSWORD:-Password123}
+      DB_NAME: ${APICURIO_DB_NAME:-apicurio}
+      DB_USER: ${APICURIO_DB_USER:-apicurio}
+      DB_PASSWORD: ${APICURIO_DB_PASSWORD:-Password123}
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        for i in $$(seq 30); do pg_isready -q -d postgres && break; echo "waiting for postgresql (start Databases/PostgreSQL)"; sleep 2; done
+        psql -d postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$$DB_USER'" | grep -q 1 \
+          || psql -d postgres -c "CREATE ROLE \"$$DB_USER\" LOGIN PASSWORD '$$DB_PASSWORD'"
+        psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$$DB_NAME'" | grep -q 1 \
+          && echo "database $$DB_NAME exists" \
+          || psql -d postgres -c "CREATE DATABASE \"$$DB_NAME\" OWNER \"$$DB_USER\""
+    networks:
+      GroupNetwork:
+        ipv4_address: ${APICURIO_DB_INIT_IP:-172.20.10.90}
+  apicurio-registry:
+    image: apicurio/apicurio-registry:${APICURIO_VERSION:-3.3.4}
+    container_name: apicurio-registry
+    restart: unless-stopped
+    depends_on:
+      apicurio-db-init:
+        condition: service_completed_successfully
+    environment:
+      APICURIO_STORAGE_KIND: sql
+      APICURIO_STORAGE_SQL_KIND: postgresql
+      APICURIO_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/${APICURIO_DB_NAME:-apicurio}
+      APICURIO_DATASOURCE_USERNAME: ${APICURIO_DB_USER:-apicurio}
+      APICURIO_DATASOURCE_PASSWORD: ${APICURIO_DB_PASSWORD:-Password123}
+      # The UI calls the API from the browser
+      QUARKUS_HTTP_CORS_ORIGINS: http://localhost:${APICURIO_UI_PORT:-8120}
+    networks:
+      GroupNetwork:
+        ipv4_address: ${APICURIO_IP:-172.20.10.91}
+        aliases:
+          - apicurio-registry
+    ports:
+      - "${APICURIO_API_PORT:-8119}:8080" # REST API (v3 + ccompat)
+  apicurio-ui:
+    image: apicurio/apicurio-registry-ui:${APICURIO_VERSION:-3.3.4}
+    container_name: apicurio-ui
+    restart: unless-stopped
+    depends_on:
+      - apicurio-registry
+    environment:
+      REGISTRY_API_URL: http://localhost:${APICURIO_API_PORT:-8119}/apis/registry/v3
+    networks:
+      GroupNetwork:
+        ipv4_address: ${APICURIO_UI_IP:-172.20.10.92}
+        aliases:
+          - apicurio-ui
+    ports:
+      - "${APICURIO_UI_PORT:-8120}:8080"
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

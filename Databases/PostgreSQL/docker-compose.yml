@@ -7,6 +7,15 @@ services:
     image: pgvector/pgvector:${PGVECTOR_VERSION:-pg18-trixie}
     container_name: postgresql
     restart: unless-stopped
+    # wal_level=logical lets Debezium (Messaging/Debezium) stream changes; it only adds WAL detail, data is unaffected
+    command:
+      - postgres
+      - -c
+      - wal_level=${POSTGRES_WAL_LEVEL:-logical}
+      - -c
+      - max_replication_slots=${POSTGRES_MAX_REPLICATION_SLOTS:-10}
+      - -c
+      - max_wal_senders=${POSTGRES_MAX_WAL_SENDERS:-10}
     environment:
       POSTGRES_USER: "${POSTGRES_USER:-user@user.com}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-Password123}"

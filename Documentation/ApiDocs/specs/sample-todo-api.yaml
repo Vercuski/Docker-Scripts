@@ -1,0 +1,63 @@
+# Sample OpenAPI document so the viewers have something to show. Drop your own *.yaml / *.json specs into this
+# folder (and list them in API_SPEC_URLS in .env), or point the viewers at a running app's /openapi/v1.json.
+openapi: 3.1.0
+info:
+  title: Sample Todo API
+  version: 1.0.0
+  description: Minimal example spec served from Documentation/ApiDocs/specs.
+paths:
+  /todos:
+    get:
+      summary: List todos
+      operationId: listTodos
+      responses:
+        "200":
+          description: The todos
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Todo" }
+    post:
+      summary: Create a todo
+      operationId: createTodo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/NewTodo" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Todo" }
+  /todos/{id}:
+    get:
+      summary: Get a todo
+      operationId: getTodo
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer, format: int64 } }
+      responses:
+        "200":
+          description: The todo
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Todo" }
+        "404":
+          description: Not found
+components:
+  schemas:
+    NewTodo:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string }
+        isComplete: { type: boolean, default: false }
+    Todo:
+      allOf:
+        - $ref: "#/components/schemas/NewTodo"
+        - type: object
+          required: [id]
+          properties:
+            id: { type: integer, format: int64 }

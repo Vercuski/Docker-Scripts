@@ -1,0 +1,41 @@
+# Apache Artemis broker (the project formerly called ActiveMQ Artemis). Works with MassTransit
+# (MassTransit.ActiveMQ / MassTransit.AmqpTransport), NServiceBus, NMS and any AMQP 1.0 client.
+# Console: http://localhost:8161/console (artemis / Password123)
+# The broker instance (broker.xml, users, journal) is created in the volume on the first start.
+services:
+  artemis:
+    image: apache/artemis:${ARTEMIS_VERSION:-2.57.0}
+    container_name: artemis
+    restart: unless-stopped
+    environment:
+      ARTEMIS_USER: ${ARTEMIS_USER:-artemis}
+      ARTEMIS_PASSWORD: ${ARTEMIS_PASSWORD:-Password123}
+      ANONYMOUS_LOGIN: "false"
+      EXTRA_ARGS: --http-host 0.0.0.0 --relax-jolokia
+      # Artemis blocks producers when the disk is fuller than max-disk-usage (90% by default), which is common
+      # on a dev machine; -1 turns the check off
+      JDK_JAVA_OPTIONS: -Dbrokerconfig.maxDiskUsage=${ARTEMIS_MAX_DISK_USAGE:--1}
+    volumes:
+      - artemis_instance:/var/lib/artemis-instance
+    networks:
+      GroupNetwork:
+        ipv4_address: ${ARTEMIS_IP:-172.20.10.50}
+        aliases:
+          - artemis
+    ports:
+      - "${ARTEMIS_PORT:-61616}:61616" # all protocols
+      - "${ARTEMIS_AMQP_PORT:-5675}:5672" # AMQP 1.0
+      - "${ARTEMIS_STOMP_PORT:-61613}:61613" # STOMP
+      - "${ARTEMIS_CONSOLE_PORT:-8161}:8161" # web console
+volumes:
+  artemis_instance:
+    name: artemis_instance
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Messaging/Artemis/instance
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

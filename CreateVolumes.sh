@@ -87,15 +87,26 @@ mkdir -p "$ROOT/docker/volumes/Databases/ScyllaDB/data"
 mkdir -p "$ROOT/docker/volumes/Databases/TimescaleDB/data"
 mkdir -p "$ROOT/docker/volumes/Databases/Valkey/data"
 
+mkdir -p "$ROOT/docker/volumes/Documentation/BookStack/config"
 mkdir -p "$ROOT/docker/volumes/Documentation/Mediawiki/html"
+mkdir -p "$ROOT/docker/volumes/Documentation/Outline/data"
+mkdir -p "$ROOT/docker/volumes/Documentation/Structurizr/workspace"
+mkdir -p "$ROOT/docker/volumes/Documentation/WikiJs/data"
 
 mkdir -p "$ROOT/docker/volumes/Email/Mailpit/data"
+mkdir -p "$ROOT/docker/volumes/Email/Smtp4dev/data"
 
-mkdir -p "$ROOT/docker/volumes/IaC/Terraform/data"
+mkdir -p "$ROOT/docker/volumes/IaC/Atlantis/data"
+mkdir -p "$ROOT/docker/volumes/IaC/Semaphore/data"
 
+mkdir -p "$ROOT/docker/volumes/Messaging/Artemis/instance"
 mkdir -p "$ROOT/docker/volumes/Messaging/Kafka/Kafka/data/"
+mkdir -p "$ROOT/docker/volumes/Messaging/Mosquitto/data"
+mkdir -p "$ROOT/docker/volumes/Messaging/NATS/data"
+mkdir -p "$ROOT/docker/volumes/Messaging/Pulsar/data"
 mkdir -p "$ROOT/docker/volumes/Messaging/RabbitMQ/data"
 mkdir -p "$ROOT/docker/volumes/Messaging/RabbitMQ/log"
+mkdir -p "$ROOT/docker/volumes/Messaging/Redpanda/data"
 
 mkdir -p "$ROOT/docker/volumes/Observability/OpenTelemetry/tempo"
 mkdir -p "$ROOT/docker/volumes/Observability/OpenTelemetry/loki"
@@ -171,6 +182,14 @@ if [ "$(uname -s)" = "Linux" ] && [ "${SKIP_CHOWN:-0}" != "1" ]; then
   own 5050:5050   Databases/PostgreSQL/pgadmin4data                                               # pgadmin
   own 999:999     Databases/RavenDB/data                                                         # ravendb
   own 998:1000    Databases/ScyllaDB/data                                                        # scylla
+  own 1001:1001   Documentation/Outline/data                                                     # outline (nodejs)
+  own 65532:65532 Documentation/Structurizr/workspace                                            # structurizr
+  own 1000:1000   Documentation/WikiJs/data                                                      # wiki.js (node)
+  own 100:1000    IaC/Atlantis/data                                                              # atlantis
+  own 1001:1001   IaC/Semaphore/data                                                             # semaphore
+  own 1001:1001   Messaging/Artemis/instance                                                     # artemis
+  own 10000:0     Messaging/Pulsar/data                                                          # pulsar
+  own 101:101     Messaging/Redpanda/data                                                        # redpanda
   own 1000:1000   Messaging/Kafka/Kafka/data                                                      # apache/kafka appuser
   own 10001:10001 Observability/OpenTelemetry/tempo Observability/OpenTelemetry/loki
   own 65534:65534 Observability/Prometheus/prometheus_data Observability/Prometheus/alertmanager  # nobody

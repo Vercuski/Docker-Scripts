@@ -1,0 +1,30 @@
+# Structurizr local: renders the C4 model in workspace.dsl (in the workspace volume folder) and lets you arrange the
+# diagrams; edit the DSL in your editor and refresh the browser. UI: http://localhost:8112
+# This is the consolidated structurizr/structurizr image's "local" command, which replaced Structurizr Lite.
+services:
+  structurizr:
+    image: structurizr/structurizr:${STRUCTURIZR_VERSION:-2026.10.26}
+    container_name: structurizr
+    restart: unless-stopped
+    command: ["local"]
+    volumes:
+      - structurizr_workspace:/usr/local/structurizr
+    networks:
+      GroupNetwork:
+        ipv4_address: ${STRUCTURIZR_IP:-172.20.7.60}
+        aliases:
+          - structurizr
+    ports:
+      - "${STRUCTURIZR_PORT:-8112}:8080"
+volumes:
+  structurizr_workspace:
+    name: structurizr_workspace
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Documentation/Structurizr/workspace
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

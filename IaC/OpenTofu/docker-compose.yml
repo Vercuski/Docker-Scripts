@@ -1,0 +1,24 @@
+# OpenTofu CLI in a long-running container; this folder is mounted at /infra.
+#   docker exec -it opentofu tofu init
+# Drop-in for Terraform configurations (same HCL, providers from registry.opentofu.org), plus state encryption.
+services:
+  opentofu:
+    image: ghcr.io/opentofu/opentofu:${OPENTOFU_VERSION:-1.13.9}
+    container_name: opentofu
+    restart: unless-stopped
+    # The image's entrypoint is the tofu CLI, which exits immediately; keep the container alive instead
+    entrypoint: ["/bin/sh", "-c", "sleep infinity"]
+    networks:
+      GroupNetwork:
+        ipv4_address: ${OPENTOFU_IP:-172.20.9.20}
+        aliases:
+          - opentofu
+    volumes:
+      - .:/infra
+    working_dir: /infra
+    environment:
+      TZ: "${OPENTOFU_TZ:-America/New_York}"
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

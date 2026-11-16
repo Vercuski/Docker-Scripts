@@ -14,6 +14,8 @@ services:
       GITEA__server__SSH_DOMAIN: "${GITEA_SSH_DOMAIN:-localhost}"
       GITEA__server__SSH_PORT: "${GITEA_SSH_PORT:-2222}"
       GITEA__actions__ENABLED: "true"
+      # Gitea only sends webhooks to public addresses by default; "private" adds GroupNetwork (e.g. http://atlantis:4141)
+      GITEA__webhook__ALLOWED_HOST_LIST: "${GITEA_WEBHOOK_ALLOWED_HOSTS:-external,private}"
       # Shared runner registration token - the runner below registers itself with it on first start
       GITEA_RUNNER_REGISTRATION_TOKEN: "${GITEA_RUNNER_REGISTRATION_TOKEN:-8f3c1d6e2a9b4c7d5e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b}"
     volumes:

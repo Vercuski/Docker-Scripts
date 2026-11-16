@@ -1,0 +1,41 @@
+# Eclipse Mosquitto MQTT broker (MQTT 3.1.1 and 5, plus WebSockets). .NET client: MQTTnet.
+# MQTT: localhost:1883 (from other containers: mosquitto:1883), WebSockets: ws://localhost:9002
+services:
+  mosquitto:
+    image: eclipse-mosquitto:${MOSQUITTO_VERSION:-2.1.2-alpine}
+    container_name: mosquitto
+    restart: unless-stopped
+    environment:
+      MQTT_USER: ${MOSQUITTO_USER:-mqtt}
+      MQTT_PASSWORD: ${MOSQUITTO_PASSWORD:-Password123}
+    # Write the password file from .env (hashed by mosquitto_passwd), then run the image's normal entrypoint
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        mosquitto_passwd -c -b /mosquitto/passwordfile "$$MQTT_USER" "$$MQTT_PASSWORD"
+        chown mosquitto:mosquitto /mosquitto/passwordfile && chmod 0700 /mosquitto/passwordfile
+        exec /docker-entrypoint.sh /usr/sbin/mosquitto -c /mosquitto/config/mosquitto.conf
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto_data:/mosquitto/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${MOSQUITTO_IP:-172.20.10.40}
+        aliases:
+          - mosquitto
+    ports:
+      - "${MOSQUITTO_PORT:-1883}:1883" # MQTT
+      - "${MOSQUITTO_WS_PORT:-9002}:9001" # MQTT over WebSockets
+volumes:
+  mosquitto_data:
+    name: mosquitto_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Messaging/Mosquitto/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

@@ -27,3 +27,6 @@ Clone over SSH: `git clone ssh://git@localhost:2222/<owner>/<repo>.git`
 Job containers join GroupNetwork (see `runner-config.yaml`), so tests can use `mssqldb`, `postgresql`, `kafka`, etc.
 The runner uses the host Docker daemon via `/var/run/docker.sock`, so jobs can see other containers on it -
 fine for a personal dev box, not for untrusted code.
+
+Webhooks: Gitea only calls public addresses by default. `GITEA_WEBHOOK_ALLOWED_HOSTS` (`external,private`) also allows
+GroupNetwork services, e.g. Atlantis (`http://atlantis:4141/events`, see IaC/Atlantis).

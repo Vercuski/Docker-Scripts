@@ -1,3 +1,7 @@
+# Terraform CLI in a long-running container; this folder is mounted at /infra.
+#   docker exec -it terraform terraform init
+# (The Gaia web UI that used to live here was removed: the project is unmaintained. See IaC/Atlantis for
+#  pull-request driven plan/apply and IaC/Semaphore for a web UI.)
 services:
   terraform:
     image: hashicorp/terraform:${TERRAFORM_VERSION:-latest}
@@ -16,60 +20,6 @@ services:
     working_dir: /infra
     environment:
       TZ: "${TERRAFORM_TZ:-America/New_York}"
-  gaia:
-    image: gaiaapp/gaia:${GAIA_VERSION:-latest}
-    container_name: gaia
-    restart: unless-stopped
-    depends_on:
-      - mongo
-    networks:
-      GroupNetwork:
-        ipv4_address: ${GAIA_IP:-172.20.9.11}
-        aliases:
-          - gaia
-    ports:
-      - "${GAIA_PORT:-8085}:8080" # 8080 is used by CockroachDB
-    environment:
-      GAIA_MONGODB_URI: "${GAIA_MONGODB_URI:-mongodb://gaia-mongo/gaia}"
-      GAIA_RUNNER_API_PASSWORD: "${GAIA_RUNNER_API_PASSWORD:-123456}"
-      GAIA_EXTERNAL_URL: "${GAIA_EXTERNAL_URL:-http://gaia:8080}"
-  runner:
-    image: gaiaapp/runner:${GAIA_RUNNER_VERSION:-latest}
-    container_name: runner
-    restart: unless-stopped
-    depends_on:
-      - gaia
-    environment:
-      GAIA_URL: http://gaia:8080
-      GAIA_RUNNER_API_PASSWORD: "${GAIA_RUNNER_API_PASSWORD:-123456}"
-    networks:
-      GroupNetwork:
-        ipv4_address: ${GAIA_RUNNER_IP:-172.20.9.12}
-        aliases:
-          - gaiarunner
-    volumes:
-      # The runner starts terraform containers, so it needs the host Docker socket
-      - /var/run/docker.sock:/var/run/docker.sock
-  mongo:
-    # Gaia's documented MongoDB version (the project is no longer actively maintained; newer servers are untested)
-    image: mongo:${GAIA_MONGO_VERSION:-4.4}
-    container_name: gaia-mongo
-    restart: unless-stopped
-    networks:
-      GroupNetwork:
-        ipv4_address: ${GAIA_MONGO_IP:-172.20.9.13}
-        aliases:
-          - gaia-mongo
-    volumes:
-      - terraform_data:/data/db
-volumes:
-  terraform_data:
-    name: terraform_data
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/IaC/Terraform/data
 networks:
   GroupNetwork:
     driver: bridge

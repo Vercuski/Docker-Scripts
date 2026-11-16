@@ -45,6 +45,10 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: "${KAFKA_UI_CLUSTER_NAME:-local}"
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      # Optional companions, shown when their stacks are running: Messaging/Debezium and Messaging/Apicurio
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: debezium
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://debezium:8083
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://apicurio-registry:8080/apis/ccompat/v7
       DYNAMIC_CONFIG_ENABLED: "true"
     networks:
       GroupNetwork:

@@ -20,7 +20,7 @@ If `ROOT_VOLUME_DIR` is missing, `docker compose` stops with *run CreateVolumes.
 instead of binding volumes to the wrong place. To point a single stack somewhere else, uncomment `ROOT_VOLUME_DIR` in its `.env`.
 
 On native Linux the script also `chown`s the folders of images that run as a fixed non-root user (Grafana, Prometheus,
-Tempo/Loki, Elasticsearch, OpenSearch, SonarQube, Dependency-Track, DefectDojo, pgAdmin, Vault, authentik, Kafka, Spark, Flink, JupyterLab, Oracle, KurrentDB, Garnet, RavenDB, ScyllaDB, Wazuh), using `sudo`.
+Tempo/Loki, Elasticsearch, OpenSearch, SonarQube, Dependency-Track, DefectDojo, pgAdmin, Vault, authentik, Kafka, Spark, Flink, JupyterLab, Artemis, Redpanda, Pulsar, Atlantis, Semaphore, Wiki.js, Outline, Structurizr, Oracle, KurrentDB, Garnet, RavenDB, ScyllaDB, Wazuh), using `sudo`.
 Docker Desktop ignores bind-mount ownership, so Windows and macOS skip this. Set `SKIP_CHOWN=1` or `SKIP_PERSIST=1` to opt out.
 
 ## Configuration (.env)
@@ -194,19 +194,38 @@ Every stack joins the external `GroupNetwork` bridge, **172.20.0.0/16**, with a 
 |:----------|:----------|:----------|
 |Backstage|Backstage| 172.20.7.10|
 |Mediawiki|MediaWiki| 172.20.7.20|
+|WikiJs|Wiki.js DB setup (one-shot)| 172.20.7.30|
+|WikiJs|Wiki.js| 172.20.7.31|
+|BookStack|BookStack DB setup (one-shot)| 172.20.7.40|
+|BookStack|BookStack| 172.20.7.41|
+|Outline|Outline DB setup (one-shot)| 172.20.7.50|
+|Outline|Outline Redis| 172.20.7.51|
+|Outline|Dex (OIDC login for Outline)| 172.20.7.52|
+|Outline|Outline| 172.20.7.53|
+|Structurizr|Structurizr (local)| 172.20.7.60|
+|Kroki|Kroki| 172.20.7.70|
+|Kroki|Kroki Mermaid| 172.20.7.71|
+|Kroki|Kroki BPMN| 172.20.7.72|
+|Kroki|Kroki Excalidraw| 172.20.7.73|
+|DrawIo|draw.io| 172.20.7.80|
+|ApiDocs|Swagger UI| 172.20.7.90|
+|ApiDocs|Redoc| 172.20.7.91|
 
 ## Email (172.20.8.x)
 |Folder|Name|IP Address|
 |:----------|:----------|:----------|
 |Mailpit|Mailpit| 172.20.8.10|
+|Smtp4dev|smtp4dev| 172.20.8.20|
 
 ## IaC (172.20.9.x)
 |Folder|Name|IP Address|
 |:----------|:----------|:----------|
 |Terraform|Terraform| 172.20.9.10|
-|Terraform|Gaia| 172.20.9.11|
-|Terraform|Gaia runner| 172.20.9.12|
-|Terraform|Gaia MongoDB| 172.20.9.13|
+|OpenTofu|OpenTofu| 172.20.9.20|
+|Atlantis|Atlantis setup (one-shot)| 172.20.9.30|
+|Atlantis|Atlantis| 172.20.9.31|
+|Semaphore|Semaphore DB setup (one-shot)| 172.20.9.40|
+|Semaphore|Semaphore UI| 172.20.9.41|
 
 ## Messaging (172.20.10.x)
 |Folder|Name|IP Address|
@@ -214,6 +233,16 @@ Every stack joins the external `GroupNetwork` bridge, **172.20.0.0/16**, with a 
 |Kafka|Kafka| 172.20.10.10|
 |Kafka|Kafka UI| 172.20.10.11|
 |RabbitMQ|RabbitMQ| 172.20.10.20|
+|NATS|NATS (JetStream)| 172.20.10.30|
+|Mosquitto|Mosquitto (MQTT)| 172.20.10.40|
+|Artemis|Apache Artemis| 172.20.10.50|
+|Redpanda|Redpanda| 172.20.10.60|
+|Redpanda|Redpanda Console| 172.20.10.61|
+|Pulsar|Apache Pulsar (standalone)| 172.20.10.70|
+|Debezium|Debezium (Kafka Connect)| 172.20.10.80|
+|Apicurio|Apicurio DB setup (one-shot)| 172.20.10.90|
+|Apicurio|Apicurio Registry| 172.20.10.91|
+|Apicurio|Apicurio Registry UI| 172.20.10.92|
 
 ## Observability (172.20.11.x)
 |Folder|Name|IP Address|

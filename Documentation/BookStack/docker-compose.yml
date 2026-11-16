@@ -1,0 +1,80 @@
+# BookStack: structured documentation wiki (shelves, books, chapters, pages) with a WYSIWYG/Markdown editor.
+# UI: http://localhost:6875 (admin@admin.com / password on a new database). Mail goes to Mailpit.
+# Requires the MariaDB stack; bookstack-db-init creates the bookstack user and database.
+services:
+  bookstack-db-init:
+    image: ${BOOKSTACK_DB_INIT_IMAGE:-mariadb:11}
+    container_name: bookstack-db-init
+    restart: "no"
+    environment:
+      MYSQL_PWD: ${BOOKSTACK_DB_ADMIN_PASSWORD:-Password123}
+      DB_NAME: ${BOOKSTACK_DB_NAME:-bookstack}
+      DB_USER: ${BOOKSTACK_DB_USER:-bookstack}
+      DB_PASSWORD: ${BOOKSTACK_DB_PASSWORD:-Password123}
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        for i in $$(seq 30); do mariadb -h mariadb -u root -e "SELECT 1" >/dev/null 2>&1 && break; echo "waiting for mariadb (start Databases/MariaDb)"; sleep 2; done
+        mariadb -h mariadb -u root -e "CREATE DATABASE IF NOT EXISTS \`$$DB_NAME\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+          CREATE USER IF NOT EXISTS '$$DB_USER'@'%' IDENTIFIED BY '$$DB_PASSWORD';
+          GRANT ALL PRIVILEGES ON \`$$DB_NAME\`.* TO '$$DB_USER'@'%'; FLUSH PRIVILEGES;"
+        echo "database $$DB_NAME ready"
+    networks:
+      GroupNetwork:
+        ipv4_address: ${BOOKSTACK_DB_INIT_IP:-172.20.7.40}
+  bookstack:
+    image: linuxserver/bookstack:${BOOKSTACK_VERSION:-26.09.3}
+    container_name: bookstack
+    restart: unless-stopped
+    # The image's nginx also listens on [::]:80, which fails on hosts without IPv6 ("Address family not supported").
+    # Drop those listen lines only when IPv6 is unavailable, then hand over to the image's normal /init.
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        if [ ! -e /proc/net/if_inet6 ]; then
+          sed -i '/listen \[::\]/d' /defaults/nginx/site-confs/default.conf.sample /config/nginx/site-confs/default.conf 2>/dev/null
+        fi
+        exec /init
+    depends_on:
+      bookstack-db-init:
+        condition: service_completed_successfully
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: Etc/UTC
+      APP_URL: http://localhost:${BOOKSTACK_PORT:-6875}
+      APP_KEY: ${BOOKSTACK_APP_KEY:-base64:bG9jYWwtZGV2LWJvb2tzdGFjay1hcHAta2V5LTAwMDE=}
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_DATABASE: ${BOOKSTACK_DB_NAME:-bookstack}
+      DB_USERNAME: ${BOOKSTACK_DB_USER:-bookstack}
+      DB_PASSWORD: ${BOOKSTACK_DB_PASSWORD:-Password123}
+      MAIL_DRIVER: smtp
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MAIL_ENCRYPTION: "null"
+      MAIL_FROM: bookstack@dev.localhost
+    volumes:
+      - bookstack_config:/config
+    networks:
+      GroupNetwork:
+        ipv4_address: ${BOOKSTACK_IP:-172.20.7.41}
+        aliases:
+          - bookstack
+    ports:
+      - "${BOOKSTACK_PORT:-6875}:80"
+volumes:
+  bookstack_config:
+    name: bookstack_config
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Documentation/BookStack/config
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

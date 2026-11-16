@@ -57,12 +57,12 @@ Your uncommitted work in progress (Seq, MSSQL, SuperTokens, README) was kept and
 4. **PostgreSQL**: if your existing data folder was created by PG 17 or earlier, pin that major version instead of 18, or migrate with `pg_upgrade`.
 5. **SuperTokens** `supertokens-postgresql:9.3` is behind current releases. It also needs a `supertokens` database created in Postgres.
 6. **Kubernetes Dashboard** is archived. Headlamp is the recommended replacement.
-7. **Gaia** (Terraform UI) is unmaintained. Consider replacing it (see below).
+7. ~~**Gaia**~~ *Done 2026-11-16: removed; replaced by IaC/Atlantis and IaC/Semaphore.* Gaia (Terraform UI) was unmaintained.
 8. Old Docker volumes with renamed names (`rabbinginx_ui`, `nginix_www`, `nginx`, `haproxy`, `zookeeper_*`, `kafka_secrets`, `node_exporter_*`, `prometheus`) can be removed with `docker volume rm`.
 
 ## Host port map (after the changes)
 
-80/81/443 NPM · 2113 KurrentDB · 1433 MSSQL · 1521 Oracle · 3000 Grafana · 3306 MySQL · 3307 MariaDB · 3567 SuperTokens · 5000/5001 Registry/UI · 5010 Hangfire · 5050 pgAdmin · 5341/8089 Seq · 5432 Postgres · 5601 Kibana · 5602 OpenSearch Dashboards · 5672/15672/15692 RabbitMQ · 6379 Redis · 7007 Backstage · 7077/8090 Spark · 7473/7474/7687 Neo4j · 8080/26257 CockroachDB · 8081 MediaWiki · 8082 phpMyAdmin · 8083 Apache · 8084 Kafka UI · 8085 Gaia · 8086 InfluxDB · 8087 Adminer · 8088 mongo-express · 8091/8092 ProGet · 8100/8404 HAProxy · 8123/19000 ClickHouse · 8180/8181/8443 Nginx/Nginx UI · 8480/8444 Rancher · 9000 SonarQube · 9010/9443 Portainer · 9042 Cassandra · 9090 Prometheus · 9091/19530 Milvus · 9092 Kafka · 9093 Alertmanager · 9100 node-exporter · 9110/9111 MinIO (Milvus) · 9200 Elasticsearch · 9201/9601 OpenSearch · 27017 MongoDB · 514/udp, 1514/1515, 55000 Wazuh manager · 5603 Wazuh dashboard · 9202 Wazuh indexer · 8093 Flink · 8094 Trino · 8888/4040 JupyterLab · 8290/8445 authentik · 8300/8301 ZITADEL · 9095 Authelia · 4433/4434 Kratos · 4444/4445 Hydra · 4455 Ory UI · 5674/9094/5301 Event Hubs emulator · 4566 Floci · 4567 LocalStack · 8095 Pub/Sub emulator · 8096 Firestore emulator · 9011/9020 Spanner emulator · 8446/8097 Lowkey Vault · 8098/8099 Dependency-Track API/UI · 4954 Trivy server · 8102 DefectDojo · 8103 Dozzle · 5002 zot · 8104 Harbor · 8105/38888 RavenDB · 6380 Garnet · 6381 Valkey · 11211 Memcached · 6333/6334 Qdrant · 5984 CouchDB · 8107-8110/11210 Couchbase · 9043/8106 ScyllaDB CQL/Alternator · 5433 TimescaleDB · 8978 CloudBeaver
+80/81/443 NPM · 2113 KurrentDB · 1433 MSSQL · 1521 Oracle · 3000 Grafana · 3306 MySQL · 3307 MariaDB · 3567 SuperTokens · 5000/5001 Registry/UI · 5010 Hangfire · 5050 pgAdmin · 5341/8089 Seq · 5432 Postgres · 5601 Kibana · 5602 OpenSearch Dashboards · 5672/15672/15692 RabbitMQ · 6379 Redis · 7007 Backstage · 7077/8090 Spark · 7473/7474/7687 Neo4j · 8080/26257 CockroachDB · 8081 MediaWiki · 8082 phpMyAdmin · 8083 Apache · 8084 Kafka UI · 8086 InfluxDB · 8087 Adminer · 8088 mongo-express · 8091/8092 ProGet · 8100/8404 HAProxy · 8123/19000 ClickHouse · 8180/8181/8443 Nginx/Nginx UI · 8480/8444 Rancher · 9000 SonarQube · 9010/9443 Portainer · 9042 Cassandra · 9090 Prometheus · 9091/19530 Milvus · 9092 Kafka · 9093 Alertmanager · 9100 node-exporter · 9110/9111 MinIO (Milvus) · 9200 Elasticsearch · 9201/9601 OpenSearch · 27017 MongoDB · 514/udp, 1514/1515, 55000 Wazuh manager · 5603 Wazuh dashboard · 9202 Wazuh indexer · 8093 Flink · 8094 Trino · 8888/4040 JupyterLab · 8290/8445 authentik · 8300/8301 ZITADEL · 9095 Authelia · 4433/4434 Kratos · 4444/4445 Hydra · 4455 Ory UI · 5674/9094/5301 Event Hubs emulator · 4566 Floci · 4567 LocalStack · 8095 Pub/Sub emulator · 8096 Firestore emulator · 9011/9020 Spanner emulator · 8446/8097 Lowkey Vault · 8098/8099 Dependency-Track API/UI · 4954 Trivy server · 8102 DefectDojo · 8103 Dozzle · 5002 zot · 8104 Harbor · 8105/38888 RavenDB · 6380 Garnet · 6381 Valkey · 11211 Memcached · 6333/6334 Qdrant · 5984 CouchDB · 8107-8110/11210 Couchbase · 9043/8106 ScyllaDB CQL/Alternator · 5433 TimescaleDB · 8978 CloudBeaver · 3003 Wiki.js · 6875 BookStack · 3002/5556 Outline/Dex · 8112 Structurizr · 8000 Kroki · 8111 draw.io · 8113/8114 Swagger UI/Redoc · 8115/2525/1143/1110 smtp4dev · 4141 Atlantis · 3004 Semaphore · 4222/8222 NATS · 1883/9002 Mosquitto · 61616/5675/61613/8161 Artemis · 19092/18081/18082/9644/8116 Redpanda · 6650/8117 Pulsar · 8118 Debezium · 8119/8120 Apicurio
 
 ## Suggested new stacks
 
@@ -81,7 +81,7 @@ These are ordered by how much they would help a .NET/ASP.NET Core developer.
 | 9 | **Unleash** or **Flagsmith** | Feature flags | Works with `Microsoft.FeatureManagement` through OpenFeature providers. |
 | 10 | **Garnet** (Microsoft) or **Valkey** | Cache | Garnet is Microsoft Research's Redis-protocol-compatible cache written in .NET. Valkey is the open-source Redis fork. |
 | 11 | **Qdrant** or the **pgvector** Postgres image | Vector DB | A lighter alternative to the 3-container Milvus stack for Semantic Kernel / RAG work. |
-| 12 | **Debezium + Kafka Connect** | Messaging/CDC | Change-data-capture from MSSQL/Postgres into your new KRaft Kafka. |
+| 12 | ~~**Debezium + Kafka Connect**~~ *Done 2026-11-16 (Messaging/Debezium)* | Messaging/CDC | Change-data-capture from MSSQL/Postgres into your new KRaft Kafka. |
 | 13 | **Dozzle** + **Uptime Kuma** | Ops | A real-time container log viewer and an uptime/health dashboard for all these stacks. |
 | 14 | **Headlamp** | Orchestration | Replaces the archived Kubernetes Dashboard. |
 | 15 | **WireMock** | Testing | Stubs HTTP APIs for integration tests. It's also available as a Testcontainers module. |
@@ -286,3 +286,44 @@ Changes to existing stacks:
 - **PostgreSQL** now uses `pgvector/pgvector:pg18-trixie` (same Debian base as `postgres:18`; tested against a data folder created by `postgres:18`). The image variable is now `PGVECTOR_VERSION`.
 - **EventStoreDb → KurrentDB** (`kurrentplatform/kurrentdb:26.2`): new folder, container `kurrentdb`, new data folder `Databases/KurrentDB`, gRPC on 2113 only (port 1113 is gone), `KURRENTDB_*` settings. The `eventstoredb` alias is kept. The old `Databases/EventStoreDb` volume folder is not touched; the old Docker volumes `eventstore-volume-data` / `eventstore-volume-logs` can be removed with `docker volume rm`.
 - **Prometheus** moved to `Observability/Prometheus`: IPs 172.20.11.30-.32, data under `docker/volumes/Observability/Prometheus`. The alias `prometheus`, port 9090 and the volume names are unchanged, so Docker must forget the old volume definitions once (`docker volume rm prometheus_data alertmanager_data`, which doesn't delete the files).
+
+## New stacks added (2026-11-16): Documentation
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| Wiki.js 3.4 | Documentation/WikiJs | .30/.31 | 3003 | PostgreSQL stack (needs PG 17+); admin from `.env` on first start. |
+| BookStack 26.09.3 | Documentation/BookStack | .40/.41 | 6875 | MariaDB stack; mail to Mailpit. Entrypoint drops nginx's `[::]` listener when the host has no IPv6. |
+| Outline 1.13.0 + Dex v2.41.1 | Documentation/Outline | .50-.53 | 3002, 5556 | PostgreSQL stack, own Redis, local file storage. Outline has no local accounts, so Dex (static user in `dex.yaml`, rendered with gomplate) provides the OIDC login. |
+| Structurizr 2026.10.26 (`local`) | Documentation/Structurizr | .60 | 8112 | Structurizr Lite is end-of-life; the consolidated `structurizr/structurizr` image's `local` command replaces it. |
+| Kroki 0.36.0 | Documentation/Kroki | .70-.73 | 8000 | Main server plus Mermaid, BPMN and Excalidraw companions; stateless. Kroki includes PlantUML, so no separate PlantUML server. |
+| draw.io 32.6.10 | Documentation/DrawIo | .80 | 8111 | Stateless editor. |
+| Swagger UI v5.35.0 + Redoc 3.1.0 | Documentation/ApiDocs | .90/.91 | 8113, 8114 | Serve `./specs` (sample spec included); specs from running apps are fetched by the browser. |
+
+## New stacks added (2026-11-16): Email and IaC
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| smtp4dev 3.16.1 | Email/Smtp4dev | 8.20 | 8115 UI, 2525 SMTP, 1143 IMAP, 1110 POP3 | .NET fake SMTP server; mailbox readable over IMAP/POP3. |
+| OpenTofu 1.13.9 | IaC/OpenTofu | 9.20 | - | CLI container like the Terraform one. |
+| Atlantis v0.49.0 | IaC/Atlantis | 9.30/9.31 | 4141 | PR-driven plan/apply on the Gitea stack. `atlantis-init` creates the bot user and token; the entrypoint rewrites Gitea's public clone URLs to `gitea:3000`. Tested: webhook → autoplan → `atlantis plan` / `atlantis apply` comments and commit statuses. |
+| Semaphore UI v2.20.24 | IaC/Semaphore | 9.40/9.41 | 3004 | PostgreSQL stack; admin from `.env`; alerts to Mailpit. |
+
+Changes to existing stacks:
+- **IaC/Terraform**: Gaia, its runner and MongoDB 4.4 removed (unmaintained). The `IaC/Terraform/data` volume folder is no longer used, and the old containers (`gaia`, `runner`, `gaia-mongo`) and volume `terraform_data` can be removed with `docker rm -f` / `docker volume rm`.
+- **SourceControl/Gitea**: `GITEA__webhook__ALLOWED_HOST_LIST` = `GITEA_WEBHOOK_ALLOWED_HOSTS` (`external,private`) so webhooks can reach GroupNetwork services.
+
+## New stacks added (2026-11-16): Messaging
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| NATS 2.15.3 | Messaging/NATS | 10.30 | 4222, 8222 | JetStream on; user/password from `.env` via `nats-server.conf`. |
+| Mosquitto 2.1.2 | Messaging/Mosquitto | 10.40 | 1883, 9002 (WebSockets) | Anonymous refused; password file generated from `.env` on every start. |
+| Apache Artemis 2.57.0 | Messaging/Artemis | 10.50 | 61616, 5675 (AMQP), 61613 (STOMP), 8161 | The project was renamed from ActiveMQ Artemis; image is now `apache/artemis`. `maxDiskUsage` disabled (-1) because the 90% default blocks producers on full dev disks. |
+| Redpanda v26.2.7 + Console v3.14.0 | Messaging/Redpanda | 10.60/10.61 | 19092, 18081, 18082, 9644, 8116 | Kafka API, Schema Registry and HTTP proxy; dev-container mode. |
+| Apache Pulsar 5.0.1 | Messaging/Pulsar | 10.70 | 6650, 8117 | Standalone, functions worker and stream storage off. No UI (Pulsar Manager unmaintained since 2023). |
+| Debezium 3.7 (Kafka Connect) | Messaging/Debezium | 10.80 | 8118 | Image is on quay.io (Docker Hub stopped at 3.0). Sample PostgreSQL connector in `postgres-connector.json`; tested snapshot + update events. |
+| Apicurio Registry 3.3.4 + UI | Messaging/Apicurio | 10.90-10.92 | 8119, 8120 | PostgreSQL storage; Confluent-compatible API at `/apis/ccompat/v7`. |
+
+Changes to existing stacks:
+- **Databases/PostgreSQL**: `wal_level=logical` (plus `max_replication_slots` / `max_wal_senders`) via `command:` and `.env`, for Debezium. Needs one restart.
+- **Messaging/Kafka**: Kafka UI lists the Debezium Connect cluster and uses Apicurio as schema registry.

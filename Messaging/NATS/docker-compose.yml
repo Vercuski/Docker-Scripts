@@ -1,0 +1,37 @@
+# NATS server with JetStream: subjects (pub/sub, request/reply, queue groups) plus persistent streams, consumers,
+# key/value and object stores. .NET client: NATS.Net (nats://nats:Password123@localhost:4222).
+# Monitoring: http://localhost:8222
+services:
+  nats:
+    image: nats:${NATS_VERSION:-2.15.3-alpine}
+    container_name: nats
+    restart: unless-stopped
+    command: ["nats-server", "--config", "/etc/nats/nats-server.conf"]
+    environment:
+      NATS_USER: ${NATS_USER:-nats}
+      NATS_PASSWORD: ${NATS_PASSWORD:-Password123}
+      NATS_JS_MAX_MEMORY: ${NATS_JS_MAX_MEMORY:-256M}
+      NATS_JS_MAX_FILE: ${NATS_JS_MAX_FILE:-5G}
+    volumes:
+      - ./nats-server.conf:/etc/nats/nats-server.conf:ro
+      - nats_data:/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${NATS_IP:-172.20.10.30}
+        aliases:
+          - nats
+    ports:
+      - "${NATS_CLIENT_PORT:-4222}:4222" # clients
+      - "${NATS_MONITOR_PORT:-8222}:8222" # HTTP monitoring
+volumes:
+  nats_data:
+    name: nats_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Messaging/NATS/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

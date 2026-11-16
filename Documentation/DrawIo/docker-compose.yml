@@ -1,0 +1,18 @@
+# draw.io (diagrams.net) editor, self-hosted. UI: http://localhost:8111/?offline=1
+# Stateless: diagrams are opened from / saved to your own disk (or GitHub etc. from the editor). No volumes.
+services:
+  drawio:
+    image: jgraph/drawio:${DRAWIO_VERSION:-32.6.10}
+    container_name: drawio
+    restart: unless-stopped
+    networks:
+      GroupNetwork:
+        ipv4_address: ${DRAWIO_IP:-172.20.7.80}
+        aliases:
+          - drawio
+    ports:
+      - "${DRAWIO_PORT:-8111}:8080"
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true
