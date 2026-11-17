@@ -1,0 +1,15 @@
+# Bookmarks - https://gethomepage.dev/configs/bookmarks/
+- Docs:
+    - Docker Compose:
+        - href: https://docs.docker.com/compose/
+    - .NET Aspire:
+        - href: https://learn.microsoft.com/dotnet/aspire/
+    - OpenTelemetry .NET:
+        - href: https://opentelemetry.io/docs/languages/dotnet/
+- Tools:
+    - IT-Tools:
+        - href: http://localhost:8157/
+    - CyberChef:
+        - href: http://localhost:8158/
+    - code-server:
+        - href: http://localhost:8159/

@@ -1,0 +1,19 @@
+# CyberChef (GCHQ): the "Cyber Swiss Army Knife" - chain 400+ operations (encode/decode, hash, encrypt, compress,
+# parse X.509/JWT, regex extract, data formats) into recipes. Runs fully client-side.   UI: http://localhost:8158
+# Standalone and stateless (no volumes).
+services:
+  cyberchef:
+    image: ghcr.io/gchq/cyberchef:${CYBERCHEF_VERSION:-11.5.0}
+    container_name: cyberchef
+    restart: unless-stopped
+    networks:
+      GroupNetwork:
+        ipv4_address: ${CYBERCHEF_IP:-172.20.30.40}
+        aliases:
+          - cyberchef
+    ports:
+      - "${CYBERCHEF_PORT:-8158}:8080" # web UI
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

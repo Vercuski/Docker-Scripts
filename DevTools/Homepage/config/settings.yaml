@@ -1,0 +1,13 @@
+# Homepage settings - https://gethomepage.dev/configs/settings/
+title: Docker-Scripts
+description: Local development stacks on GroupNetwork
+theme: dark
+color: slate
+headerStyle: clean
+statusStyle: dot
+hideVersion: true
+# Collapsible groups, three columns, sorted as in services.yaml
+layout:
+  style: columns
+  columns: 3
+groupsInitiallyCollapsed: false

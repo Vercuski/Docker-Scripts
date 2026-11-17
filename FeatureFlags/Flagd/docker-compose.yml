@@ -1,0 +1,29 @@
+# flagd: the OpenFeature reference flag daemon. Flags are defined as code in flags/*.json (reloaded on change) and
+# evaluated over gRPC / Connect, or plain HTTP via OFREP. No UI and no database.
+#   Evaluation (gRPC/Connect, OpenFeature flagd provider): localhost:8013   OFREP (HTTP): http://localhost:8016
+services:
+  flagd:
+    image: ghcr.io/open-feature/flagd:${FLAGD_VERSION:-v0.18.2}
+    container_name: flagd
+    restart: unless-stopped
+    command:
+      - start
+      - --uri
+      - file:/etc/flagd/${FLAGD_FLAGS_FILE:-flags.json}
+      - --cors-origin
+      - "*"
+    volumes:
+      - ./flags:/etc/flagd:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${FLAGD_IP:-172.20.24.40}
+        aliases:
+          - flagd
+    ports:
+      - "${FLAGD_PORT:-8013}:8013" # evaluation API (gRPC + Connect/HTTP)
+      - "${FLAGD_MANAGEMENT_PORT:-8014}:8014" # /healthz, /readyz, /metrics (Prometheus)
+      - "${FLAGD_OFREP_PORT:-8016}:8016" # OpenFeature Remote Evaluation Protocol
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

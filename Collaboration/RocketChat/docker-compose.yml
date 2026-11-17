@@ -1,0 +1,90 @@
+# Rocket.Chat: open-source team chat (channels, threads, DMs, video via Jitsi, omnichannel, apps, webhooks).
+#   UI + API: http://localhost:3015 (admin / Password123)
+# Self-contained: Rocket.Chat needs MongoDB as a replica set, so it brings its own MongoDB 8.0 (rocketchat-mongo,
+# single-member set "rs0", not published to the host). The admin is created from .env on an empty database and the
+# setup wizard is skipped. Email goes to the Mailpit stack.
+services:
+  rocketchat-mongo:
+    image: mongo:${ROCKETCHAT_MONGO_VERSION:-8.0}
+    container_name: rocketchat-mongo
+    restart: unless-stopped
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--oplogSize", "128"]
+    volumes:
+      - rocketchat_mongo:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+      GroupNetwork:
+        ipv4_address: ${ROCKETCHAT_MONGO_IP:-172.20.29.20}
+        aliases:
+          - rocketchat-mongo
+  rocketchat-mongo-init:
+    image: mongo:${ROCKETCHAT_MONGO_VERSION:-8.0}
+    container_name: rocketchat-mongo-init
+    restart: "no"
+    depends_on:
+      rocketchat-mongo:
+        condition: service_healthy
+    # Initialise the single-member replica set once (Rocket.Chat needs the oplog)
+    command:
+      - mongosh
+      - --quiet
+      - --host
+      - rocketchat-mongo
+      - --eval
+      - |
+        try { rs.status(); print("replica set rs0 already initialised"); }
+        catch (e) { rs.initiate({ _id: "rs0", members: [{ _id: 0, host: "rocketchat-mongo:27017" }] }); print("initialised replica set rs0"); }
+    networks:
+      GroupNetwork:
+        ipv4_address: ${ROCKETCHAT_MONGO_INIT_IP:-172.20.29.21}
+  rocketchat:
+    image: rocketchat/rocket.chat:${ROCKETCHAT_VERSION:-9.0.0}
+    container_name: rocketchat
+    restart: unless-stopped
+    depends_on:
+      rocketchat-mongo-init:
+        condition: service_completed_successfully
+    environment:
+      MONGO_URL: mongodb://rocketchat-mongo:27017/rocketchat?replicaSet=rs0
+      ROOT_URL: http://localhost:${ROCKETCHAT_PORT:-3015}
+      PORT: "3000"
+      DEPLOY_METHOD: docker
+      # Admin created when the database has no users
+      ADMIN_USERNAME: ${ROCKETCHAT_ADMIN_USER:-admin}
+      ADMIN_PASS: ${ROCKETCHAT_ADMIN_PASSWORD:-Password123}
+      ADMIN_EMAIL: ${ROCKETCHAT_ADMIN_EMAIL:-admin@example.com}
+      ADMIN_NAME: Admin
+      OVERWRITE_SETTING_Show_Setup_Wizard: completed
+      OVERWRITE_SETTING_SMTP_Host: mailpit
+      OVERWRITE_SETTING_SMTP_Port: "1025"
+      OVERWRITE_SETTING_From_Email: ${ROCKETCHAT_MAIL_FROM:-rocketchat@example.com}
+      OVERWRITE_SETTING_Statistics_reporting: "false"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/api/info').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${ROCKETCHAT_IP:-172.20.29.22}
+        aliases:
+          - rocketchat
+    ports:
+      - "${ROCKETCHAT_PORT:-3015}:3000" # UI + REST/Realtime API + webhooks
+volumes:
+  rocketchat_mongo:
+    name: rocketchat_mongo
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Collaboration/RocketChat/mongo
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

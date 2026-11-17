@@ -1,0 +1,83 @@
+# Camunda 8 (Self-Managed, lightweight): BPMN/DMN process orchestration. One Orchestration Cluster container (Zeebe
+# engine + Operate + Tasklist + Identity + REST/gRPC APIs) on file-based H2, plus the Connectors runtime.
+#   Web apps: http://localhost:8152/operate, /tasklist, /admin (identity; login admin / Password123)
+#   REST API: http://localhost:8152/v2   gRPC (Zeebe clients): localhost:26500   Connectors: http://localhost:8153
+# Model processes with the free Camunda Desktop Modeler and deploy to http://localhost:8152 (or localhost:26500).
+# Camunda 8 Self-Managed is free for development and testing; production use needs a Camunda license.
+services:
+  camunda:
+    image: camunda/camunda:${CAMUNDA_VERSION:-8.10.9}
+    container_name: camunda
+    restart: unless-stopped
+    environment:
+      CAMUNDA_ADMIN_USER: ${CAMUNDA_ADMIN_USER:-admin}
+      CAMUNDA_ADMIN_PASSWORD: ${CAMUNDA_ADMIN_PASSWORD:-Password123}
+      CAMUNDA_ADMIN_EMAIL: ${CAMUNDA_ADMIN_EMAIL:-admin@example.com}
+      CAMUNDA_UNPROTECTED_API: ${CAMUNDA_UNPROTECTED_API:-true}
+      JAVA_TOOL_OPTIONS: ${CAMUNDA_JAVA_OPTS:--Xmx768m}
+    volumes:
+      - ./config/application.yaml:/usr/local/camunda/config/application.yaml:ro
+      - camunda_data:/usr/local/camunda/data
+      - camunda_h2:/usr/local/camunda/camunda-data
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/9600 && printf \"GET /actuator/health/status HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n\" >&3 && head -n 1 <&3 | grep -q 200'"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${CAMUNDA_IP:-172.20.15.60}
+        aliases:
+          - camunda
+          - orchestration
+    ports:
+      - "${CAMUNDA_PORT:-8152}:8080" # Operate, Tasklist, Admin (identity), REST API (/v2)
+      - "${CAMUNDA_GRPC_PORT:-26500}:26500" # Zeebe gRPC
+  camunda-connectors:
+    image: camunda/connectors-bundle:${CAMUNDA_CONNECTORS_VERSION:-8.10.5}
+    container_name: camunda-connectors
+    restart: unless-stopped
+    depends_on:
+      camunda:
+        condition: service_healthy
+    environment:
+      CAMUNDA_CLIENT_MODE: self-managed
+      CAMUNDA_CLIENT_GRPCADDRESS: http://camunda:26500
+      CAMUNDA_CLIENT_RESTADDRESS: http://camunda:8080
+      # Connector secrets: CONNECTORS_SECRET_<NAME> here is {{secrets.<NAME>}} in a BPMN model
+      CAMUNDA_CONNECTOR_SECRETPROVIDER_ENVIRONMENT_PREFIX: CONNECTORS_SECRET_
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health
+      MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED: "true"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/actuator/health/readiness"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${CAMUNDA_CONNECTORS_IP:-172.20.15.61}
+        aliases:
+          - camunda-connectors
+    ports:
+      - "${CAMUNDA_CONNECTORS_PORT:-8153}:8080" # inbound connectors (webhooks)
+volumes:
+  camunda_data:
+    name: camunda_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Scheduling/Camunda/data
+  camunda_h2:
+    name: camunda_h2
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Scheduling/Camunda/h2
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

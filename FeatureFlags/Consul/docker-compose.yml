@@ -1,0 +1,67 @@
+# HashiCorp Consul (single server): key/value configuration store, service catalog + health checks and DNS.
+#   UI + HTTP API: http://localhost:8500   DNS: localhost:8600 (tcp/udp)
+# consul-init imports kv/seed.json (sample config for an ASP.NET Core app) the first time, i.e. while config/ is empty.
+# Consul is BUSL-licensed since 1.17: free for internal / local use.
+services:
+  consul:
+    image: hashicorp/consul:${CONSUL_VERSION:-2.1.0}
+    container_name: consul
+    restart: unless-stopped
+    # Single server with persistent data (not -dev, which keeps everything in memory); ACLs off for local use
+    command:
+      - agent
+      - -server
+      - -bootstrap-expect=1
+      - -ui
+      - -node=consul
+      - -client=0.0.0.0
+      - -data-dir=/consul/data
+      - -datacenter=${CONSUL_DATACENTER:-dc1}
+    volumes:
+      - consul_data:/consul/data
+    healthcheck:
+      test: ["CMD", "consul", "operator", "raft", "list-peers"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${CONSUL_IP:-172.20.24.50}
+        aliases:
+          - consul
+    ports:
+      - "${CONSUL_HTTP_PORT:-8500}:8500" # UI + HTTP API
+      - "${CONSUL_DNS_PORT:-8600}:8600/tcp" # DNS (<service>.service.consul)
+      - "${CONSUL_DNS_PORT:-8600}:8600/udp"
+  consul-init:
+    image: hashicorp/consul:${CONSUL_VERSION:-2.1.0}
+    container_name: consul-init
+    restart: "no"
+    depends_on:
+      consul:
+        condition: service_healthy
+    environment:
+      CONSUL_HTTP_ADDR: http://consul:8500
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -n "$$(consul kv get -keys config/)" ]; then echo "config/ already has keys - seed skipped"; exit 0; fi
+        consul kv import @/seed/seed.json
+    volumes:
+      - ./kv:/seed:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${CONSUL_INIT_IP:-172.20.24.51}
+volumes:
+  consul_data:
+    name: consul_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/FeatureFlags/Consul/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

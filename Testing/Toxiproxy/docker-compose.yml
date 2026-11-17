@@ -1,0 +1,35 @@
+# Toxiproxy: TCP proxy for chaos / resilience testing - add latency, bandwidth limits, timeouts or dropped connections
+# between your app and a dependency, from tests or the CLI.   API: http://localhost:8474
+# Proxies come from config/toxiproxy.json (PostgreSQL, SQL Server, Redis, RabbitMQ, WireMock); point your app at
+# the proxy port instead of the real service, then add "toxics" through the API.
+services:
+  toxiproxy:
+    image: ghcr.io/shopify/toxiproxy:${TOXIPROXY_VERSION:-2.13.0}
+    container_name: toxiproxy
+    restart: unless-stopped
+    command:
+      - -host=0.0.0.0
+      - -config=/config/toxiproxy.json
+    volumes:
+      - ./config:/config:ro
+    healthcheck:
+      test: ["CMD", "/toxiproxy-cli", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    networks:
+      GroupNetwork:
+        ipv4_address: ${TOXIPROXY_IP:-172.20.23.50}
+        aliases:
+          - toxiproxy
+    ports:
+      - "${TOXIPROXY_API_PORT:-8474}:8474" # REST API
+      - "${TOXIPROXY_POSTGRES_PORT:-15432}:15432" # -> postgresql:5432
+      - "${TOXIPROXY_MSSQL_PORT:-11433}:11433" # -> mssqldb:1433
+      - "${TOXIPROXY_REDIS_PORT:-16379}:16379" # -> redis:6379
+      - "${TOXIPROXY_RABBITMQ_PORT:-15673}:15673" # -> rabbitmq:5672
+      - "${TOXIPROXY_WIREMOCK_PORT:-18147}:18147" # -> wiremock:8080
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

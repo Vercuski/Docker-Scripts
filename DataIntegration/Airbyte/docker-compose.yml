@@ -1,0 +1,90 @@
+# Airbyte (community edition): ELT with 600+ source/destination connectors. Airbyte no longer supports Docker Compose
+# (only Kubernetes via abctl/Helm), so this stack installs it into the Orchestration/K3s cluster with Helm.
+#   UI + API: http://localhost:8154 - password Password123 (first visit: enter your email and organisation name)
+# Requires Orchestration/K3s (start it first) and the PostgreSQL stack (airbyte-db-init creates role + database).
+# airbyte-install runs "helm upgrade --install" (idempotent, ~10-20 min the first time while images download);
+# airbyte-proxy forwards localhost:8154 to the Airbyte server's NodePort on the k3s node.
+services:
+  airbyte-db-init:
+    image: ${AIRBYTE_DB_INIT_IMAGE:-postgres:18}
+    container_name: airbyte-db-init
+    restart: "no"
+    environment:
+      PGHOST: postgresql
+      PGUSER: ${AIRBYTE_DB_ADMIN_USER:-user@user.com}
+      PGPASSWORD: ${AIRBYTE_DB_ADMIN_PASSWORD:-Password123}
+      DB_NAME: ${AIRBYTE_DB_NAME:-airbyte}
+      DB_USER: ${AIRBYTE_DB_USER:-airbyte}
+      DB_PASSWORD: ${AIRBYTE_DB_PASSWORD:-Password123}
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        for i in $$(seq 30); do pg_isready -q -d postgres && break; echo "waiting for postgresql (start Databases/PostgreSQL)"; sleep 2; done
+        # CREATEDB: Airbyte's Temporal creates its own temporal / temporal_visibility databases
+        psql -d postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$$DB_USER'" | grep -q 1 \
+          || psql -d postgres -c "CREATE ROLE \"$$DB_USER\" LOGIN CREATEDB PASSWORD '$$DB_PASSWORD'"
+        psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$$DB_NAME'" | grep -q 1 \
+          && echo "database $$DB_NAME exists" \
+          || psql -d postgres -c "CREATE DATABASE \"$$DB_NAME\" OWNER \"$$DB_USER\""
+    networks:
+      GroupNetwork:
+        ipv4_address: ${AIRBYTE_DB_INIT_IP:-172.20.28.20}
+  airbyte-install:
+    image: alpine/helm:${AIRBYTE_HELM_VERSION:-4.3.2}
+    container_name: airbyte-install
+    restart: "no"
+    depends_on:
+      airbyte-db-init:
+        condition: service_completed_successfully
+    environment:
+      CHART_VERSION: ${AIRBYTE_CHART_VERSION:-2.5.0}
+      ADMIN_PASSWORD: ${AIRBYTE_ADMIN_PASSWORD:-Password123}
+      DB_PASSWORD: ${AIRBYTE_DB_PASSWORD:-Password123}
+      KUBECONFIG: /kube/kubeconfig-groupnetwork.yaml
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        for i in $$(seq 90); do [ -s "$$KUBECONFIG" ] && break; echo "waiting for the K3s kubeconfig (start Orchestration/K3s)"; sleep 2; done
+        until helm list -A >/dev/null 2>&1; do echo "waiting for the K3s API"; sleep 3; done
+        echo "installing/upgrading Airbyte chart $$CHART_VERSION (first install pulls several GB of images)"
+        helm upgrade --install airbyte airbyte --repo https://airbytehq.github.io/charts --version "$$CHART_VERSION" \
+          --namespace airbyte --create-namespace -f /config/values.yaml \
+          --set global.auth.instanceAdmin.password="$$ADMIN_PASSWORD" \
+          --set global.database.password="$$DB_PASSWORD" \
+          --wait --timeout 30m
+        echo "Airbyte is ready on http://localhost:${AIRBYTE_PORT:-8154}"
+    volumes:
+      - ./values.yaml:/config/values.yaml:ro
+      - airbyte_kubeconfig:/kube:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${AIRBYTE_INSTALL_IP:-172.20.28.21}
+  airbyte-proxy:
+    image: alpine/socat:${AIRBYTE_SOCAT_VERSION:-1.8.1.3}
+    container_name: airbyte-proxy
+    restart: unless-stopped
+    # NodePort 30081 of the k3s node = the k3s container on GroupNetwork
+    command: ["TCP-LISTEN:8154,fork,reuseaddr", "TCP:k3s:30081"]
+    networks:
+      GroupNetwork:
+        ipv4_address: ${AIRBYTE_PROXY_IP:-172.20.28.22}
+        aliases:
+          - airbyte
+    ports:
+      - "${AIRBYTE_PORT:-8154}:8154" # Airbyte UI + API
+volumes:
+  # Same host folder as the K3s stack's k3s_kubeconfig volume, mounted read-only
+  airbyte_kubeconfig:
+    name: airbyte_kubeconfig
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Orchestration/K3s/kubeconfig
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

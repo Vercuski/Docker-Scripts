@@ -1,0 +1,77 @@
+# JetBrains TeamCity (free Professional license: 100 build configurations, 3 agents) + one build agent with the
+# .NET SDK, git and the Docker CLI.   UI: http://localhost:8145
+# First visit: accept the license agreement and create the administrator account (TeamCity has no way to preset them).
+# The agent connects to http://teamcity:8111 on its own; authorize it once under Agents > Unauthorized.
+services:
+  teamcity:
+    image: jetbrains/teamcity-server:${TEAMCITY_VERSION:-2026.2.2}
+    container_name: teamcity
+    restart: unless-stopped
+    environment:
+      # Skip the "TeamCity First Start" page (data directory + database selection): uses the internal database
+      TEAMCITY_SERVER_OPTS: -Dteamcity.startup.maintenance=false
+      TEAMCITY_SERVER_MEM_OPTS: ${TEAMCITY_SERVER_MEM_OPTS:--Xmx2g -XX:ReservedCodeCacheSize=640m}
+    volumes:
+      - teamcity_data:/data/teamcity_server/datadir
+      - teamcity_logs:/opt/teamcity/logs
+    healthcheck:
+      # "healthy" = web server up (also while the license page waits); "ready" stays 503 until it is accepted
+      test: ["CMD-SHELL", "curl -fsS -o /dev/null http://localhost:8111/healthCheck/healthy"]
+      interval: 15s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${TEAMCITY_IP:-172.20.22.20}
+        aliases:
+          - teamcity
+    ports:
+      - "${TEAMCITY_PORT:-8145}:8111" # UI + REST API
+  teamcity-agent:
+    image: jetbrains/teamcity-agent:${TEAMCITY_VERSION:-2026.2.2}
+    container_name: teamcity-agent
+    restart: unless-stopped
+    # root so build steps can use the host Docker socket
+    user: "0:0"
+    depends_on:
+      teamcity:
+        condition: service_healthy
+    environment:
+      SERVER_URL: http://teamcity:8111
+      AGENT_NAME: ${TEAMCITY_AGENT_NAME:-docker-agent}
+    volumes:
+      - teamcity_agent_conf:/data/teamcity_agent/conf
+      # Docker steps and "Run in Docker" start sibling containers on the host Docker daemon
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      GroupNetwork:
+        ipv4_address: ${TEAMCITY_AGENT_IP:-172.20.22.21}
+        aliases:
+          - teamcity-agent
+volumes:
+  teamcity_data:
+    name: teamcity_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/CI-CD/TeamCity/data
+  teamcity_logs:
+    name: teamcity_logs
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/CI-CD/TeamCity/logs
+  teamcity_agent_conf:
+    name: teamcity_agent_conf
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/CI-CD/TeamCity/agent
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

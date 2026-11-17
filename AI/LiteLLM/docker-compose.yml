@@ -1,0 +1,76 @@
+# LiteLLM proxy: one OpenAI-compatible API (http://localhost:4000/v1) in front of local Ollama models and cloud
+# providers (OpenAI, Azure OpenAI, Anthropic, Bedrock, ...), with virtual keys, budgets, rate limits, fallbacks and
+# spend tracking.   Admin UI: http://localhost:4000/ui (admin / Password123)
+# Models: config.yaml. Requires the PostgreSQL stack (litellm-db-init creates the role and database); uses the
+# Ollama stack for local models and sends traces to the Langfuse stack.
+services:
+  litellm-db-init:
+    image: ${LITELLM_DB_INIT_IMAGE:-postgres:18}
+    container_name: litellm-db-init
+    restart: "no"
+    environment:
+      PGHOST: postgresql
+      PGUSER: ${LITELLM_DB_ADMIN_USER:-user@user.com}
+      PGPASSWORD: ${LITELLM_DB_ADMIN_PASSWORD:-Password123}
+      DB_NAME: ${LITELLM_DB_NAME:-litellm}
+      DB_USER: ${LITELLM_DB_USER:-litellm}
+      DB_PASSWORD: ${LITELLM_DB_PASSWORD:-Password123}
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        for i in $$(seq 30); do pg_isready -q -d postgres && break; echo "waiting for postgresql (start Databases/PostgreSQL)"; sleep 2; done
+        psql -d postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$$DB_USER'" | grep -q 1 \
+          || psql -d postgres -c "CREATE ROLE \"$$DB_USER\" LOGIN PASSWORD '$$DB_PASSWORD'"
+        psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$$DB_NAME'" | grep -q 1 \
+          && echo "database $$DB_NAME exists" \
+          || psql -d postgres -c "CREATE DATABASE \"$$DB_NAME\" OWNER \"$$DB_USER\""
+    networks:
+      GroupNetwork:
+        ipv4_address: ${LITELLM_DB_INIT_IP:-172.20.27.30}
+  litellm:
+    image: ghcr.io/berriai/litellm-database:${LITELLM_VERSION:-v1.83.14-stable}
+    container_name: litellm
+    restart: unless-stopped
+    depends_on:
+      litellm-db-init:
+        condition: service_completed_successfully
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    environment:
+      DATABASE_URL: postgresql://${LITELLM_DB_USER:-litellm}:${LITELLM_DB_PASSWORD:-Password123}@postgresql:5432/${LITELLM_DB_NAME:-litellm}
+      # Admin key for the API and the key-management endpoints (must start with "sk-")
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-sk-local-dev-litellm-master-key}
+      # Encrypts provider credentials stored in the database: keep it once models are stored there
+      LITELLM_SALT_KEY: ${LITELLM_SALT_KEY:-sk-local-dev-litellm-salt-key}
+      UI_USERNAME: ${LITELLM_UI_USER:-admin}
+      UI_PASSWORD: ${LITELLM_UI_PASSWORD:-Password123}
+      # Langfuse stack project keys (LANGFUSE_INIT_PROJECT_* in AI/Langfuse/.env)
+      LANGFUSE_HOST: http://langfuse-web:3000
+      LANGFUSE_PUBLIC_KEY: ${LITELLM_LANGFUSE_PUBLIC_KEY:-pk-lf-local-dev}
+      LANGFUSE_SECRET_KEY: ${LITELLM_LANGFUSE_SECRET_KEY:-sk-lf-local-dev}
+      # Cloud provider keys referenced from config.yaml (leave empty if unused)
+      OPENAI_API_KEY: ${LITELLM_OPENAI_API_KEY:-}
+      AZURE_API_BASE: ${LITELLM_AZURE_API_BASE:-}
+      AZURE_API_KEY: ${LITELLM_AZURE_API_KEY:-}
+      LITELLM_LOG: ${LITELLM_LOG_LEVEL:-INFO}
+      LITELLM_TELEMETRY: "False"
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:4000/health/liveliness')"]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${LITELLM_IP:-172.20.27.31}
+        aliases:
+          - litellm
+    ports:
+      - "${LITELLM_PORT:-4000}:4000" # OpenAI-compatible API + admin UI (/ui)
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

@@ -1,0 +1,144 @@
+# Mattermost Team Edition: open-source team chat (Slack-style channels, threads, incoming/outgoing webhooks, slash
+# commands, bots) - also a target for Grafana / Alertmanager / CI notifications.   UI + API: http://localhost:8065
+# Login: admin / Password123 (team "docker-scripts"). Requires the PostgreSQL stack (mattermost-db-init); email
+# notifications go to the Mailpit stack. mattermost-init creates the admin (the first user is the system admin) and team.
+services:
+  mattermost-db-init:
+    image: ${MATTERMOST_DB_INIT_IMAGE:-postgres:18}
+    container_name: mattermost-db-init
+    restart: "no"
+    environment:
+      PGHOST: postgresql
+      PGUSER: ${MATTERMOST_DB_ADMIN_USER:-user@user.com}
+      PGPASSWORD: ${MATTERMOST_DB_ADMIN_PASSWORD:-Password123}
+      DB_NAME: ${MATTERMOST_DB_NAME:-mattermost}
+      DB_USER: ${MATTERMOST_DB_USER:-mattermost}
+      DB_PASSWORD: ${MATTERMOST_DB_PASSWORD:-Password123}
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        for i in $$(seq 30); do pg_isready -q -d postgres && break; echo "waiting for postgresql (start Databases/PostgreSQL)"; sleep 2; done
+        psql -d postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$$DB_USER'" | grep -q 1 \
+          || psql -d postgres -c "CREATE ROLE \"$$DB_USER\" LOGIN PASSWORD '$$DB_PASSWORD'"
+        psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$$DB_NAME'" | grep -q 1 \
+          && echo "database $$DB_NAME exists" \
+          || psql -d postgres -c "CREATE DATABASE \"$$DB_NAME\" OWNER \"$$DB_USER\""
+    networks:
+      GroupNetwork:
+        ipv4_address: ${MATTERMOST_DB_INIT_IP:-172.20.29.10}
+  mattermost:
+    image: mattermost/mattermost-team-edition:${MATTERMOST_VERSION:-12.1.0}
+    container_name: mattermost
+    restart: unless-stopped
+    depends_on:
+      mattermost-db-init:
+        condition: service_completed_successfully
+    environment:
+      TZ: ${MATTERMOST_TZ:-America/New_York}
+      MM_SQLSETTINGS_DRIVERNAME: postgres
+      MM_SQLSETTINGS_DATASOURCE: postgres://${MATTERMOST_DB_USER:-mattermost}:${MATTERMOST_DB_PASSWORD:-Password123}@postgresql:5432/${MATTERMOST_DB_NAME:-mattermost}?sslmode=disable&connect_timeout=10
+      MM_SERVICESETTINGS_SITEURL: http://localhost:${MATTERMOST_PORT:-8065}
+      # Local mode: mmctl inside the container works without login (used by the healthcheck)
+      MM_SERVICESETTINGS_ENABLELOCALMODE: "true"
+      MM_SERVICESETTINGS_ENABLEINCOMINGWEBHOOKS: "true"
+      MM_SERVICESETTINGS_ENABLEOUTGOINGWEBHOOKS: "true"
+      MM_SERVICESETTINGS_ENABLEBOTACCOUNTCREATION: "true"
+      MM_SERVICESETTINGS_ENABLEUSERACCESSTOKENS: "true"
+      # Outgoing webhooks / integrations may call other GroupNetwork stacks
+      MM_SERVICESETTINGS_ALLOWEDUNTRUSTEDINTERNALCONNECTIONS: 172.20.0.0/16
+      MM_SERVICESETTINGS_ENABLESECURITYFIXALERT: "false"
+      MM_EMAILSETTINGS_SENDEMAILNOTIFICATIONS: "true"
+      MM_EMAILSETTINGS_SMTPSERVER: mailpit
+      MM_EMAILSETTINGS_SMTPPORT: "1025"
+      MM_EMAILSETTINGS_FEEDBACKEMAIL: ${MATTERMOST_MAIL_FROM:-mattermost@example.com}
+      MM_EMAILSETTINGS_REPLYTOADDRESS: ${MATTERMOST_MAIL_FROM:-mattermost@example.com}
+      MM_LOGSETTINGS_CONSOLELEVEL: ${MATTERMOST_LOG_LEVEL:-INFO}
+      MM_LOGSETTINGS_ENABLEFILE: "false"
+      MM_LOGSETTINGS_ENABLEDIAGNOSTICS: "false"
+    volumes:
+      - mattermost_config:/mattermost/config
+      - mattermost_data:/mattermost/data
+      - mattermost_plugins:/mattermost/plugins
+      - mattermost_client_plugins:/mattermost/client/plugins
+    healthcheck:
+      test: ["CMD", "/mattermost/bin/mmctl", "system", "status", "--local"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 30s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${MATTERMOST_IP:-172.20.29.11}
+        aliases:
+          - mattermost
+    ports:
+      - "${MATTERMOST_PORT:-8065}:8065" # UI + REST/WebSocket API + webhooks
+  mattermost-init:
+    image: ${MATTERMOST_CURL_IMAGE:-curlimages/curl:8.23.0}
+    container_name: mattermost-init
+    restart: "no"
+    depends_on:
+      mattermost:
+        condition: service_healthy
+    environment:
+      ADMIN_USER: ${MATTERMOST_ADMIN_USER:-admin}
+      ADMIN_PASSWORD: ${MATTERMOST_ADMIN_PASSWORD:-Password123}
+      ADMIN_EMAIL: ${MATTERMOST_ADMIN_EMAIL:-admin@example.com}
+      TEAM: ${MATTERMOST_TEAM:-docker-scripts}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        API=http://mattermost:8065/api/v4
+        login() { curl -s -D /tmp/h -o /tmp/me -w '%{http_code}' -H 'Content-Type: application/json' $$API/users/login \
+          -d "{\"login_id\":\"$$ADMIN_USER\",\"password\":\"$$ADMIN_PASSWORD\"}"; }
+        if [ "$$(login)" != 200 ]; then
+          # On an empty database the first user created becomes the system admin
+          curl -fsS -o /dev/null -H 'Content-Type: application/json' $$API/users \
+            -d "{\"username\":\"$$ADMIN_USER\",\"password\":\"$$ADMIN_PASSWORD\",\"email\":\"$$ADMIN_EMAIL\"}"
+          [ "$$(login)" = 200 ] || { echo "could not log in as $$ADMIN_USER (another first user exists?)"; exit 1; }
+          echo "created admin $$ADMIN_USER"
+        fi
+        TOKEN=$$(sed -n 's/^[Tt]oken: *\(.*\)\r$$/\1/p' /tmp/h)
+        if curl -fs -o /dev/null -H "Authorization: Bearer $$TOKEN" $$API/teams/name/$$TEAM; then echo "team $$TEAM exists"; exit 0; fi
+        curl -fsS -o /dev/null -H "Authorization: Bearer $$TOKEN" -H 'Content-Type: application/json' $$API/teams \
+          -d "{\"name\":\"$$TEAM\",\"display_name\":\"$$TEAM\",\"type\":\"O\"}"
+        echo "created team $$TEAM"
+    networks:
+      GroupNetwork:
+        ipv4_address: ${MATTERMOST_INIT_IP:-172.20.29.12}
+volumes:
+  mattermost_config:
+    name: mattermost_config
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Collaboration/Mattermost/config
+  mattermost_data:
+    name: mattermost_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Collaboration/Mattermost/data
+  mattermost_plugins:
+    name: mattermost_plugins
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Collaboration/Mattermost/plugins
+  mattermost_client_plugins:
+    name: mattermost_client_plugins
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Collaboration/Mattermost/client-plugins
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

@@ -1,0 +1,69 @@
+# RustFS: S3-compatible object storage written in Rust (Apache 2.0), a drop-in for MinIO (same S3 API, MinIO SDKs
+# and mc work). Replaces MinIO here: MinIO Community Edition is archived and ships no official images since 2025.
+#   S3 API: http://localhost:9008 (access key admin / Password123)   Web console: http://localhost:9009
+# rustfs-init creates the buckets listed in RUSTFS_BUCKETS if they don't exist.
+services:
+  rustfs:
+    image: rustfs/rustfs:${RUSTFS_VERSION:-1.0.6}
+    container_name: rustfs
+    restart: unless-stopped
+    environment:
+      RUSTFS_VOLUMES: /data
+      RUSTFS_ADDRESS: ":9000"
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_CONSOLE_ADDRESS: ":9001"
+      # Root credentials (S3 access key / secret, also the console login)
+      RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY:-admin}
+      RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY:-Password123}
+      RUSTFS_REGION: ${RUSTFS_REGION:-us-east-1}
+    volumes:
+      - rustfs_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:9000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${RUSTFS_IP:-172.20.25.10}
+        aliases:
+          - rustfs
+    ports:
+      - "${RUSTFS_S3_PORT:-9008}:9000" # S3 API (9000 is SonarQube)
+      - "${RUSTFS_CONSOLE_PORT:-9009}:9001" # web console
+  rustfs-init:
+    image: amazon/aws-cli:${RUSTFS_AWSCLI_VERSION:-2.40.4}
+    container_name: rustfs-init
+    restart: "no"
+    depends_on:
+      rustfs:
+        condition: service_healthy
+    environment:
+      AWS_ACCESS_KEY_ID: ${RUSTFS_ACCESS_KEY:-admin}
+      AWS_SECRET_ACCESS_KEY: ${RUSTFS_SECRET_KEY:-Password123}
+      AWS_DEFAULT_REGION: ${RUSTFS_REGION:-us-east-1}
+      BUCKETS: ${RUSTFS_BUCKETS:-dev-bucket}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        for b in $$(echo "$$BUCKETS" | tr ',' ' '); do
+          if aws --endpoint-url http://rustfs:9000 s3api head-bucket --bucket "$$b" 2>/dev/null; then echo "bucket $$b exists"
+          else aws --endpoint-url http://rustfs:9000 s3 mb "s3://$$b"; fi
+        done
+    networks:
+      GroupNetwork:
+        ipv4_address: ${RUSTFS_INIT_IP:-172.20.25.11}
+volumes:
+  rustfs_data:
+    name: rustfs_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/ObjectStorage/RustFS/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

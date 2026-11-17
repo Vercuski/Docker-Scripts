@@ -1,0 +1,46 @@
+# Open WebUI: ChatGPT-style web UI for the Ollama stack (chats, model switching, document/RAG uploads, prompts,
+# users).   UI: http://localhost:3013 (admin@example.com / Password123)
+# The admin account is created on the first start (then sign-up is turned off). Requires the Ollama stack.
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:${OPENWEBUI_VERSION:-v0.13.3}
+    container_name: open-webui
+    restart: unless-stopped
+    environment:
+      OLLAMA_BASE_URL: http://ollama:11434
+      WEBUI_URL: http://localhost:${OPENWEBUI_PORT:-3013}
+      WEBUI_SECRET_KEY: ${OPENWEBUI_SECRET_KEY:-local-dev-open-webui-secret-key}
+      # Applied only while no users exist
+      WEBUI_ADMIN_EMAIL: ${OPENWEBUI_ADMIN_EMAIL:-admin@example.com}
+      WEBUI_ADMIN_PASSWORD: ${OPENWEBUI_ADMIN_PASSWORD:-Password123}
+      WEBUI_ADMIN_NAME: ${OPENWEBUI_ADMIN_NAME:-Admin}
+      # Document embeddings via Ollama, so nothing is downloaded from Hugging Face at start
+      RAG_EMBEDDING_ENGINE: ollama
+      RAG_EMBEDDING_MODEL: ${OPENWEBUI_EMBEDDING_MODEL:-nomic-embed-text}
+      RAG_OLLAMA_BASE_URL: http://ollama:11434
+      # No OpenAI connection by default (add LiteLLM or others in Admin > Settings > Connections)
+      ENABLE_OPENAI_API: "false"
+      ANONYMIZED_TELEMETRY: "false"
+      SCARF_NO_ANALYTICS: "true"
+      DO_NOT_TRACK: "true"
+    volumes:
+      - openwebui_data:/app/backend/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${OPENWEBUI_IP:-172.20.27.20}
+        aliases:
+          - open-webui
+    ports:
+      - "${OPENWEBUI_PORT:-3013}:8080" # UI + API
+volumes:
+  openwebui_data:
+    name: openwebui_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/AI/OpenWebUI/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

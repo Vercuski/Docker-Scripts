@@ -1,0 +1,3 @@
+# Docker hosts used by "server:" in services.yaml (the socket is mounted read-only)
+local:
+  socket: /var/run/docker.sock

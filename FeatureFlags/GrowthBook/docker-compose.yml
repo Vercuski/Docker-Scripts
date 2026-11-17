@@ -1,0 +1,106 @@
+# GrowthBook (open source): feature flags + A/B experimentation with a statistics engine; .NET SDK
+# (GrowthBook.NET) and OpenFeature provider.   UI: http://localhost:3011   API: http://localhost:3012
+# Login: admin@example.com / Password123 - growthbook-init creates this super admin, the organisation and a
+# first project on an empty database (GrowthBook's own first-time registration).
+# Self-contained: GrowthBook supports only MongoDB, so it brings its own MongoDB 8.0 (Databases/MongoDB floats on 9.x).
+services:
+  growthbook-mongo:
+    image: mongo:${GROWTHBOOK_MONGO_VERSION:-8.0}
+    container_name: growthbook-mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${GROWTHBOOK_MONGO_USER:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${GROWTHBOOK_MONGO_PASSWORD:-Password123}
+    volumes:
+      - growthbook_mongo:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+      GroupNetwork:
+        ipv4_address: ${GROWTHBOOK_MONGO_IP:-172.20.24.30}
+        aliases:
+          - growthbook-mongo
+  growthbook:
+    image: growthbook/growthbook:${GROWTHBOOK_VERSION:-5.2.1}
+    container_name: growthbook
+    restart: unless-stopped
+    depends_on:
+      growthbook-mongo:
+        condition: service_healthy
+    environment:
+      MONGODB_URI: mongodb://${GROWTHBOOK_MONGO_USER:-root}:${GROWTHBOOK_MONGO_PASSWORD:-Password123}@growthbook-mongo:27017/growthbook?authSource=admin
+      NODE_ENV: production
+      # Addresses your browser uses (SDKs also call the API host)
+      APP_ORIGIN: http://localhost:${GROWTHBOOK_UI_PORT:-3011}
+      API_HOST: http://localhost:${GROWTHBOOK_API_PORT:-3012}
+      JWT_SECRET: ${GROWTHBOOK_JWT_SECRET:-local-dev-growthbook-jwt-secret}
+      # Encrypts data source credentials stored in MongoDB: keep it once data exists
+      ENCRYPTION_KEY: ${GROWTHBOOK_ENCRYPTION_KEY:-local-dev-growthbook-encryption-key}
+      DISABLE_TELEMETRY: "true"
+    volumes:
+      - growthbook_uploads:/usr/local/src/app/packages/back-end/uploads
+    networks:
+      GroupNetwork:
+        ipv4_address: ${GROWTHBOOK_IP:-172.20.24.31}
+        aliases:
+          - growthbook
+    ports:
+      - "${GROWTHBOOK_UI_PORT:-3011}:3000" # UI
+      - "${GROWTHBOOK_API_PORT:-3012}:3100" # API (SDK features endpoint /api/features/<client key>)
+  growthbook-init:
+    image: ${GROWTHBOOK_CURL_IMAGE:-curlimages/curl:8.23.0}
+    container_name: growthbook-init
+    restart: "no"
+    depends_on:
+      growthbook:
+        condition: service_started
+    environment:
+      ADMIN_EMAIL: ${GROWTHBOOK_ADMIN_EMAIL:-admin@example.com}
+      ADMIN_NAME: ${GROWTHBOOK_ADMIN_NAME:-Admin}
+      ADMIN_PASSWORD: ${GROWTHBOOK_ADMIN_PASSWORD:-Password123}
+      ORGANIZATION: ${GROWTHBOOK_ORGANIZATION:-Docker-Scripts}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        API=http://growthbook:3100
+        for i in $$(seq 90); do curl -fs $$API/healthcheck >/dev/null && break; sleep 2; done
+        if curl -fsS $$API/auth/hasorgs | grep -q '"hasOrganizations":true'; then
+          echo "organisation already exists"; exit 0
+        fi
+        curl -fsS -H 'Content-Type: application/json' -X POST $$API/auth/firsttime \
+          -d "{\"email\":\"$$ADMIN_EMAIL\",\"name\":\"$$ADMIN_NAME\",\"password\":\"$$ADMIN_PASSWORD\",\"companyname\":\"$$ORGANIZATION\"}" >/dev/null
+        echo "created super admin $$ADMIN_EMAIL and organisation $$ORGANIZATION"
+        # SDK connection for the production environment, so apps can fetch features right away
+        token=$$(curl -fsS -H 'Content-Type: application/json' $$API/auth/login \
+          -d "{\"email\":\"$$ADMIN_EMAIL\",\"password\":\"$$ADMIN_PASSWORD\"}" | sed -n 's/.*"token":"\([^"]*\)".*/\1/p')
+        org=$$(curl -fsS -H "Authorization: Bearer $$token" $$API/user | sed -n 's/.*"organizations":\[{"id":"\([^"]*\)".*/\1/p')
+        key=$$(curl -fsS -H "Authorization: Bearer $$token" -H "X-Organization: $$org" -H 'Content-Type: application/json' \
+          -X POST $$API/sdk-connections -d '{"name":"Local dev","languages":["csharp"],"environment":"production","projects":[]}' \
+          | sed -n 's/.*"key":"\(sdk-[^"]*\)".*/\1/p')
+        echo "SDK connection 'Local dev' client key: $$key (features: http://localhost:3012/api/features/$$key)"
+    networks:
+      GroupNetwork:
+        ipv4_address: ${GROWTHBOOK_INIT_IP:-172.20.24.32}
+volumes:
+  growthbook_mongo:
+    name: growthbook_mongo
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/FeatureFlags/GrowthBook/mongo
+  growthbook_uploads:
+    name: growthbook_uploads
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/FeatureFlags/GrowthBook/uploads
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

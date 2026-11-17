@@ -20,6 +20,11 @@ set "ROOT=%ROOT:/=\%"
 set "ROOT_FWD=%ROOT:\=/%"
 set "V=%ROOT%\docker\volumes"
 echo Creating volume folders under %V%
+call :mk AI\Langfuse\clickhouse
+call :mk AI\Langfuse\clickhouse-logs
+call :mk AI\Ollama\models
+call :mk AI\OpenWebUI\data
+
 call :mk Analytics\ApacheFlink\checkpoints
 call :mk Analytics\ApacheFlink\savepoints
 call :mk Analytics\ApacheFlink\jobs
@@ -34,6 +39,13 @@ call :mk Authentication\Authentik\data
 call :mk Authentication\Authentik\certs
 call :mk Authentication\Authentik\templates
 call :mk Authentication\Zitadel\bootstrap
+
+call :mk CI-CD\Jenkins\home
+call :mk CI-CD\TeamCity\data
+call :mk CI-CD\TeamCity\logs
+call :mk CI-CD\TeamCity\agent
+call :mk CI-CD\Woodpecker\data
+call :mk CI-CD\Woodpecker\agent
 
 call :mk CloudEmulators\Azurite\data
 call :mk CloudEmulators\AzureCosmosDb\data
@@ -96,6 +108,25 @@ call :mk Databases\ScyllaDB\data
 call :mk Databases\TimescaleDB\data
 call :mk Databases\Valkey\data
 
+call :mk Collaboration\Mattermost\config
+call :mk Collaboration\Mattermost\data
+call :mk Collaboration\Mattermost\plugins
+call :mk Collaboration\Mattermost\client-plugins
+call :mk Collaboration\RocketChat\mongo
+call :mk Collaboration\Plane\uploads
+call :mk Collaboration\Plane\mq
+call :mk DataIntegration\NiFi\conf
+call :mk DataIntegration\NiFi\content
+call :mk DataIntegration\NiFi\database
+call :mk DataIntegration\NiFi\flowfile
+call :mk DataIntegration\NiFi\provenance
+call :mk DataIntegration\NiFi\state
+call :mk DevTools\Homepage\config
+call :mk DevTools\Homarr\appdata
+call :mk DevTools\CodeServer\config
+call :mk DevTools\CodeServer\local
+call :mk DevTools\CodeServer\project
+
 call :mk Documentation\BookStack\config
 call :mk Documentation\Mediawiki\html
 call :mk Documentation\Outline\data
@@ -104,6 +135,10 @@ call :mk Documentation\WikiJs\data
 
 call :mk Email\Mailpit\data
 call :mk Email\Smtp4dev\data
+
+call :mk FeatureFlags\Consul\data
+call :mk FeatureFlags\GrowthBook\mongo
+call :mk FeatureFlags\GrowthBook\uploads
 
 call :mk IaC\Atlantis\data
 call :mk IaC\Semaphore\data
@@ -116,6 +151,11 @@ call :mk Messaging\Pulsar\data
 call :mk Messaging\RabbitMQ\data
 call :mk Messaging\RabbitMQ\log
 call :mk Messaging\Redpanda\data
+
+call :mk ObjectStorage\Garage\data
+call :mk ObjectStorage\Garage\meta
+call :mk ObjectStorage\RustFS\data
+call :mk ObjectStorage\SeaweedFS\data
 
 call :mk Observability\Jaeger\badger
 call :mk Observability\OpenTelemetry\tempo
@@ -145,7 +185,10 @@ call :mk RP-LB\Caddy\data
 call :mk RP-LB\NginxProxyManager\data
 call :mk RP-LB\NginxProxyManager\letsencrypt
 call :mk Scheduling\Airflow\logs
+call :mk Scheduling\Camunda\data
+call :mk Scheduling\Camunda\h2
 call :mk Scheduling\N8n\data
+call :mk Scheduling\NodeRed\data
 call :mk Scheduling\Rundeck\logs
 
 call :mk Search\OpenSearch\node1
@@ -164,6 +207,8 @@ call :mk Security\OpenBao\data
 call :mk Security\StepCa\data
 call :mk Security\Vault\data
 call :mk Security\Zap\wrk
+
+call :mk ServiceMesh\Dapr\scheduler
 
 call :mk SIEM\Graylog\datanode
 call :mk SIEM\Graylog\mongodb
@@ -192,6 +237,8 @@ call :mk SourceControl\GitLab\config
 call :mk SourceControl\GitLab\data
 call :mk SourceControl\GitLab\logs
 call :mk SourceControl\OneDev\data
+
+call :mk Testing\K6\results
 
 call :mk Visualization\Grafana\storage
 

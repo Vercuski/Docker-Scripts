@@ -1,0 +1,19 @@
+# IT-Tools: ~80 handy developer utilities in the browser (GUID/ULID, hashes, JWT decoder, Base64, cron parser,
+# JSON/YAML/TOML converters, regex tester, chmod and subnet calculators...). Runs fully client-side.   UI: http://localhost:8157
+# Standalone and stateless (no volumes).
+services:
+  it-tools:
+    image: corentinth/it-tools:${ITTOOLS_VERSION:-2024.10.22-7ca5933}
+    container_name: it-tools
+    restart: unless-stopped
+    networks:
+      GroupNetwork:
+        ipv4_address: ${ITTOOLS_IP:-172.20.30.30}
+        aliases:
+          - it-tools
+    ports:
+      - "${ITTOOLS_PORT:-8157}:80" # web UI
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

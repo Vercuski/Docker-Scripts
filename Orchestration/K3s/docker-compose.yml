@@ -69,6 +69,8 @@ services:
         printf "$$BLOCKS" > /tmp/groupnetwork.server
         kubectl -n kube-system create configmap coredns-custom --from-file=groupnetwork.server=/tmp/groupnetwork.server \
           --dry-run=client -o yaml | kubectl apply -f -
+        # On a fresh cluster CoreDNS is deployed a little after the node is Ready
+        until kubectl -n kube-system get deployment coredns >/dev/null 2>&1; do sleep 2; done
         kubectl -n kube-system rollout restart deployment coredns
 
         # Argo CD: install or upgrade, plain HTTP on NodePort 30080, known admin password

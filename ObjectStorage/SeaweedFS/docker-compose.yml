@@ -1,0 +1,52 @@
+# SeaweedFS ("weed mini": master + volume server + filer + S3 gateway + admin UI in one container).
+#   S3 API: http://localhost:8333 (access key admin / Password123)   Admin UI: http://localhost:12535 (admin / Password123)
+#   Filer UI / HTTP file API: http://localhost:8150   Master UI: http://localhost:9333
+services:
+  seaweedfs:
+    image: chrislusf/seaweedfs:${SEAWEEDFS_VERSION:-4.54}
+    container_name: seaweedfs
+    restart: unless-stopped
+    environment:
+      # Admin S3 identity (full access); more users/keys can be added in the admin UI
+      AWS_ACCESS_KEY_ID: ${SEAWEEDFS_ACCESS_KEY:-admin}
+      AWS_SECRET_ACCESS_KEY: ${SEAWEEDFS_SECRET_KEY:-Password123}
+    command:
+      - mini
+      - -dir=/data
+      # Name the servers advertise to each other and to clients on GroupNetwork
+      - -ip=seaweedfs
+      - -ip.bind=0.0.0.0
+      - -admin.user=${SEAWEEDFS_ADMIN_USER:-admin}
+      - -admin.password=${SEAWEEDFS_ADMIN_PASSWORD:-Password123}
+      # Buckets created on start if missing (comma separated)
+      - -bucket=${SEAWEEDFS_BUCKETS:-dev-bucket}
+    volumes:
+      - seaweedfs_data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:9333/cluster/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SEAWEEDFS_IP:-172.20.25.20}
+        aliases:
+          - seaweedfs
+    ports:
+      - "${SEAWEEDFS_S3_PORT:-8333}:8333" # S3 API
+      - "${SEAWEEDFS_ADMIN_PORT:-12535}:12535" # admin UI
+      - "${SEAWEEDFS_FILER_PORT:-8150}:8888" # filer UI + HTTP file API (8888 is JupyterLab)
+      - "${SEAWEEDFS_MASTER_PORT:-9333}:9333" # master UI / cluster status
+volumes:
+  seaweedfs_data:
+    name: seaweedfs_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/ObjectStorage/SeaweedFS/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

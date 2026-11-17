@@ -1,0 +1,40 @@
+# Homepage: static, fast start page configured in YAML (kept in git under ./config) - one tile per stack with a
+# running/stopped dot from the Docker socket, plus resource, search and clock widgets.   UI: http://localhost:3016
+# Standalone. The YAML files in ./config are mounted read-only and reloaded on change; Homepage's own generated
+# files (skeleton configs, logs) go to the config volume. The Docker socket is mounted read-only.
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:${HOMEPAGE_VERSION:-v2.8.0}
+    container_name: homepage
+    restart: unless-stopped
+    environment:
+      # Host:port values the UI may be opened with (Homepage rejects other Host headers)
+      HOMEPAGE_ALLOWED_HOSTS: localhost:${HOMEPAGE_PORT:-3016},127.0.0.1:${HOMEPAGE_PORT:-3016},homepage:3000
+      TZ: ${HOMEPAGE_TZ:-America/New_York}
+    volumes:
+      - homepage_config:/app/config
+      - ./config/settings.yaml:/app/config/settings.yaml:ro
+      - ./config/services.yaml:/app/config/services.yaml:ro
+      - ./config/widgets.yaml:/app/config/widgets.yaml:ro
+      - ./config/bookmarks.yaml:/app/config/bookmarks.yaml:ro
+      - ./config/docker.yaml:/app/config/docker.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${HOMEPAGE_IP:-172.20.30.10}
+        aliases:
+          - homepage
+    ports:
+      - "${HOMEPAGE_PORT:-3016}:3000" # UI
+volumes:
+  homepage_config:
+    name: homepage_config
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/DevTools/Homepage/config
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

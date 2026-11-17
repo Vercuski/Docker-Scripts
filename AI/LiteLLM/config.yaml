@@ -1,0 +1,37 @@
+# LiteLLM proxy configuration. Models listed here are available to every key; more can be added in the admin UI
+# (stored in the database). os.environ/<NAME> reads a value from the container environment (docker-compose.yml).
+model_list:
+  # Local models from the Ollama stack (pull them there first)
+  - model_name: llama3.2
+    litellm_params:
+      model: ollama_chat/llama3.2:3b
+      api_base: http://ollama:11434
+  - model_name: nomic-embed-text
+    litellm_params:
+      model: ollama/nomic-embed-text
+      api_base: http://ollama:11434
+    model_info:
+      mode: embedding
+
+  # Cloud models: uncomment, and put the key in .env (LITELLM_OPENAI_API_KEY / LITELLM_AZURE_*)
+  # - model_name: gpt-4.1-mini
+  #   litellm_params:
+  #     model: openai/gpt-4.1-mini
+  #     api_key: os.environ/OPENAI_API_KEY
+  # - model_name: azure-gpt-4.1
+  #   litellm_params:
+  #     model: azure/<your deployment name>
+  #     api_base: os.environ/AZURE_API_BASE
+  #     api_key: os.environ/AZURE_API_KEY
+  #     api_version: "2025-04-01-preview"
+
+litellm_settings:
+  # Every request is traced to the Langfuse stack over OpenTelemetry (Langfuse v4 only accepts OTel; the older
+  # "langfuse" callback is rejected). Keys from .env; if Langfuse isn't running, only a warning is logged.
+  callbacks: ["langfuse_otel"]
+  drop_params: true
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  database_url: os.environ/DATABASE_URL
+  store_model_in_db: true

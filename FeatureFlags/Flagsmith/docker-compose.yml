@@ -1,0 +1,101 @@
+# Flagsmith (open source): feature flags and remote config with environments, segments, identities and an
+# audit log; .NET SDK (Flagsmith) and OpenFeature provider.   UI + API: http://localhost:8149
+# Login: admin@example.com / Password123 (flagsmith-init sets the password on every start).
+# Requires the PostgreSQL stack; flagsmith-db-init creates the flagsmith role and database.
+x-flagsmith-env: &flagsmith-env
+  DATABASE_URL: postgresql://${FLAGSMITH_DB_USER:-flagsmith}:${FLAGSMITH_DB_PASSWORD:-Password123}@postgresql:5432/${FLAGSMITH_DB_NAME:-flagsmith}
+  DJANGO_SECRET_KEY: ${FLAGSMITH_SECRET_KEY:-local-dev-flagsmith-django-secret-key-change-me}
+  DJANGO_ALLOWED_HOSTS: "*"
+  # First start (empty database): create the admin user, an organisation and a project
+  ALLOW_ADMIN_INITIATION_VIA_CLI: "true"
+  ADMIN_EMAIL: ${FLAGSMITH_ADMIN_EMAIL:-admin@example.com}
+  ORGANISATION_NAME: ${FLAGSMITH_ORGANISATION:-Docker-Scripts}
+  PROJECT_NAME: ${FLAGSMITH_PROJECT:-Default}
+services:
+  flagsmith-db-init:
+    image: ${FLAGSMITH_DB_INIT_IMAGE:-postgres:18}
+    container_name: flagsmith-db-init
+    restart: "no"
+    environment:
+      PGHOST: postgresql
+      PGUSER: ${FLAGSMITH_DB_ADMIN_USER:-user@user.com}
+      PGPASSWORD: ${FLAGSMITH_DB_ADMIN_PASSWORD:-Password123}
+      DB_NAME: ${FLAGSMITH_DB_NAME:-flagsmith}
+      DB_USER: ${FLAGSMITH_DB_USER:-flagsmith}
+      DB_PASSWORD: ${FLAGSMITH_DB_PASSWORD:-Password123}
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        for i in $$(seq 30); do pg_isready -q -d postgres && break; echo "waiting for postgresql (start Databases/PostgreSQL)"; sleep 2; done
+        psql -d postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$$DB_USER'" | grep -q 1 \
+          || psql -d postgres -c "CREATE ROLE \"$$DB_USER\" LOGIN PASSWORD '$$DB_PASSWORD'"
+        psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$$DB_NAME'" | grep -q 1 \
+          && echo "database $$DB_NAME exists" \
+          || psql -d postgres -c "CREATE DATABASE \"$$DB_NAME\" OWNER \"$$DB_USER\""
+    networks:
+      GroupNetwork:
+        ipv4_address: ${FLAGSMITH_DB_INIT_IP:-172.20.24.20}
+  flagsmith:
+    image: flagsmith/flagsmith:${FLAGSMITH_VERSION:-2.291.0}
+    container_name: flagsmith
+    restart: unless-stopped
+    depends_on:
+      flagsmith-db-init:
+        condition: service_completed_successfully
+    environment:
+      <<: *flagsmith-env
+      # Runs scheduled tasks in-process (no separate task processor)
+      TASK_RUN_METHOD: SYNCHRONOUSLY
+      PREVENT_SIGNUP: ${FLAGSMITH_PREVENT_SIGNUP:-true}
+      ENABLE_ADMIN_ACCESS_USER_PASS: "true"
+      TELEMETRY_DISABLED: "true"
+    networks:
+      GroupNetwork:
+        ipv4_address: ${FLAGSMITH_IP:-172.20.24.21}
+        aliases:
+          - flagsmith
+    ports:
+      - "${FLAGSMITH_PORT:-8149}:8000" # UI + API (/api/v1) + Django admin (/admin) (8000 is Kroki)
+  flagsmith-init:
+    image: flagsmith/flagsmith:${FLAGSMITH_VERSION:-2.291.0}
+    container_name: flagsmith-init
+    restart: "no"
+    depends_on:
+      flagsmith:
+        condition: service_healthy
+    environment:
+      <<: *flagsmith-env
+      ADMIN_PASSWORD: ${FLAGSMITH_ADMIN_PASSWORD:-Password123}
+    # The bootstrap (in the flagsmith service) creates the admin without a password (it logs a reset link); set it from .env
+    entrypoint:
+      - flagsmith
+      - shell
+      - -c
+      - |
+        import os
+        from users.models import FFAdminUser
+        u = FFAdminUser.objects.filter(email=os.environ["ADMIN_EMAIL"]).first()
+        if u is None:
+            print("admin user not found (it is only created in an empty database)")
+        else:
+            u.set_password(os.environ["ADMIN_PASSWORD"]); u.save()
+            print("password set for " + u.email)
+        # The bootstrap project has no environments; add the usual two once
+        from projects.models import Project
+        from environments.models import Environment
+        p = Project.objects.filter(name=os.environ["PROJECT_NAME"]).first()
+        if p is not None and not Environment.objects.filter(project=p).exists():
+            for name in ("Development", "Production"):
+                Environment.objects.create(name=name, project=p)
+            print("created environments Development and Production in " + p.name)
+        for e in Environment.objects.filter(project__name=os.environ["PROJECT_NAME"]):
+            print(e.name + " client-side environment key: " + e.api_key)
+    networks:
+      GroupNetwork:
+        ipv4_address: ${FLAGSMITH_INIT_IP:-172.20.24.22}
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

@@ -1,0 +1,20 @@
+# Pub/sub on the Redis stack (Redis Streams). For RabbitMQ use type pubsub.rabbitmq with
+# connectionString amqp://guest:guest@rabbitmq:5672 (Messaging/RabbitMQ).
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pubsub
+spec:
+  type: pubsub.redis
+  version: v1
+  metadata:
+    - name: redisHost
+      value: redis:6379
+    - name: redisPassword
+      secretKeyRef:
+        name: REDIS_PASSWORD
+        key: REDIS_PASSWORD
+    - name: redisDB
+      value: "4"
+auth:
+  secretStore: envsecrets

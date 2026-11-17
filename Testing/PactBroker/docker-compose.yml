@@ -1,0 +1,64 @@
+# Pact Broker: shares consumer-driven contracts (PactNet) between consumers and providers, records verification
+# results and answers "can I deploy?".   UI + API: http://localhost:9292 (pact / Password123, read-only: pact-reader)
+# Requires the PostgreSQL stack; pact-broker-db-init creates the pact_broker role and database.
+services:
+  pact-broker-db-init:
+    image: ${PACT_BROKER_DB_INIT_IMAGE:-postgres:18}
+    container_name: pact-broker-db-init
+    restart: "no"
+    environment:
+      PGHOST: postgresql
+      PGUSER: ${PACT_BROKER_DB_ADMIN_USER:-user@user.com}
+      PGPASSWORD: ${PACT_BROKER_DB_ADMIN_PASSWORD:-Password123}
+      DB_NAME: ${PACT_BROKER_DB_NAME:-pact_broker}
+      DB_USER: ${PACT_BROKER_DB_USER:-pact_broker}
+      DB_PASSWORD: ${PACT_BROKER_DB_PASSWORD:-Password123}
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        for i in $$(seq 30); do pg_isready -q -d postgres && break; echo "waiting for postgresql (start Databases/PostgreSQL)"; sleep 2; done
+        psql -d postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$$DB_USER'" | grep -q 1 \
+          || psql -d postgres -c "CREATE ROLE \"$$DB_USER\" LOGIN PASSWORD '$$DB_PASSWORD'"
+        psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$$DB_NAME'" | grep -q 1 \
+          && echo "database $$DB_NAME exists" \
+          || psql -d postgres -c "CREATE DATABASE \"$$DB_NAME\" OWNER \"$$DB_USER\""
+    networks:
+      GroupNetwork:
+        ipv4_address: ${PACT_BROKER_DB_INIT_IP:-172.20.23.70}
+  pact-broker:
+    image: pactfoundation/pact-broker:${PACT_BROKER_VERSION:-3.0.0-pactbroker2.121.2}
+    container_name: pact-broker
+    restart: unless-stopped
+    depends_on:
+      pact-broker-db-init:
+        condition: service_completed_successfully
+    environment:
+      PACT_BROKER_DATABASE_URL: postgres://${PACT_BROKER_DB_USER:-pact_broker}:${PACT_BROKER_DB_PASSWORD:-Password123}@postgresql:5432/${PACT_BROKER_DB_NAME:-pact_broker}
+      PACT_BROKER_PORT: "9292"
+      PACT_BROKER_PUBLIC_HEARTBEAT: "true"
+      PACT_BROKER_BASIC_AUTH_USERNAME: ${PACT_BROKER_USER:-pact}
+      PACT_BROKER_BASIC_AUTH_PASSWORD: ${PACT_BROKER_PASSWORD:-Password123}
+      PACT_BROKER_BASIC_AUTH_READ_ONLY_USERNAME: ${PACT_BROKER_READ_ONLY_USER:-pact-reader}
+      PACT_BROKER_BASIC_AUTH_READ_ONLY_PASSWORD: ${PACT_BROKER_READ_ONLY_PASSWORD:-Password123}
+      PACT_BROKER_ALLOW_PUBLIC_READ: ${PACT_BROKER_ALLOW_PUBLIC_READ:-false}
+      PACT_BROKER_LOG_LEVEL: ${PACT_BROKER_LOG_LEVEL:-info}
+      PACT_DO_NOT_TRACK: "true"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:9292/diagnostic/status/heartbeat"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${PACT_BROKER_IP:-172.20.23.71}
+        aliases:
+          - pact-broker
+    ports:
+      - "${PACT_BROKER_PORT:-9292}:9292" # UI + HAL API
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

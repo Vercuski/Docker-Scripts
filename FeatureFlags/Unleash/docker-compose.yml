@@ -1,0 +1,67 @@
+# Unleash (open source): feature flags with gradual rollout, strategies, variants and environments; SDKs for .NET
+# (Unleash.Client) and OpenFeature.   UI + API: http://localhost:4242 (admin / Password123)
+# Requires the PostgreSQL stack; unleash-db-init creates the unleash role and database.
+# API tokens below are created on first start (INIT_*_API_TOKENS) so apps can connect without clicking in the UI.
+services:
+  unleash-db-init:
+    image: ${UNLEASH_DB_INIT_IMAGE:-postgres:18}
+    container_name: unleash-db-init
+    restart: "no"
+    environment:
+      PGHOST: postgresql
+      PGUSER: ${UNLEASH_DB_ADMIN_USER:-user@user.com}
+      PGPASSWORD: ${UNLEASH_DB_ADMIN_PASSWORD:-Password123}
+      DB_NAME: ${UNLEASH_DB_NAME:-unleash}
+      DB_USER: ${UNLEASH_DB_USER:-unleash}
+      DB_PASSWORD: ${UNLEASH_DB_PASSWORD:-Password123}
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        for i in $$(seq 30); do pg_isready -q -d postgres && break; echo "waiting for postgresql (start Databases/PostgreSQL)"; sleep 2; done
+        psql -d postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$$DB_USER'" | grep -q 1 \
+          || psql -d postgres -c "CREATE ROLE \"$$DB_USER\" LOGIN PASSWORD '$$DB_PASSWORD'"
+        psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$$DB_NAME'" | grep -q 1 \
+          && echo "database $$DB_NAME exists" \
+          || psql -d postgres -c "CREATE DATABASE \"$$DB_NAME\" OWNER \"$$DB_USER\""
+    networks:
+      GroupNetwork:
+        ipv4_address: ${UNLEASH_DB_INIT_IP:-172.20.24.10}
+  unleash:
+    image: unleashorg/unleash-server:${UNLEASH_VERSION:-8.3.1}
+    container_name: unleash
+    restart: unless-stopped
+    depends_on:
+      unleash-db-init:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgres://${UNLEASH_DB_USER:-unleash}:${UNLEASH_DB_PASSWORD:-Password123}@postgresql:5432/${UNLEASH_DB_NAME:-unleash}
+      DATABASE_SSL: "false"
+      UNLEASH_URL: http://localhost:${UNLEASH_PORT:-4242}
+      # Only applied when the database is created (change it later in the UI)
+      UNLEASH_DEFAULT_ADMIN_USERNAME: ${UNLEASH_ADMIN_USER:-admin}
+      UNLEASH_DEFAULT_ADMIN_PASSWORD: ${UNLEASH_ADMIN_PASSWORD:-Password123}
+      # <project>:<environment>.<secret> - backend SDKs (Unleash.Client), frontend SDKs, admin API
+      INIT_CLIENT_API_TOKENS: ${UNLEASH_CLIENT_TOKEN:-default:development.local-dev-unleash-client-token}
+      INIT_FRONTEND_API_TOKENS: ${UNLEASH_FRONTEND_TOKEN:-default:development.local-dev-unleash-frontend-token}
+      INIT_ADMIN_API_TOKENS: ${UNLEASH_ADMIN_TOKEN:-*:*.local-dev-unleash-admin-token}
+      SEND_TELEMETRY: "false"
+      CHECK_VERSION: "false"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4242/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${UNLEASH_IP:-172.20.24.11}
+        aliases:
+          - unleash
+    ports:
+      - "${UNLEASH_PORT:-4242}:4242" # UI + Admin/Client/Frontend APIs
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

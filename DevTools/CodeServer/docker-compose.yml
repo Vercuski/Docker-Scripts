@@ -1,0 +1,61 @@
+# code-server: VS Code in the browser, built here with the .NET SDK and the C# extension (OmniSharp + netcoredbg).
+#   UI: http://localhost:8159 (password Password123)
+# Standalone. Work in /home/coder/project (the "project" folder); settings and user-installed extensions persist in the
+# config and local folders. On GroupNetwork, so code running inside can reach other stacks by alias (postgresql, redis...).
+services:
+  code-server:
+    build:
+      context: ./image
+      args:
+        CODE_SERVER_VERSION: ${CODE_SERVER_VERSION:-4.145.2}
+        DOTNET_CHANNEL: ${CODE_SERVER_DOTNET_CHANNEL:-10.0}
+    image: code-server-dotnet:${CODE_SERVER_VERSION:-4.145.2}
+    container_name: code-server
+    restart: unless-stopped
+    environment:
+      PASSWORD: ${CODE_SERVER_PASSWORD:-Password123}
+      TZ: ${CODE_SERVER_TZ:-America/New_York}
+    volumes:
+      - code_server_config:/home/coder/.config
+      - code_server_local:/home/coder/.local
+      - code_server_project:/home/coder/project
+    command: ["--bind-addr", "0.0.0.0:8080", "--auth", "password", "--disable-telemetry", "/home/coder/project"]
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:8080/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    networks:
+      GroupNetwork:
+        ipv4_address: ${CODE_SERVER_IP:-172.20.30.50}
+        aliases:
+          - code-server
+    ports:
+      - "${CODE_SERVER_PORT:-8159}:8080" # IDE
+      - "${CODE_SERVER_APP_PORT:-5080}:5080" # an app you run inside (e.g. dotnet run --urls http://0.0.0.0:5080)
+volumes:
+  code_server_config:
+    name: code_server_config
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/DevTools/CodeServer/config
+  code_server_local:
+    name: code_server_local
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/DevTools/CodeServer/local
+  code_server_project:
+    name: code_server_project
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/DevTools/CodeServer/project
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

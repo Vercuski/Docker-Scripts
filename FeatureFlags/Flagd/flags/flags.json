@@ -1,0 +1,26 @@
+{
+  "$schema": "https://flagd.dev/schema/v0/flags.json",
+  "flags": {
+    "new-checkout": {
+      "state": "ENABLED",
+      "variants": { "on": true, "off": false },
+      "defaultVariant": "off",
+      "targeting": {
+        "if": [{ "ends_with": [{ "var": "email" }, "@example.com"] }, "on", "off"]
+      }
+    },
+    "header-color": {
+      "state": "ENABLED",
+      "variants": { "red": "#c00", "blue": "#00c", "green": "#0c0" },
+      "defaultVariant": "blue",
+      "targeting": {
+        "fractional": [["red", 25], ["blue", 50], ["green", 25]]
+      }
+    },
+    "max-items": {
+      "state": "ENABLED",
+      "variants": { "small": 10, "large": 100 },
+      "defaultVariant": "small"
+    }
+  }
+}

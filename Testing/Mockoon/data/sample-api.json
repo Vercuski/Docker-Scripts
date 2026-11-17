@@ -1,0 +1,207 @@
+{
+  "uuid": "3bd391a3-c470-47e9-a5de-b32c0bf39efd",
+  "lastMigration": 33,
+  "name": "Docker-Scripts sample API",
+  "endpointPrefix": "api",
+  "latency": 0,
+  "port": 3000,
+  "hostname": "",
+  "folders": [],
+  "routes": [
+    {
+      "uuid": "af3f244c-30eb-40ba-adff-0c5e6cba51cf",
+      "type": "http",
+      "documentation": "Health check (used by the container healthcheck)",
+      "method": "get",
+      "endpoint": "health",
+      "responses": [
+        {
+          "uuid": "3dfa8291-0260-46ea-9b02-877f90ebd175",
+          "body": "{\"status\":\"ok\"}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "OK",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "b00449d9-deac-45cd-9bdb-7c8904cd6822",
+      "type": "http",
+      "documentation": "Templated response with a random name; id 404 returns not found",
+      "method": "get",
+      "endpoint": "customers/:id",
+      "responses": [
+        {
+          "uuid": "072e10a1-a16a-4c09-82cf-a068627fcefe",
+          "body": "{\n  \"id\": \"{{urlParam 'id'}}\",\n  \"name\": \"{{faker 'person.fullName'}}\",\n  \"email\": \"{{faker 'internet.email'}}\"\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Customer",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "ad81f9e5-9c3e-45ea-a4c7-388c842891ed",
+          "body": "{\"error\":\"Customer not found\"}",
+          "latency": 0,
+          "statusCode": 404,
+          "label": "Not found",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "id",
+              "value": "404",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "c5ebfc5b-51e3-491a-802c-f8406f59d80a",
+      "type": "crud",
+      "documentation": "Sample CRUD route over the Products data bucket: GET/POST/PUT/PATCH/DELETE /api/products[/:id]",
+      "method": "",
+      "endpoint": "products",
+      "responses": [
+        {
+          "uuid": "51cccc08-6c3c-4e46-9e06-a325303da2fe",
+          "body": "",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "CRUD",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "DATABUCKET",
+          "filePath": "",
+          "databucketID": "prd1",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    }
+  ],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "af3f244c-30eb-40ba-adff-0c5e6cba51cf"
+    },
+    {
+      "type": "route",
+      "uuid": "b00449d9-deac-45cd-9bdb-7c8904cd6822"
+    },
+    {
+      "type": "route",
+      "uuid": "c5ebfc5b-51e3-491a-802c-f8406f59d80a"
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": true,
+  "headers": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    }
+  ],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "data": [
+    {
+      "uuid": "58fd29e3-5d59-477d-be4c-fd5a75be4a4a",
+      "id": "prd1",
+      "name": "Products",
+      "documentation": "Sample data for the CRUD route",
+      "value": "[\n  {\n    \"id\": \"1\",\n    \"name\": \"Keyboard\",\n    \"price\": 49.99\n  },\n  {\n    \"id\": \"2\",\n    \"name\": \"Mouse\",\n    \"price\": 19.99\n  }\n]"
+    }
+  ],
+  "callbacks": []
+}

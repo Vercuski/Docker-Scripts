@@ -1,0 +1,17 @@
+{
+  "name": "Sample: GET /api/hello",
+  "request": {
+    "urlPath": "/api/hello",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "message": "Hello {{request.query.name}}",
+      "served": "{{now}}"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

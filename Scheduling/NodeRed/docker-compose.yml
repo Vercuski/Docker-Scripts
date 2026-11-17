@@ -1,0 +1,43 @@
+# Node-RED: low-code, flow-based automation - wire together HTTP endpoints, MQTT, Kafka, databases, webhooks and
+# timers in the browser.   Editor: http://localhost:1880 (admin / Password123)
+# settings.js reads the login and credential secret from .env. Flows, credentials and installed nodes are kept in
+# the data volume. Brokers in other stacks are reachable by alias (mosquitto:1883, kafka:29092, rabbitmq:5672, ...).
+services:
+  node-red:
+    image: nodered/node-red:${NODERED_VERSION:-5.0.10}
+    container_name: node-red
+    restart: unless-stopped
+    environment:
+      TZ: ${NODERED_TZ:-America/New_York}
+      NODE_RED_ADMIN_USER: ${NODERED_ADMIN_USER:-admin}
+      NODE_RED_ADMIN_PASSWORD: ${NODERED_ADMIN_PASSWORD:-Password123}
+      NODE_RED_CREDENTIAL_SECRET: ${NODERED_CREDENTIAL_SECRET:-local-dev-node-red-credential-secret}
+      NODE_RED_LOG_LEVEL: ${NODERED_LOG_LEVEL:-info}
+    volumes:
+      - nodered_data:/data
+      - ./settings.js:/data/settings.js:ro
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:1880/settings').then(r=>process.exit(r.status<500?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 20s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${NODERED_IP:-172.20.15.70}
+        aliases:
+          - node-red
+    ports:
+      - "${NODERED_PORT:-1880}:1880" # editor + admin API + HTTP-in endpoints of your flows
+volumes:
+  nodered_data:
+    name: nodered_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Scheduling/NodeRed/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

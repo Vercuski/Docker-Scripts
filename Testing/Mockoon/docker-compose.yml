@@ -1,0 +1,37 @@
+# Mockoon CLI: runs a mock API designed in the Mockoon desktop app (or written by hand) from a JSON data file.
+#   Mock API: http://localhost:3009 (sample: data/sample-api.json)
+# Design or edit the mock in the free Mockoon desktop app, save it over data/sample-api.json (or add a file and point
+# MOCKOON_DATA_FILE at it), then: docker compose restart mockoon
+services:
+  mockoon:
+    image: mockoon/cli:${MOCKOON_VERSION:-9.10.0}
+    container_name: mockoon
+    restart: unless-stopped
+    command:
+      - --data
+      - /data/${MOCKOON_DATA_FILE:-sample-api.json}
+      - --port
+      - "3000"
+      # Reload when the data file changes
+      - --watch
+      # Admin API at /mockoon-admin (logs, state, data buckets); header Authorization: Bearer <token>
+      - --admin-api-token
+      - ${MOCKOON_ADMIN_TOKEN:-local-dev-mockoon-admin-token}
+    volumes:
+      - ./data:/data:ro
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    networks:
+      GroupNetwork:
+        ipv4_address: ${MOCKOON_IP:-172.20.23.30}
+        aliases:
+          - mockoon
+    ports:
+      - "${MOCKOON_PORT:-3009}:3000" # mock API
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

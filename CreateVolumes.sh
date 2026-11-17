@@ -11,6 +11,11 @@ set -euo pipefail
 ROOT="${1:-${ROOT_VOLUME_DIR:-$HOME}}"
 ROOT="${ROOT%/}"
 echo "Creating volume folders under $ROOT/docker/volumes"
+mkdir -p "$ROOT/docker/volumes/AI/Langfuse/clickhouse"
+mkdir -p "$ROOT/docker/volumes/AI/Langfuse/clickhouse-logs"
+mkdir -p "$ROOT/docker/volumes/AI/Ollama/models"
+mkdir -p "$ROOT/docker/volumes/AI/OpenWebUI/data"
+
 mkdir -p "$ROOT/docker/volumes/Analytics/ApacheFlink/checkpoints"
 mkdir -p "$ROOT/docker/volumes/Analytics/ApacheFlink/savepoints"
 mkdir -p "$ROOT/docker/volumes/Analytics/ApacheFlink/jobs"
@@ -25,6 +30,13 @@ mkdir -p "$ROOT/docker/volumes/Authentication/Authentik/data"
 mkdir -p "$ROOT/docker/volumes/Authentication/Authentik/certs"
 mkdir -p "$ROOT/docker/volumes/Authentication/Authentik/templates"
 mkdir -p "$ROOT/docker/volumes/Authentication/Zitadel/bootstrap"
+
+mkdir -p "$ROOT/docker/volumes/CI-CD/Jenkins/home"
+mkdir -p "$ROOT/docker/volumes/CI-CD/TeamCity/data"
+mkdir -p "$ROOT/docker/volumes/CI-CD/TeamCity/logs"
+mkdir -p "$ROOT/docker/volumes/CI-CD/TeamCity/agent"
+mkdir -p "$ROOT/docker/volumes/CI-CD/Woodpecker/data"
+mkdir -p "$ROOT/docker/volumes/CI-CD/Woodpecker/agent"
 
 mkdir -p "$ROOT/docker/volumes/CloudEmulators/Azurite/data"
 mkdir -p "$ROOT/docker/volumes/CloudEmulators/AzureCosmosDb/data"
@@ -87,6 +99,25 @@ mkdir -p "$ROOT/docker/volumes/Databases/ScyllaDB/data"
 mkdir -p "$ROOT/docker/volumes/Databases/TimescaleDB/data"
 mkdir -p "$ROOT/docker/volumes/Databases/Valkey/data"
 
+mkdir -p "$ROOT/docker/volumes/Collaboration/Mattermost/config"
+mkdir -p "$ROOT/docker/volumes/Collaboration/Mattermost/data"
+mkdir -p "$ROOT/docker/volumes/Collaboration/Mattermost/plugins"
+mkdir -p "$ROOT/docker/volumes/Collaboration/Mattermost/client-plugins"
+mkdir -p "$ROOT/docker/volumes/Collaboration/RocketChat/mongo"
+mkdir -p "$ROOT/docker/volumes/Collaboration/Plane/uploads"
+mkdir -p "$ROOT/docker/volumes/Collaboration/Plane/mq"
+mkdir -p "$ROOT/docker/volumes/DataIntegration/NiFi/conf"
+mkdir -p "$ROOT/docker/volumes/DataIntegration/NiFi/content"
+mkdir -p "$ROOT/docker/volumes/DataIntegration/NiFi/database"
+mkdir -p "$ROOT/docker/volumes/DataIntegration/NiFi/flowfile"
+mkdir -p "$ROOT/docker/volumes/DataIntegration/NiFi/provenance"
+mkdir -p "$ROOT/docker/volumes/DataIntegration/NiFi/state"
+mkdir -p "$ROOT/docker/volumes/DevTools/Homepage/config"
+mkdir -p "$ROOT/docker/volumes/DevTools/Homarr/appdata"
+mkdir -p "$ROOT/docker/volumes/DevTools/CodeServer/config"
+mkdir -p "$ROOT/docker/volumes/DevTools/CodeServer/local"
+mkdir -p "$ROOT/docker/volumes/DevTools/CodeServer/project"
+
 mkdir -p "$ROOT/docker/volumes/Documentation/BookStack/config"
 mkdir -p "$ROOT/docker/volumes/Documentation/Mediawiki/html"
 mkdir -p "$ROOT/docker/volumes/Documentation/Outline/data"
@@ -95,6 +126,10 @@ mkdir -p "$ROOT/docker/volumes/Documentation/WikiJs/data"
 
 mkdir -p "$ROOT/docker/volumes/Email/Mailpit/data"
 mkdir -p "$ROOT/docker/volumes/Email/Smtp4dev/data"
+
+mkdir -p "$ROOT/docker/volumes/FeatureFlags/Consul/data"
+mkdir -p "$ROOT/docker/volumes/FeatureFlags/GrowthBook/mongo"
+mkdir -p "$ROOT/docker/volumes/FeatureFlags/GrowthBook/uploads"
 
 mkdir -p "$ROOT/docker/volumes/IaC/Atlantis/data"
 mkdir -p "$ROOT/docker/volumes/IaC/Semaphore/data"
@@ -107,6 +142,11 @@ mkdir -p "$ROOT/docker/volumes/Messaging/Pulsar/data"
 mkdir -p "$ROOT/docker/volumes/Messaging/RabbitMQ/data"
 mkdir -p "$ROOT/docker/volumes/Messaging/RabbitMQ/log"
 mkdir -p "$ROOT/docker/volumes/Messaging/Redpanda/data"
+
+mkdir -p "$ROOT/docker/volumes/ObjectStorage/Garage/data"
+mkdir -p "$ROOT/docker/volumes/ObjectStorage/Garage/meta"
+mkdir -p "$ROOT/docker/volumes/ObjectStorage/RustFS/data"
+mkdir -p "$ROOT/docker/volumes/ObjectStorage/SeaweedFS/data"
 
 mkdir -p "$ROOT/docker/volumes/Observability/Jaeger/badger"
 mkdir -p "$ROOT/docker/volumes/Observability/OpenTelemetry/tempo"
@@ -136,7 +176,10 @@ mkdir -p "$ROOT/docker/volumes/RP-LB/Caddy/data"
 mkdir -p "$ROOT/docker/volumes/RP-LB/NginxProxyManager/data"
 mkdir -p "$ROOT/docker/volumes/RP-LB/NginxProxyManager/letsencrypt"
 mkdir -p "$ROOT/docker/volumes/Scheduling/Airflow/logs"
+mkdir -p "$ROOT/docker/volumes/Scheduling/Camunda/data"
+mkdir -p "$ROOT/docker/volumes/Scheduling/Camunda/h2"
 mkdir -p "$ROOT/docker/volumes/Scheduling/N8n/data"
+mkdir -p "$ROOT/docker/volumes/Scheduling/NodeRed/data"
 mkdir -p "$ROOT/docker/volumes/Scheduling/Rundeck/logs"
 
 mkdir -p "$ROOT/docker/volumes/Search/OpenSearch/node1/"
@@ -155,6 +198,8 @@ mkdir -p "$ROOT/docker/volumes/Security/OpenBao/data"
 mkdir -p "$ROOT/docker/volumes/Security/StepCa/data"
 mkdir -p "$ROOT/docker/volumes/Security/Vault/data"
 mkdir -p "$ROOT/docker/volumes/Security/Zap/wrk"
+
+mkdir -p "$ROOT/docker/volumes/ServiceMesh/Dapr/scheduler"
 
 mkdir -p "$ROOT/docker/volumes/SIEM/Graylog/datanode"
 mkdir -p "$ROOT/docker/volumes/SIEM/Graylog/mongodb"
@@ -184,6 +229,8 @@ mkdir -p "$ROOT/docker/volumes/SourceControl/GitLab/data"
 mkdir -p "$ROOT/docker/volumes/SourceControl/GitLab/logs"
 mkdir -p "$ROOT/docker/volumes/SourceControl/OneDev/data"
 
+mkdir -p "$ROOT/docker/volumes/Testing/K6/results"
+
 mkdir -p "$ROOT/docker/volumes/Visualization/Grafana/storage"
 
 mkdir -p "$ROOT/docker/volumes/WebServers/Nginx/www"
@@ -201,10 +248,14 @@ if [ "$(uname -s)" = "Linux" ] && [ "${SKIP_CHOWN:-0}" != "1" ]; then
   if [ "$(id -u)" -ne 0 ]; then SUDO="sudo"; echo "Setting folder ownership for non-root images (sudo)"; fi
   own() { local ids="$1"; shift; for d in "$@"; do $SUDO chown -R "$ids" "$ROOT/docker/volumes/$d"; done; }
 
+  own 101:101     AI/Langfuse/clickhouse AI/Langfuse/clickhouse-logs                            # clickhouse
   own 9999:9999   Analytics/ApacheFlink/checkpoints Analytics/ApacheFlink/savepoints Analytics/ApacheFlink/jobs  # flink
   own 185:185     Analytics/ApacheSpark/data Analytics/ApacheSpark/apps Analytics/ApacheSpark/logs  # spark
   own 185:100     Analytics/JupyterLab/work                                                       # jovyan runs as spark's UID
   own 1000:1000   Authentication/Authentik/data Authentication/Authentik/certs Authentication/Authentik/templates  # authentik
+  own 1000:1000   CI-CD/TeamCity/data CI-CD/TeamCity/logs CI-CD/Woodpecker/data                  # teamcity, woodpecker
+  own 2000:2000   Collaboration/Mattermost/config Collaboration/Mattermost/data Collaboration/Mattermost/plugins Collaboration/Mattermost/client-plugins  # mattermost
+  own 10001:10001 Collaboration/Plane/uploads                                                     # rustfs (plane-minio)
   own 1000:0      CodeAnalysis/DependencyTrack/data                                               # dtrack
   own 1001:1337   CodeAnalysis/DefectDojo/media                                                   # defectdojo
   own 1000:1000   CodeAnalysis/SonarQube/data CodeAnalysis/SonarQube/extensions CodeAnalysis/SonarQube/logs
@@ -212,6 +263,10 @@ if [ "$(uname -s)" = "Linux" ] && [ "${SKIP_CHOWN:-0}" != "1" ]; then
   own 1001:1001   Databases/KurrentDB/data Databases/KurrentDB/logs                               # kurrent
   own 54321:54321 Databases/Oracle/Data Databases/Oracle/Backup                                   # oracle
   own 5050:5050   Databases/PostgreSQL/pgadmin4data                                               # pgadmin
+  own 1000:1000   DataIntegration/NiFi/conf DataIntegration/NiFi/content DataIntegration/NiFi/database DataIntegration/NiFi/flowfile DataIntegration/NiFi/provenance DataIntegration/NiFi/state  # nifi
+  own 1000:1000   DevTools/CodeServer/config DevTools/CodeServer/local DevTools/CodeServer/project                   # code-server (coder)
+  own 999:999     FeatureFlags/GrowthBook/mongo                                                  # mongodb
+  own 1000:1000   FeatureFlags/GrowthBook/uploads                                                # growthbook
   own 999:999     Databases/RavenDB/data                                                         # ravendb
   own 998:1000    Databases/ScyllaDB/data                                                        # scylla
   own 1001:1001   Documentation/Outline/data                                                     # outline (nodejs)
@@ -223,6 +278,7 @@ if [ "$(uname -s)" = "Linux" ] && [ "${SKIP_CHOWN:-0}" != "1" ]; then
   own 10000:0     Messaging/Pulsar/data                                                          # pulsar
   own 101:101     Messaging/Redpanda/data                                                        # redpanda
   own 1000:1000   Messaging/Kafka/Kafka/data                                                      # apache/kafka appuser
+  own 10001:10001 ObjectStorage/RustFS/data                                                     # rustfs
   own 10001:10001 Observability/OpenTelemetry/tempo Observability/OpenTelemetry/loki
   own 10001:10001 Observability/Jaeger/badger Observability/Pyroscope/data                    # jaeger, pyroscope
   own 101:101     Observability/SigNoz/clickhouse Observability/SigNoz/keeper                   # clickhouse
@@ -230,7 +286,9 @@ if [ "$(uname -s)" = "Linux" ] && [ "${SKIP_CHOWN:-0}" != "1" ]; then
   own 200:200     Packages/Nexus/data                                                            # nexus
   own 10001:65533 Packages/Verdaccio/storage                                                     # verdaccio
   own 50000:0     Scheduling/Airflow/logs                                                        # airflow
+  own 1001:1001   Scheduling/Camunda/data Scheduling/Camunda/h2                                  # camunda
   own 1000:1000   Scheduling/N8n/data                                                            # n8n (node)
+  own 1000:1000   Scheduling/NodeRed/data                                                        # node-red
   own 1000:0      Scheduling/Rundeck/logs                                                        # rundeck
   own 1000:0      Search/ElasticSearch/esdata01 Search/ElasticSearch/kibanadata Search/ElasticSearch/logstashdata01
   own 8983:8983   Search/Solr/data                                                               # solr
@@ -239,8 +297,10 @@ if [ "$(uname -s)" = "Linux" ] && [ "${SKIP_CHOWN:-0}" != "1" ]; then
   own 100:1000    Security/OpenBao/data                                                           # openbao
   own 1000:1000   Security/StepCa/data Security/Zap/wrk                                           # step, zap
   own 1000:1000   SourceControl/Forgejo/runner                                                   # forgejo-init writes the token
+  own 65532:65532 ServiceMesh/Dapr/scheduler                                                     # dapr scheduler (nonroot)
   own 1000:1000   SIEM/Wazuh/indexer/data SIEM/Wazuh/dashboard/config SIEM/Wazuh/dashboard/custom
   own 1100:1100   SIEM/Graylog/server                                                            # graylog
+  own 12345:12345 Testing/K6/results                                                             # k6
   own 472:0       Visualization/Grafana/storage                                                   # grafana
 fi
 

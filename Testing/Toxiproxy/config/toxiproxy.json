@@ -1,0 +1,7 @@
+[
+  { "name": "postgresql", "listen": "0.0.0.0:15432", "upstream": "postgresql:5432", "enabled": true },
+  { "name": "mssql", "listen": "0.0.0.0:11433", "upstream": "mssqldb:1433", "enabled": true },
+  { "name": "redis", "listen": "0.0.0.0:16379", "upstream": "redis:6379", "enabled": true },
+  { "name": "rabbitmq", "listen": "0.0.0.0:15673", "upstream": "rabbitmq:5672", "enabled": true },
+  { "name": "wiremock", "listen": "0.0.0.0:18147", "upstream": "wiremock:8080", "enabled": true }
+]

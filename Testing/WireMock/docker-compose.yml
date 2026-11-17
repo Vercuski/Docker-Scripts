@@ -1,0 +1,27 @@
+# WireMock: HTTP API mocking / service virtualization (stubs, request matching, response templating, faults,
+# record & playback).   Mock server + admin API: http://localhost:8147  (admin API under /__admin)
+# Stubs are loaded from ./mappings (JSON) with response bodies in ./__files; stubs saved through the admin API
+# (POST /__admin/mappings/save) are written there too, so they can be committed with your project.
+services:
+  wiremock:
+    image: wiremock/wiremock:${WIREMOCK_VERSION:-3.13.2}
+    container_name: wiremock
+    restart: unless-stopped
+    command:
+      - --global-response-templating
+      - --disable-banner
+      - --max-request-journal-entries=${WIREMOCK_JOURNAL_ENTRIES:-1000}
+    volumes:
+      - ./mappings:/home/wiremock/mappings
+      - ./__files:/home/wiremock/__files
+    networks:
+      GroupNetwork:
+        ipv4_address: ${WIREMOCK_IP:-172.20.23.10}
+        aliases:
+          - wiremock
+    ports:
+      - "${WIREMOCK_PORT:-8147}:8080" # mocks + /__admin API
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

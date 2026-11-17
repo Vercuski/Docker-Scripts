@@ -1,0 +1,165 @@
+# Langfuse v4: open-source LLM engineering platform - traces of LLM calls (tokens, cost, latency), prompt management,
+# datasets and evaluations; OpenTelemetry endpoint and SDKs.   UI: http://localhost:3014 (admin@example.com / Password123)
+# Headless init (LANGFUSE_INIT_*): admin user, organisation, project and fixed API keys on the first start.
+# Requires the PostgreSQL stack (langfuse-db-init), the Redis stack (DB 5) and the RustFS stack (S3 bucket "langfuse",
+# created by langfuse-s3-init). Brings its own ClickHouse (Langfuse needs >= 25.12, pinned to the version it tests).
+x-langfuse-env: &langfuse-env
+  NEXTAUTH_URL: http://localhost:${LANGFUSE_PORT:-3014}
+  DATABASE_URL: postgresql://${LANGFUSE_DB_USER:-langfuse}:${LANGFUSE_DB_PASSWORD:-Password123}@postgresql:5432/${LANGFUSE_DB_NAME:-langfuse}
+  SALT: ${LANGFUSE_SALT:-local-dev-langfuse-salt}
+  # 64 hex characters; encrypts stored LLM API keys - keep it once data exists
+  ENCRYPTION_KEY: ${LANGFUSE_ENCRYPTION_KEY:-37a45fe619cdacb6d58ce4da5f4bfd8946c526d62a5fb18f5dd1b3bf233f2919}
+  TELEMETRY_ENABLED: "false"
+  CLICKHOUSE_MIGRATION_URL: clickhouse://langfuse-clickhouse:9000
+  CLICKHOUSE_URL: http://langfuse-clickhouse:8123
+  CLICKHOUSE_USER: ${LANGFUSE_CLICKHOUSE_USER:-clickhouse}
+  CLICKHOUSE_PASSWORD: ${LANGFUSE_CLICKHOUSE_PASSWORD:-Password123}
+  CLICKHOUSE_CLUSTER_ENABLED: "false"
+  REDIS_CONNECTION_STRING: redis://:${LANGFUSE_REDIS_PASSWORD:-Password123}@redis:6379/5
+  # Event and media uploads in the RustFS stack
+  LANGFUSE_S3_EVENT_UPLOAD_BUCKET: ${LANGFUSE_S3_BUCKET:-langfuse}
+  LANGFUSE_S3_EVENT_UPLOAD_REGION: us-east-1
+  LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${LANGFUSE_S3_ACCESS_KEY:-admin}
+  LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${LANGFUSE_S3_SECRET_KEY:-Password123}
+  LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: http://rustfs:9000
+  LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: "true"
+  LANGFUSE_S3_EVENT_UPLOAD_PREFIX: events/
+  LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: ${LANGFUSE_S3_BUCKET:-langfuse}
+  LANGFUSE_S3_MEDIA_UPLOAD_REGION: us-east-1
+  LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${LANGFUSE_S3_ACCESS_KEY:-admin}
+  LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${LANGFUSE_S3_SECRET_KEY:-Password123}
+  # Browsers upload media through presigned URLs, so this is RustFS's host address
+  LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: ${LANGFUSE_S3_PUBLIC_ENDPOINT:-http://localhost:9008}
+  LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: "true"
+  LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: media/
+services:
+  langfuse-db-init:
+    image: ${LANGFUSE_DB_INIT_IMAGE:-postgres:18}
+    container_name: langfuse-db-init
+    restart: "no"
+    environment:
+      PGHOST: postgresql
+      PGUSER: ${LANGFUSE_DB_ADMIN_USER:-user@user.com}
+      PGPASSWORD: ${LANGFUSE_DB_ADMIN_PASSWORD:-Password123}
+      DB_NAME: ${LANGFUSE_DB_NAME:-langfuse}
+      DB_USER: ${LANGFUSE_DB_USER:-langfuse}
+      DB_PASSWORD: ${LANGFUSE_DB_PASSWORD:-Password123}
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        for i in $$(seq 30); do pg_isready -q -d postgres && break; echo "waiting for postgresql (start Databases/PostgreSQL)"; sleep 2; done
+        psql -d postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$$DB_USER'" | grep -q 1 \
+          || psql -d postgres -c "CREATE ROLE \"$$DB_USER\" LOGIN PASSWORD '$$DB_PASSWORD'"
+        psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$$DB_NAME'" | grep -q 1 \
+          && echo "database $$DB_NAME exists" \
+          || psql -d postgres -c "CREATE DATABASE \"$$DB_NAME\" OWNER \"$$DB_USER\""
+    networks:
+      GroupNetwork:
+        ipv4_address: ${LANGFUSE_DB_INIT_IP:-172.20.27.40}
+  langfuse-s3-init:
+    image: amazon/aws-cli:${LANGFUSE_AWSCLI_VERSION:-2.40.4}
+    container_name: langfuse-s3-init
+    restart: "no"
+    environment:
+      AWS_ACCESS_KEY_ID: ${LANGFUSE_S3_ACCESS_KEY:-admin}
+      AWS_SECRET_ACCESS_KEY: ${LANGFUSE_S3_SECRET_KEY:-Password123}
+      AWS_DEFAULT_REGION: us-east-1
+      BUCKET: ${LANGFUSE_S3_BUCKET:-langfuse}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        for i in $$(seq 30); do aws --endpoint-url http://rustfs:9000 s3 ls >/dev/null 2>&1 && break; echo "waiting for rustfs (start ObjectStorage/RustFS)"; sleep 2; done
+        aws --endpoint-url http://rustfs:9000 s3api head-bucket --bucket "$$BUCKET" 2>/dev/null && echo "bucket $$BUCKET exists" \
+          || aws --endpoint-url http://rustfs:9000 s3 mb "s3://$$BUCKET"
+    networks:
+      GroupNetwork:
+        ipv4_address: ${LANGFUSE_S3_INIT_IP:-172.20.27.41}
+  langfuse-clickhouse:
+    image: clickhouse/clickhouse-server:${LANGFUSE_CLICKHOUSE_VERSION:-26.3.62.3}
+    container_name: langfuse-clickhouse
+    restart: unless-stopped
+    user: "101:101"
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: ${LANGFUSE_CLICKHOUSE_USER:-clickhouse}
+      CLICKHOUSE_PASSWORD: ${LANGFUSE_CLICKHOUSE_PASSWORD:-Password123}
+    volumes:
+      - langfuse_clickhouse_data:/var/lib/clickhouse
+      - langfuse_clickhouse_logs:/var/log/clickhouse-server
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8123/ping || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      GroupNetwork:
+        ipv4_address: ${LANGFUSE_CLICKHOUSE_IP:-172.20.27.42}
+        aliases:
+          - langfuse-clickhouse
+  langfuse-web:
+    image: langfuse/langfuse:${LANGFUSE_VERSION:-4.81.0}
+    container_name: langfuse-web
+    restart: unless-stopped
+    depends_on: &langfuse-depends
+      langfuse-db-init:
+        condition: service_completed_successfully
+      langfuse-s3-init:
+        condition: service_completed_successfully
+      langfuse-clickhouse:
+        condition: service_healthy
+    environment:
+      <<: *langfuse-env
+      NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:-local-dev-langfuse-nextauth-secret}
+      LANGFUSE_S3_MEDIA_UPLOAD_INTERNAL_ENDPOINT: http://rustfs:9000
+      # Created on the first start (skipped once they exist)
+      LANGFUSE_INIT_ORG_ID: ${LANGFUSE_INIT_ORG_ID:-docker-scripts}
+      LANGFUSE_INIT_ORG_NAME: ${LANGFUSE_INIT_ORG_NAME:-Docker-Scripts}
+      LANGFUSE_INIT_PROJECT_ID: ${LANGFUSE_INIT_PROJECT_ID:-local-dev}
+      LANGFUSE_INIT_PROJECT_NAME: ${LANGFUSE_INIT_PROJECT_NAME:-Local dev}
+      LANGFUSE_INIT_PROJECT_PUBLIC_KEY: ${LANGFUSE_INIT_PROJECT_PUBLIC_KEY:-pk-lf-local-dev}
+      LANGFUSE_INIT_PROJECT_SECRET_KEY: ${LANGFUSE_INIT_PROJECT_SECRET_KEY:-sk-lf-local-dev}
+      LANGFUSE_INIT_USER_EMAIL: ${LANGFUSE_ADMIN_EMAIL:-admin@example.com}
+      LANGFUSE_INIT_USER_NAME: ${LANGFUSE_ADMIN_NAME:-Admin}
+      LANGFUSE_INIT_USER_PASSWORD: ${LANGFUSE_ADMIN_PASSWORD:-Password123}
+      AUTH_DISABLE_SIGNUP: ${LANGFUSE_DISABLE_SIGNUP:-true}
+    networks:
+      GroupNetwork:
+        ipv4_address: ${LANGFUSE_WEB_IP:-172.20.27.43}
+        aliases:
+          - langfuse-web
+          - langfuse
+    ports:
+      - "${LANGFUSE_PORT:-3014}:3000" # UI + public API + OTLP (/api/public/otel)
+  langfuse-worker:
+    image: langfuse/langfuse-worker:${LANGFUSE_VERSION:-4.81.0}
+    container_name: langfuse-worker
+    restart: unless-stopped
+    depends_on: *langfuse-depends
+    environment:
+      <<: *langfuse-env
+    networks:
+      GroupNetwork:
+        ipv4_address: ${LANGFUSE_WORKER_IP:-172.20.27.44}
+        aliases:
+          - langfuse-worker
+volumes:
+  langfuse_clickhouse_data:
+    name: langfuse_clickhouse_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/AI/Langfuse/clickhouse
+  langfuse_clickhouse_logs:
+    name: langfuse_clickhouse_logs
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/AI/Langfuse/clickhouse-logs
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

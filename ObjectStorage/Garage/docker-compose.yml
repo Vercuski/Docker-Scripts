@@ -1,0 +1,95 @@
+# Garage: lightweight, geo-distributed S3-compatible object store (AGPL, by Deuxfleurs). Single node here.
+#   S3 API: http://localhost:3900 (region "garage")   Static website hosting: http://localhost:3902
+#   Admin API: http://localhost:3903   Web UI (community garage-webui): http://localhost:3909
+# garage-init (Python, admin API v2) assigns the node its layout role, imports the access key from .env and
+# creates the buckets in GARAGE_BUCKETS. Settings: garage.toml (secrets come from the environment).
+x-garage-secrets: &garage-secrets
+  GARAGE_ADMIN_TOKEN: ${GARAGE_ADMIN_TOKEN:-local-dev-garage-admin-token}
+services:
+  garage:
+    image: dxflrs/garage:${GARAGE_VERSION:-v2.5.0}
+    container_name: garage
+    hostname: garage
+    restart: unless-stopped
+    environment:
+      <<: *garage-secrets
+      # 32 bytes as 64 hex characters, shared by all nodes of a cluster
+      GARAGE_RPC_SECRET: ${GARAGE_RPC_SECRET:-613c2feac8f6458546db6b69ccf16c26ac03c0eb22030e78c3e0b24312295b7d}
+      GARAGE_METRICS_TOKEN: ${GARAGE_METRICS_TOKEN:-local-dev-garage-metrics-token}
+    volumes:
+      - ./garage.toml:/etc/garage.toml:ro
+      - garage_meta:/var/lib/garage/meta
+      - garage_data:/var/lib/garage/data
+    healthcheck:
+      test: ["CMD", "/garage", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${GARAGE_IP:-172.20.25.30}
+        aliases:
+          - garage
+    ports:
+      - "${GARAGE_S3_PORT:-3900}:3900" # S3 API
+      - "${GARAGE_WEB_PORT:-3902}:3902" # static website hosting
+      - "${GARAGE_ADMIN_PORT:-3903}:3903" # admin API (+ /metrics, /health)
+  garage-init:
+    image: ${GARAGE_INIT_IMAGE:-python:3.13-alpine}
+    container_name: garage-init
+    restart: "no"
+    depends_on:
+      garage:
+        condition: service_healthy
+    environment:
+      <<: *garage-secrets
+      ACCESS_KEY_ID: ${GARAGE_ACCESS_KEY_ID:-GK6d7662022c03a786ac8be692}
+      SECRET_KEY: ${GARAGE_SECRET_KEY:-b023faab5141afc5bac2c975f74fd1bcc0ea0bb1bacb6bb75aac2715c2b96587}
+      BUCKETS: ${GARAGE_BUCKETS:-dev-bucket}
+      CAPACITY_GB: ${GARAGE_CAPACITY_GB:-100}
+    command: ["python", "/init/garage-init.py"]
+    volumes:
+      - ./init:/init:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${GARAGE_INIT_IP:-172.20.25.31}
+  garage-webui:
+    image: khairul169/garage-webui:${GARAGE_WEBUI_VERSION:-1.1.0}
+    container_name: garage-webui
+    restart: unless-stopped
+    depends_on:
+      - garage
+    environment:
+      API_BASE_URL: http://garage:3903
+      S3_ENDPOINT_URL: http://garage:3900
+      API_ADMIN_KEY: ${GARAGE_ADMIN_TOKEN:-local-dev-garage-admin-token}
+      S3_REGION: garage
+    volumes:
+      - ./garage.toml:/etc/garage.toml:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${GARAGE_WEBUI_IP:-172.20.25.32}
+        aliases:
+          - garage-webui
+    ports:
+      - "${GARAGE_WEBUI_PORT:-3909}:3909" # web UI
+volumes:
+  garage_meta:
+    name: garage_meta
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/ObjectStorage/Garage/meta
+  garage_data:
+    name: garage_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/ObjectStorage/Garage/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

@@ -1,0 +1,709 @@
+# Generated from the overview table in "Claude outputs/Home.html" (one group per category).
+# Status dots come from the Docker socket (container running / stopped); links open the host-published UI.
+# Edit freely - Homepage reloads this file on change.
+- "AI":
+    - "Ollama":
+        href: "http://localhost:11434/api/tags"
+        description: ":11434"
+        server: local
+        container: ollama
+    - "Open WebUI":
+        href: "http://localhost:3013/"
+        description: ":3013"
+        server: local
+        container: open-webui
+    - "LiteLLM":
+        href: "http://localhost:4000/ui"
+        description: ":4000 (API /v1)"
+        server: local
+        container: litellm
+    - "Langfuse":
+        href: "http://localhost:3014/"
+        description: ":3014"
+        server: local
+        container: langfuse-web
+- "Analytics":
+    - "Apache Spark":
+        href: "http://localhost:8090/"
+        description: ":8090 UI, :7077 master"
+        server: local
+        container: apache-spark-master
+    - "Seq":
+        href: "http://localhost:8089/"
+        description: ":8089 UI, :5341 ingest"
+        server: local
+        container: seq
+    - "Apache Flink":
+        href: "http://localhost:8093/"
+        description: ":8093 UI / REST"
+        server: local
+        container: flink-jobmanager
+    - "Trino":
+        href: "http://localhost:8094/"
+        description: ":8094 UI, JDBC"
+        server: local
+        container: trino
+    - "JupyterLab":
+        href: "http://localhost:8888/lab?token=Password123"
+        description: ":8888 lab, :4040 Spark UI"
+        server: local
+        container: jupyterlab
+- "Authentication":
+    - "Keycloak":
+        href: "http://localhost:8280/"
+        description: ":8280, :9001 management"
+        server: local
+        container: keycloak
+    - "authentik":
+        href: "http://localhost:8290/"
+        description: ":8290 UI, :8445 HTTPS"
+        server: local
+        container: authentik-server
+    - "ZITADEL":
+        href: "http://localhost:8300/ui/console"
+        description: ":8300 console, :8301 login"
+        server: local
+        container: zitadel
+    - "Authelia":
+        href: "https://auth.dev.localhost:9095/"
+        description: ":9095 portal (HTTPS)"
+        server: local
+        container: authelia
+    - "Ory Kratos + Hydra":
+        href: "http://127.0.0.1:4455/registration"
+        description: ":4455 UI, :4433/:4434 Kratos, :4444/:4445 Hydra"
+        server: local
+        container: kratos
+- "CI / CD":
+    - "Jenkins":
+        href: "http://localhost:8144/"
+        description: ":8144"
+        server: local
+        container: jenkins
+    - "TeamCity / agent":
+        href: "http://localhost:8145/"
+        description: ":8145"
+        server: local
+        container: teamcity
+    - "Woodpecker server / agent":
+        href: "http://localhost:8146/"
+        description: ":8146"
+        server: local
+        container: woodpecker-server
+- "Cloud Emulators":
+    - "Azure Cosmos DB":
+        href: "http://localhost:1234/"
+        description: ":8081 (https), :1234 explorer"
+        server: local
+        container: cosmosdb-emulator
+    - "Azure Event Hubs":
+        href: "http://localhost:5301/health"
+        description: ":5674 AMQP, :9094 Kafka, :5301 health"
+        server: local
+        container: eventhubs-emulator
+    - "Floci (AWS)":
+        href: "http://localhost:4566/_floci/ui"
+        description: ":4566 all services"
+        server: local
+        container: floci
+- "Code Analysis":
+    - "SonarQube":
+        href: "http://localhost:9000/"
+        description: ":9000"
+        server: local
+        container: sonarqube
+    - "Dependency-Track":
+        href: "http://localhost:8099/"
+        description: ":8099 UI, :8098 API"
+        server: local
+        container: dtrack-apiserver
+    - "DefectDojo":
+        href: "http://localhost:8102/"
+        description: ":8102"
+        server: local
+        container: defectdojo-nginx
+- "Collaboration":
+    - "Mattermost":
+        href: "http://localhost:8065/"
+        description: ":8065"
+        server: local
+        container: mattermost
+    - "Rocket.Chat":
+        href: "http://localhost:3015/"
+        description: ":3015"
+        server: local
+        container: rocketchat
+    - "Plane":
+        href: "http://localhost:8156/"
+        description: ":8156"
+        server: local
+        container: plane-proxy
+- "Containerization":
+    - "Docker Registry / UI":
+        href: "http://localhost:5001/"
+        description: ":5000 API, :5001 UI"
+        server: local
+        container: registry-server
+    - "Dozzle":
+        href: "http://localhost:8103/"
+        description: ":8103"
+        server: local
+        container: dozzle
+    - "zot registry":
+        href: "http://localhost:5002/"
+        description: ":5002 API + UI"
+        server: local
+        container: zot
+    - "Harbor":
+        href: "http://localhost:8104/"
+        description: ":8104 UI, API, registry"
+        server: local
+        container: harbor-proxy
+- "Data Integration":
+    - "Apache NiFi":
+        href: "https://localhost:8155/nifi"
+        description: ":8155 (HTTPS)"
+        server: local
+        container: nifi
+    - "Airbyte (K3s, via proxy)":
+        href: "http://localhost:8154/"
+        description: ":8154"
+        server: local
+        container: airbyte-proxy
+- "Databases":
+    - "ClickHouse":
+        href: "http://localhost:8123/play"
+        description: ":8123 HTTP, :19000 native"
+        server: local
+        container: clickhouse-server
+    - "CockroachDB":
+        href: "http://localhost:8080/"
+        description: ":26257 SQL, :8080 UI"
+        server: local
+        container: cockroachdb
+    - "KurrentDB":
+        href: "http://localhost:2113/"
+        description: ":2113 gRPC + UI"
+        server: local
+        container: kurrentdb
+    - "InfluxDB":
+        href: "http://localhost:8086/"
+        description: ":8086"
+        server: local
+        container: influxdb
+    - "MariaDB / Adminer":
+        href: "http://localhost:8087/"
+        description: ":3307, :8087 Adminer"
+        server: local
+        container: MariaDb
+    - "Milvus":
+        href: "http://localhost:9111/"
+        description: ":19530, :9091 metrics, :9110 MinIO API, :9111 MinIO console"
+        server: local
+        container: milvus-standalone
+    - "MongoDB / Mongo Express":
+        href: "http://localhost:8088/"
+        description: ":27017, :8088 Mongo Express"
+        server: local
+        container: mongodb
+    - "MySQL / phpMyAdmin":
+        href: "http://localhost:8082/"
+        description: ":3306, :8082 phpMyAdmin"
+        server: local
+        container: mysql
+    - "Neo4j":
+        href: "http://localhost:7474/"
+        description: ":7474 HTTP, :7473 HTTPS, :7687 Bolt"
+        server: local
+        container: neo4j_server
+    - "PostgreSQL / pgAdmin":
+        href: "http://localhost:5050/"
+        description: ":5432, :5050 pgAdmin"
+        server: local
+        container: postgresql
+    - "RavenDB":
+        href: "http://localhost:8105/"
+        description: ":8105 Studio, :38888 TCP"
+        server: local
+        container: ravendb
+    - "CouchDB":
+        href: "http://localhost:5984/_utils"
+        description: ":5984 Fauxton + API"
+        server: local
+        container: couchdb
+    - "Couchbase CE":
+        href: "http://localhost:8107/"
+        description: ":8107 console, :8108-8110 views/query/search, :11210 KV"
+        server: local
+        container: couchbase
+    - "Qdrant":
+        href: "http://localhost:6333/dashboard"
+        description: ":6333 REST + dashboard, :6334 gRPC"
+        server: local
+        container: qdrant
+    - "CloudBeaver":
+        href: "http://localhost:8978/"
+        description: ":8978"
+        server: local
+        container: cloudbeaver
+- "Dev Tools":
+    - "Homepage":
+        href: "http://localhost:3016/"
+        description: ":3016"
+        server: local
+        container: homepage
+    - "Homarr":
+        href: "http://localhost:7575/"
+        description: ":7575"
+        server: local
+        container: homarr
+    - "IT-Tools":
+        href: "http://localhost:8157/"
+        description: ":8157"
+        server: local
+        container: it-tools
+    - "CyberChef":
+        href: "http://localhost:8158/"
+        description: ":8158"
+        server: local
+        container: cyberchef
+    - "code-server (.NET)":
+        href: "http://localhost:8159/"
+        description: ":8159, :5080 app"
+        server: local
+        container: code-server
+- "Documentation":
+    - "Backstage":
+        href: "http://localhost:7007/"
+        description: ":7007"
+        server: local
+        container: backstage
+    - "MediaWiki":
+        href: "http://localhost:8281/"
+        description: ":8281"
+        server: local
+        container: mediawiki
+    - "Wiki.js":
+        href: "http://localhost:3003/"
+        description: ":3003"
+        server: local
+        container: wikijs
+    - "BookStack":
+        href: "http://localhost:6875/"
+        description: ":6875"
+        server: local
+        container: bookstack
+    - "Outline (+ Dex)":
+        href: "http://localhost:3002/"
+        description: ":3002, :5556 Dex"
+        server: local
+        container: outline
+    - "Structurizr":
+        href: "http://localhost:8112/"
+        description: ":8112"
+        server: local
+        container: structurizr
+    - "draw.io":
+        href: "http://localhost:8111/?offline=1"
+        description: ":8111"
+        server: local
+        container: drawio
+    - "Swagger UI / Redoc":
+        href: "http://localhost:8113/"
+        description: ":8113 Swagger UI, :8114 Redoc"
+        server: local
+        container: swagger-ui
+- "Email":
+    - "Mailpit":
+        href: "http://localhost:8025/"
+        description: ":8025 UI, :1025 SMTP"
+        server: local
+        container: mailpit
+    - "smtp4dev":
+        href: "http://localhost:8115/"
+        description: ":8115 UI, :2525 SMTP, :1143 IMAP, :1110 POP3"
+        server: local
+        container: smtp4dev
+- "Feature Flags":
+    - "Unleash":
+        href: "http://localhost:4242/"
+        description: ":4242"
+        server: local
+        container: unleash
+    - "Flagsmith":
+        href: "http://localhost:8149/"
+        description: ":8149"
+        server: local
+        container: flagsmith
+    - "GrowthBook":
+        href: "http://localhost:3011/"
+        description: ":3011 UI, :3012 API"
+        server: local
+        container: growthbook
+    - "Consul":
+        href: "http://localhost:8500/ui/"
+        description: ":8500, :8600 DNS"
+        server: local
+        container: consul
+- "IaC":
+    - "Atlantis":
+        href: "http://localhost:4141/"
+        description: ":4141"
+        server: local
+        container: atlantis
+    - "Semaphore UI":
+        href: "http://localhost:3004/"
+        description: ":3004"
+        server: local
+        container: semaphore
+- "Messaging":
+    - "Kafka / Kafka UI":
+        href: "http://localhost:8084/"
+        description: ":9092, :8084 Kafka UI"
+        server: local
+        container: kafka
+    - "RabbitMQ":
+        href: "http://localhost:15672/"
+        description: ":5672 AMQP, :15672 UI, :15692\n                                metrics"
+        server: local
+        container: rabbitmq
+    - "NATS":
+        href: "http://localhost:8222/"
+        description: ":4222, :8222 monitoring"
+        server: local
+        container: nats
+    - "Apache Artemis":
+        href: "http://localhost:8161/console"
+        description: ":61616, :5675 AMQP, :61613 STOMP, :8161 console"
+        server: local
+        container: artemis
+    - "Redpanda / Console":
+        href: "http://localhost:8116/"
+        description: ":19092 Kafka, :18081 schemas, :8116 Console"
+        server: local
+        container: redpanda
+    - "Apicurio Registry":
+        href: "http://localhost:8120/"
+        description: ":8119 API, :8120 UI"
+        server: local
+        container: apicurio-registry
+- "Object Storage":
+    - "RustFS":
+        href: "http://localhost:9009/rustfs/console/"
+        description: ":9008 S3, :9009 console"
+        server: local
+        container: rustfs
+    - "SeaweedFS":
+        href: "http://localhost:12535/"
+        description: ":8333 S3, :12535 admin, :8150 filer, :9333 master"
+        server: local
+        container: seaweedfs
+    - "Garage / web UI":
+        href: "http://localhost:3909/"
+        description: ":3900 S3, :3902 web, :3903 admin, :3909 UI"
+        server: local
+        container: garage
+- "Observability":
+    - "Aspire Dashboard":
+        href: "http://localhost:18888/"
+        description: ":18888 UI, :18889 OTLP gRPC,\n                                :18890 OTLP HTTP"
+        server: local
+        container: aspire-dashboard
+    - "Prometheus":
+        href: "http://localhost:9090/"
+        description: ":9090, :9100 node exporter, :9093 Alertmanager"
+        server: local
+        container: prometheus
+    - "Jaeger v2":
+        href: "http://localhost:16686/"
+        description: ":16686 UI, :14317/:14318 OTLP"
+        server: local
+        container: jaeger
+    - "Pyroscope":
+        href: "http://localhost:4041/"
+        description: ":4041"
+        server: local
+        container: pyroscope
+    - "Uptime Kuma":
+        href: "http://localhost:3005/"
+        description: ":3005"
+        server: local
+        container: uptime-kuma
+    - "cAdvisor":
+        href: "http://localhost:8121/"
+        description: ":8121"
+        server: local
+        container: cadvisor
+    - "otel-lgtm":
+        href: "http://localhost:3006/"
+        description: ":3006 Grafana, :24317/:24318 OTLP"
+        server: local
+        container: otel-lgtm
+    - "SigNoz":
+        href: "http://localhost:8122/"
+        description: ":8122 UI, :34317/:34318 OTLP"
+        server: local
+        container: signoz-db-init
+- "Orchestration":
+    - "Rancher":
+        href: "https://localhost:8444/"
+        description: ":8480, :8444 HTTPS"
+        server: local
+        container: rancher
+    - "Portainer":
+        href: "https://localhost:9443/"
+        description: ":9010, :9443 HTTPS"
+        server: local
+        container: portainer
+    - "K3s + Argo CD":
+        href: "http://localhost:8124/"
+        description: ":6443 API, :8124 Argo CD"
+        server: local
+        container: k3s
+    - "Headlamp":
+        href: "http://localhost:4466/"
+        description: ":4466"
+        server: local
+        container: headlamp
+    - "Nomad":
+        href: "http://localhost:4646/ui/"
+        description: ":4646"
+        server: local
+        container: nomad
+- "Packages":
+    - "ProGet":
+        href: "http://localhost:8091/"
+        description: ":8091, :8092 HTTPS"
+        server: local
+        container: proget
+    - "Sonatype Nexus CE":
+        href: "http://localhost:8125/"
+        description: ":8125"
+        server: local
+        container: nexus
+    - "BaGetter":
+        href: "http://localhost:5555/"
+        description: ":5555"
+        server: local
+        container: bagetter
+    - "Verdaccio":
+        href: "http://localhost:4873/"
+        description: ":4873"
+        server: local
+        container: verdaccio
+- "Proxy / LB":
+    - "HAProxy":
+        href: "http://localhost:8100/"
+        description: ":8100 frontend, :8404 stats"
+        server: local
+        container: haproxy
+    - "Nginx Proxy Manager":
+        href: "http://localhost:81/"
+        description: ":80, :443, :81 admin"
+        server: local
+        container: nginx-proxy-manager
+    - "Traefik":
+        href: "http://localhost:8126/web/"
+        description: ":8126, :8127 dashboard"
+        server: local
+        container: traefik
+    - "Caddy":
+        href: "http://localhost:8128/"
+        description: ":8128, :8134 HTTPS"
+        server: local
+        container: caddy
+    - "YARP":
+        href: "http://localhost:8129/web/"
+        description: ":8129"
+        server: local
+        container: yarp
+    - "Envoy":
+        href: "http://localhost:8130/"
+        description: ":8130, :9902 admin"
+        server: local
+        container: envoy
+    - "Kong":
+        href: "http://localhost:8131/web/"
+        description: ":8131 proxy, :8132 admin, :8133 Manager"
+        server: local
+        container: kong
+- "Scheduling":
+    - "Hangfire":
+        href: "http://localhost:5010/hangfire"
+        description: ":5010"
+        server: local
+        container: hangfire-server
+    - "Temporal":
+        href: "http://localhost:8135/"
+        description: ":7233 gRPC, :8135 UI"
+        server: local
+        container: temporal
+    - "Airflow":
+        href: "http://localhost:8136/"
+        description: ":8136"
+        server: local
+        container: airflow-apiserver
+    - "Rundeck":
+        href: "http://localhost:4440/"
+        description: ":4440"
+        server: local
+        container: rundeck
+    - "n8n":
+        href: "http://localhost:5678/"
+        description: ":5678"
+        server: local
+        container: n8n
+    - "Camunda 8":
+        href: "http://localhost:8152/operate"
+        description: ":8152, :26500 gRPC, :8153 connectors"
+        server: local
+        container: camunda
+    - "Node-RED":
+        href: "http://localhost:1880/"
+        description: ":1880"
+        server: local
+        container: node-red
+- "Search":
+    - "Elasticsearch / Kibana":
+        href: "http://localhost:5601/"
+        description: ":9200 (https), :5601 Kibana"
+    - "OpenSearch / Dashboards":
+        href: "http://localhost:5602/"
+        description: ":9201 (https), :9601, :5602\n                                Dashboards"
+        server: local
+        container: opensearch-node1
+    - "Meilisearch":
+        href: "http://localhost:7700/"
+        description: ":7700"
+        server: local
+        container: meilisearch
+    - "Solr":
+        href: "http://localhost:8983/solr/"
+        description: ":8983"
+        server: local
+        container: solr
+- "Security":
+    - "Vault":
+        href: "http://localhost:8200/ui"
+        description: ":8200"
+        server: local
+        container: vault
+    - "OpenBao":
+        href: "http://localhost:8202/ui"
+        description: ":8202"
+        server: local
+        container: openbao
+    - "ZAP":
+        href: "http://localhost:8139/zap/"
+        description: ":8140 proxy + API, :8139 UI"
+        server: local
+        container: zap
+    - "Infisical":
+        href: "http://localhost:8138/"
+        description: ":8138"
+        server: local
+        container: infisical
+- "Service Mesh":
+    - "Dapr dashboard":
+        href: "http://localhost:8151/"
+        description: ":8151"
+        server: local
+        container: dapr-dashboard
+- "SIEM":
+    - "Wazuh":
+        href: "https://localhost:5603/"
+        description: ":5603 dashboard (https), :9202\n                                indexer, :55000 API, :1514/:1515 agents, :514/udp syslog"
+    - "Graylog":
+        href: "http://localhost:9004/"
+        description: ":9004, :12201 GELF, :5140 syslog, :5044 Beats"
+        server: local
+        container: graylog
+- "Source Control":
+    - "Gitea / runner":
+        href: "http://localhost:3001/"
+        description: ":3001, :2222 SSH"
+        server: local
+        container: gitea
+    - "Forgejo / runner":
+        href: "http://localhost:3007/"
+        description: ":3007, :2223 SSH"
+        server: local
+        container: forgejo
+    - "GitLab CE":
+        href: "http://localhost:8141/"
+        description: ":8141, :2224 SSH"
+        server: local
+        container: gitlab
+    - "OneDev":
+        href: "http://localhost:6610/"
+        description: ":6610, :6611 SSH"
+        server: local
+        container: onedev
+- "Testing":
+    - "WireMock":
+        href: "http://localhost:8147/"
+        description: ":8147"
+        server: local
+        container: wiremock
+    - "Microcks":
+        href: "http://localhost:8148/"
+        description: ":8148, :9005 gRPC"
+        server: local
+        container: microcks
+    - "Mockoon CLI":
+        href: "http://localhost:3009/"
+        description: ":3009"
+        server: local
+        container: mockoon
+    - "Toxiproxy":
+        href: "http://localhost:8474/"
+        description: ":8474 API, :15432 :11433 :16379 :15673 :18147 proxies"
+        server: local
+        container: toxiproxy
+    - "Selenium Grid":
+        href: "http://localhost:4447/"
+        description: ":4447, :7900-:7902 noVNC"
+        server: local
+        container: selenium-hub
+    - "Pact Broker":
+        href: "http://localhost:9292/"
+        description: ":9292"
+        server: local
+        container: pact-broker
+    - "Hoppscotch":
+        href: "http://localhost:3010/"
+        description: ":3010"
+        server: local
+        container: hoppscotch
+- "Visualization":
+    - "Grafana":
+        href: "http://localhost:3000/"
+        description: ":3000"
+        server: local
+        container: grafana
+    - "Metabase":
+        href: "http://localhost:3008/"
+        description: ":3008"
+        server: local
+        container: metabase
+    - "Superset":
+        href: "http://localhost:8142/"
+        description: ":8142"
+        server: local
+        container: superset
+    - "Redash":
+        href: "http://localhost:8143/"
+        description: ":8143"
+        server: local
+        container: redash-server
+- "Web Servers":
+    - "Nginx / Nginx UI":
+        href: "http://localhost:8180/"
+        description: ":8180, :8181 UI, :8443 UI HTTPS"
+        server: local
+        container: nginx
+    - "Apache":
+        href: "http://localhost:8083/"
+        description: ":8083"
+        server: local
+        container: apache

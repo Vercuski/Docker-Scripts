@@ -1,0 +1,40 @@
+# Helm values for Airbyte (community edition) in the Orchestration/K3s cluster. Passwords are not in this file:
+# airbyte-install passes them with --set from .env.
+global:
+  edition: community
+  # Address of the UI as your browser opens it (airbyte-proxy publishes it on this port)
+  airbyteUrl: "http://localhost:8154"
+  auth:
+    enabled: true
+    instanceAdmin:
+      firstName: "Admin"
+      lastName: "User"
+    security:
+      # Plain HTTP on localhost: secure cookies would never be sent back
+      cookieSecureSetting: false
+  # Config + jobs databases (and Temporal's) on the PostgreSQL stack, reached through K3s CoreDNS ("postgresql")
+  database:
+    type: external
+    host: postgresql
+    port: 5432
+    name: airbyte
+    user: airbyte
+  # Small requests so sync jobs fit on a single local node (same idea as abctl's --low-resource-mode)
+  jobs:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: "2"
+        memory: 2Gi
+
+# The chart's own Postgres is not needed with an external database
+postgresql:
+  enabled: false
+
+# UI + API on NodePort 30081 of the k3s node (airbyte-proxy forwards localhost:8154 to it)
+server:
+  service:
+    type: NodePort
+    nodePort: 30081

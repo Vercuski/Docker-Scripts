@@ -1,0 +1,114 @@
+# Dapr (self-hosted control plane in Docker): placement (actors), scheduler (jobs, actor reminders, workflows),
+# dashboard, plus one daprd sidecar for an app you run on your machine (dotnet run / Visual Studio).
+#   Sidecar HTTP API: http://localhost:3500   gRPC: localhost:50001   Dashboard: http://localhost:8151
+# The sidecar calls your app at host.docker.internal:DAPR_APP_PORT and uses the components in ./components
+# (state store + pub/sub on the Redis stack). Requires the Redis stack; tracing goes to Observability/OpenTelemetry.
+services:
+  dapr-placement:
+    image: daprio/placement:${DAPR_VERSION:-1.19.1}
+    container_name: dapr-placement
+    restart: unless-stopped
+    command: ["./placement", "--port", "50005", "--log-level", "${DAPR_LOG_LEVEL:-info}"]
+    networks:
+      GroupNetwork:
+        ipv4_address: ${DAPR_PLACEMENT_IP:-172.20.26.10}
+        aliases:
+          - dapr-placement
+    ports:
+      - "${DAPR_PLACEMENT_PORT:-50005}:50005" # for "dapr run --placement-host-address localhost:50005"
+  dapr-scheduler:
+    image: daprio/scheduler:${DAPR_VERSION:-1.19.1}
+    container_name: dapr-scheduler
+    restart: unless-stopped
+    command:
+      - ./scheduler
+      - --port
+      - "50006"
+      - --etcd-data-dir
+      - /data
+      # Address sidecars are told to use (not the container's IP)
+      - --override-broadcast-host-port
+      - dapr-scheduler:50006
+      - --log-level
+      - ${DAPR_LOG_LEVEL:-info}
+    volumes:
+      - dapr_scheduler:/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${DAPR_SCHEDULER_IP:-172.20.26.11}
+        aliases:
+          - dapr-scheduler
+    ports:
+      - "${DAPR_SCHEDULER_PORT:-50006}:50006" # for "dapr run --scheduler-host-address localhost:50006"
+  dapr-dashboard:
+    image: daprio/dashboard:${DAPR_DASHBOARD_VERSION:-0.15.0}
+    container_name: dapr-dashboard
+    restart: unless-stopped
+    command:
+      - --docker-compose=true
+      - --components-path=/components
+      - --config-path=/config
+      - --docker-compose-path=/compose/docker-compose.yml
+      - --port=8080
+    volumes:
+      - ./components:/components:ro
+      - ./config:/config:ro
+      - ./docker-compose.yml:/compose/docker-compose.yml:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${DAPR_DASHBOARD_IP:-172.20.26.12}
+        aliases:
+          - dapr-dashboard
+    ports:
+      - "${DAPR_DASHBOARD_PORT:-8151}:8080" # dashboard
+  dapr-sidecar:
+    image: daprio/daprd:${DAPR_VERSION:-1.19.1}
+    container_name: dapr-sidecar
+    restart: unless-stopped
+    depends_on:
+      - dapr-placement
+      - dapr-scheduler
+    environment:
+      # Read by the envsecrets component (components/secretstore.yaml)
+      REDIS_PASSWORD: ${DAPR_REDIS_PASSWORD:-Password123}
+    command:
+      - ./daprd
+      - --app-id=${DAPR_APP_ID:-my-app}
+      - --app-port=${DAPR_APP_PORT:-5000}
+      - --app-protocol=${DAPR_APP_PROTOCOL:-http}
+      # Your app runs on the host, not in this container
+      - --app-channel-address=host.docker.internal
+      - --dapr-http-port=3500
+      - --dapr-grpc-port=50001
+      - --dapr-listen-addresses=0.0.0.0
+      - --placement-host-address=dapr-placement:50005
+      - --scheduler-host-address=dapr-scheduler:50006
+      - --resources-path=/components
+      - --config=/config/config.yaml
+      - --log-level=${DAPR_LOG_LEVEL:-info}
+    volumes:
+      - ./components:/components:ro
+      - ./config:/config:ro
+    extra_hosts:
+      # Resolves to your machine on native Linux too (Docker Desktop provides it already)
+      - host.docker.internal:host-gateway
+    networks:
+      GroupNetwork:
+        ipv4_address: ${DAPR_SIDECAR_IP:-172.20.26.20}
+        aliases:
+          - dapr-sidecar
+    ports:
+      - "${DAPR_HTTP_PORT:-3500}:3500" # Dapr HTTP API (DAPR_HTTP_ENDPOINT in the .NET SDK)
+      - "${DAPR_GRPC_PORT:-50001}:50001" # Dapr gRPC API (DAPR_GRPC_ENDPOINT)
+volumes:
+  dapr_scheduler:
+    name: dapr_scheduler
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/ServiceMesh/Dapr/scheduler
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

@@ -1,0 +1,17 @@
+[
+  {
+    "key": "config/my-api/appsettings.json",
+    "flags": 0,
+    "value": "ewogICJGZWF0dXJlTWFuYWdlbWVudCI6IHsKICAgICJOZXdDaGVja291dCI6IHRydWUKICB9LAogICJDaGVja291dCI6IHsKICAgICJNYXhJdGVtcyI6IDI1LAogICAgIkN1cnJlbmN5IjogIlVTRCIKICB9Cn0="
+  },
+  {
+    "key": "config/my-api/ConnectionStrings/Orders",
+    "flags": 0,
+    "value": "U2VydmVyPW1zc3FsZGIsMTQzMztEYXRhYmFzZT1PcmRlcnM7VXNlciBJZD1zYTtQYXNzd29yZD1QYXNzd29yZDEyMztUcnVzdFNlcnZlckNlcnRpZmljYXRlPXRydWU="
+  },
+  {
+    "key": "config/shared/Logging/LogLevel/Default",
+    "flags": 0,
+    "value": "SW5mb3JtYXRpb24="
+  }
+]

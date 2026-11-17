@@ -1,0 +1,106 @@
+# Apache NiFi 2: visual dataflow / ETL - route, transform and move data between systems with 300+ processors
+# (databases via JDBC, Kafka, MQTT, HTTP, S3, files, ...).   UI: https://localhost:8155/nifi (admin / Password123!)
+# HTTPS with a self-signed certificate (NiFi 2 has no plain-HTTP mode once a login is configured).
+# Single-user login from .env; the password must be at least 12 characters. nifi-init copies the image's default
+# conf/ into the empty conf volume on first start (bind mounts start empty), flows are saved in conf/flow.json.gz.
+services:
+  nifi-init:
+    image: apache/nifi:${NIFI_VERSION:-2.12.0}
+    container_name: nifi-init
+    restart: "no"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -f /target/nifi.properties ]; then echo "conf already initialised"; exit 0; fi
+        cp -a /opt/nifi/nifi-current/conf/. /target/ && echo "copied default conf"
+    volumes:
+      - nifi_conf:/target
+    networks:
+      GroupNetwork:
+        ipv4_address: ${NIFI_INIT_IP:-172.20.28.11}
+  nifi:
+    image: apache/nifi:${NIFI_VERSION:-2.12.0}
+    container_name: nifi
+    hostname: nifi
+    restart: unless-stopped
+    depends_on:
+      nifi-init:
+        condition: service_completed_successfully
+    environment:
+      SINGLE_USER_CREDENTIALS_USERNAME: ${NIFI_ADMIN_USER:-admin}
+      SINGLE_USER_CREDENTIALS_PASSWORD: ${NIFI_ADMIN_PASSWORD:-Password123!}
+      # Encrypts sensitive processor properties in the flow - keep it once flows exist (12+ characters)
+      NIFI_SENSITIVE_PROPS_KEY: ${NIFI_SENSITIVE_PROPS_KEY:-local-dev-nifi-sensitive-key}
+      NIFI_WEB_HTTPS_HOST: 0.0.0.0
+      NIFI_WEB_HTTPS_PORT: "8443"
+      # Host names the UI may be opened on (NiFi rejects other Host headers)
+      NIFI_WEB_PROXY_HOST: localhost:${NIFI_PORT:-8155},nifi:8443
+      NIFI_JVM_HEAP_INIT: ${NIFI_JVM_HEAP:-1g}
+      NIFI_JVM_HEAP_MAX: ${NIFI_JVM_HEAP:-1g}
+    volumes:
+      - nifi_conf:/opt/nifi/nifi-current/conf
+      - nifi_database:/opt/nifi/nifi-current/database_repository
+      - nifi_flowfile:/opt/nifi/nifi-current/flowfile_repository
+      - nifi_content:/opt/nifi/nifi-current/content_repository
+      - nifi_provenance:/opt/nifi/nifi-current/provenance_repository
+      - nifi_state:/opt/nifi/nifi-current/state
+    healthcheck:
+      test: ["CMD-SHELL", "curl -ks -o /dev/null -w '%{http_code}' https://localhost:8443/nifi/ | grep -q 200"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${NIFI_IP:-172.20.28.10}
+        aliases:
+          - nifi
+    ports:
+      - "${NIFI_PORT:-8155}:8443" # UI + REST API (HTTPS, self-signed)
+volumes:
+  nifi_conf:
+    name: nifi_conf
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/DataIntegration/NiFi/conf
+  nifi_database:
+    name: nifi_database
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/DataIntegration/NiFi/database
+  nifi_flowfile:
+    name: nifi_flowfile
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/DataIntegration/NiFi/flowfile
+  nifi_content:
+    name: nifi_content
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/DataIntegration/NiFi/content
+  nifi_provenance:
+    name: nifi_provenance
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/DataIntegration/NiFi/provenance
+  nifi_state:
+    name: nifi_state
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/DataIntegration/NiFi/state
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

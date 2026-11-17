@@ -1,0 +1,52 @@
+# Jenkins LTS: automation server / CI. UI: http://localhost:8144 (admin / Password123)
+# Built image (image/Dockerfile): official LTS + plugins from image/plugins.txt + the Docker CLI. No setup wizard:
+# casc/jenkins.yaml (Configuration as Code) creates the admin user and is re-applied on every start.
+# Builds run on the controller's executors; Docker Pipeline steps start sibling containers through the Docker socket.
+services:
+  jenkins:
+    build:
+      context: ./image
+      args:
+        JENKINS_VERSION: ${JENKINS_VERSION:-2.580.2-lts-jdk21}
+        DOCKER_CLI_VERSION: ${JENKINS_DOCKER_CLI_VERSION:-29-cli}
+    image: jenkins-plugins:${JENKINS_VERSION:-2.580.2-lts-jdk21}
+    container_name: jenkins
+    restart: unless-stopped
+    # root so builds can use the host Docker socket (Docker Desktop and Linux socket groups differ)
+    user: "0:0"
+    environment:
+      JAVA_OPTS: -Djenkins.install.runSetupWizard=false ${JENKINS_JAVA_OPTS:--Xmx1g}
+      CASC_JENKINS_CONFIG: /casc
+      JENKINS_ADMIN_USER: ${JENKINS_ADMIN_USER:-admin}
+      JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD:-Password123}
+      JENKINS_PUBLIC_URL: http://localhost:${JENKINS_PORT:-8144}/
+      JENKINS_EXECUTORS: ${JENKINS_EXECUTORS:-2}
+    volumes:
+      - ./casc:/casc:ro
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/login"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${JENKINS_IP:-172.20.22.10}
+        aliases:
+          - jenkins
+    ports:
+      - "${JENKINS_PORT:-8144}:8080" # UI + API + webhooks
+volumes:
+  jenkins_home:
+    name: jenkins_home
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/CI-CD/Jenkins/home
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

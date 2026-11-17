@@ -1,0 +1,291 @@
+# Plane (Community Edition): open-source project tracking - work items, cycles (sprints), modules, pages (wiki),
+# views and an API - a self-hosted Jira / Linear alternative.   UI: http://localhost:8156 (admin@example.com / Password123)
+#   Instance admin ("god mode"): http://localhost:8156/god-mode/      Public boards: http://localhost:8156/spaces/
+# Requires the PostgreSQL stack (plane-db-init creates the role and database) and the Redis stack (DB 6); email goes
+# to the Mailpit stack. The Celery
+# broker is the stack's own RabbitMQ 3.13 (plane-mq: Celery's control queues are refused by RabbitMQ 4.x, which the
+# Messaging/RabbitMQ stack runs) and file uploads go to its own RustFS (S3) container, alias plane-minio.
+# plane-init creates the instance admin and marks setup complete, so the setup wizard is skipped.
+x-plane-env: &plane-env
+  WEB_URL: http://localhost:${PLANE_PORT:-8156}
+  CORS_ALLOWED_ORIGINS: http://localhost:${PLANE_PORT:-8156}
+  DEBUG: "0"
+  SECRET_KEY: ${PLANE_SECRET_KEY:-local-dev-plane-secret-key-change-me-0123456789}
+  LIVE_SERVER_SECRET_KEY: ${PLANE_LIVE_SECRET_KEY:-local-dev-plane-live-secret-key}
+  DATABASE_URL: postgresql://${PLANE_DB_USER:-plane}:${PLANE_DB_PASSWORD:-Password123}@postgresql:5432/${PLANE_DB_NAME:-plane}
+  REDIS_URL: redis://:${PLANE_REDIS_PASSWORD:-Password123}@redis:6379/${PLANE_REDIS_DB:-6}
+  AMQP_URL: amqp://${PLANE_MQ_USER:-plane}:${PLANE_MQ_PASSWORD:-Password123}@plane-mq:5672/plane
+  USE_MINIO: "1"
+  MINIO_ENDPOINT_SSL: "0"
+  AWS_REGION: us-east-1
+  AWS_ACCESS_KEY_ID: ${PLANE_S3_ACCESS_KEY:-plane}
+  AWS_SECRET_ACCESS_KEY: ${PLANE_S3_SECRET_KEY:-Password123}
+  AWS_S3_ENDPOINT_URL: http://plane-minio:9000
+  AWS_S3_BUCKET_NAME: uploads
+  FILE_SIZE_LIMIT: ${PLANE_FILE_SIZE_LIMIT:-5242880}
+  GUNICORN_WORKERS: ${PLANE_GUNICORN_WORKERS:-1}
+  API_KEY_RATE_LIMIT: 60/minute
+  # Email via the Mailpit stack (seeded into the instance settings on first start; later edits: god mode > Email)
+  ENABLE_SMTP: "1"
+  EMAIL_HOST: mailpit
+  EMAIL_PORT: "1025"
+  EMAIL_USE_TLS: "0"
+  EMAIL_USE_SSL: "0"
+  EMAIL_FROM: ${PLANE_MAIL_FROM:-Plane <plane@example.com>}
+  # Webhooks may call other GroupNetwork stacks
+  WEBHOOK_ALLOWED_IPS: 172.20.0.0/16
+services:
+  plane-db-init:
+    image: ${PLANE_DB_INIT_IMAGE:-postgres:18}
+    container_name: plane-db-init
+    restart: "no"
+    environment:
+      PGHOST: postgresql
+      PGUSER: ${PLANE_DB_ADMIN_USER:-user@user.com}
+      PGPASSWORD: ${PLANE_DB_ADMIN_PASSWORD:-Password123}
+      DB_NAME: ${PLANE_DB_NAME:-plane}
+      DB_USER: ${PLANE_DB_USER:-plane}
+      DB_PASSWORD: ${PLANE_DB_PASSWORD:-Password123}
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        for i in $$(seq 30); do pg_isready -q -d postgres && break; echo "waiting for postgresql (start Databases/PostgreSQL)"; sleep 2; done
+        psql -d postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$$DB_USER'" | grep -q 1 \
+          || psql -d postgres -c "CREATE ROLE \"$$DB_USER\" LOGIN PASSWORD '$$DB_PASSWORD'"
+        psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$$DB_NAME'" | grep -q 1 \
+          && echo "database $$DB_NAME exists" \
+          || psql -d postgres -c "CREATE DATABASE \"$$DB_NAME\" OWNER \"$$DB_USER\""
+    networks:
+      GroupNetwork:
+        ipv4_address: ${PLANE_DB_INIT_IP:-172.20.29.30}
+  plane-minio:
+    # S3 store for attachments (RustFS; Plane's own compose uses MinIO under this alias)
+    image: rustfs/rustfs:${PLANE_RUSTFS_VERSION:-1.0.6}
+    container_name: plane-minio
+    restart: unless-stopped
+    environment:
+      RUSTFS_VOLUMES: /data
+      RUSTFS_ADDRESS: ":9000"
+      RUSTFS_CONSOLE_ENABLE: "false"
+      RUSTFS_ACCESS_KEY: ${PLANE_S3_ACCESS_KEY:-plane}
+      RUSTFS_SECRET_KEY: ${PLANE_S3_SECRET_KEY:-Password123}
+      RUSTFS_REGION: us-east-1
+    volumes:
+      - plane_uploads:/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${PLANE_MINIO_IP:-172.20.29.31}
+        aliases:
+          - plane-minio
+  plane-mq:
+    # Celery broker. Pinned to 3.13 like Plane's own compose: RabbitMQ 4.x rejects the transient queues Celery declares
+    image: rabbitmq:${PLANE_MQ_VERSION:-3.13-alpine}
+    container_name: plane-mq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${PLANE_MQ_USER:-plane}
+      RABBITMQ_DEFAULT_PASS: ${PLANE_MQ_PASSWORD:-Password123}
+      RABBITMQ_DEFAULT_VHOST: plane
+    volumes:
+      - plane_mq:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+    networks:
+      GroupNetwork:
+        ipv4_address: ${PLANE_MQ_IP:-172.20.29.42}
+        aliases:
+          - plane-mq
+  plane-migrator:
+    image: makeplane/plane-backend:${PLANE_VERSION:-v1.5.0}
+    container_name: plane-migrator
+    restart: "no"
+    command: ./bin/docker-entrypoint-migrator.sh
+    depends_on:
+      plane-db-init:
+        condition: service_completed_successfully
+    environment: *plane-env
+    networks:
+      GroupNetwork:
+        ipv4_address: ${PLANE_MIGRATOR_IP:-172.20.29.32}
+  plane-api:
+    image: makeplane/plane-backend:${PLANE_VERSION:-v1.5.0}
+    container_name: plane-api
+    restart: unless-stopped
+    # Waits for migrations, registers the instance, creates the "uploads" bucket, then serves the API on 8000
+    command: ./bin/docker-entrypoint-api.sh
+    depends_on:
+      plane-migrator:
+        condition: service_completed_successfully
+      plane-minio:
+        condition: service_started
+      plane-mq:
+        condition: service_healthy
+    environment: *plane-env
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/instances/')"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${PLANE_API_IP:-172.20.29.33}
+        aliases:
+          - plane-api
+  plane-worker:
+    image: makeplane/plane-backend:${PLANE_VERSION:-v1.5.0}
+    container_name: plane-worker
+    restart: unless-stopped
+    command: ./bin/docker-entrypoint-worker.sh
+    depends_on:
+      plane-api:
+        condition: service_healthy
+    environment: *plane-env
+    networks:
+      GroupNetwork:
+        ipv4_address: ${PLANE_WORKER_IP:-172.20.29.34}
+  plane-beat-worker:
+    image: makeplane/plane-backend:${PLANE_VERSION:-v1.5.0}
+    container_name: plane-beat-worker
+    restart: unless-stopped
+    command: ./bin/docker-entrypoint-beat.sh
+    depends_on:
+      plane-api:
+        condition: service_healthy
+    environment: *plane-env
+    networks:
+      GroupNetwork:
+        ipv4_address: ${PLANE_BEAT_IP:-172.20.29.35}
+  plane-web:
+    image: makeplane/plane-frontend:${PLANE_VERSION:-v1.5.0}
+    container_name: plane-web
+    restart: unless-stopped
+    networks:
+      GroupNetwork:
+        ipv4_address: ${PLANE_WEB_IP:-172.20.29.36}
+        aliases:
+          - plane-web
+  plane-space:
+    image: makeplane/plane-space:${PLANE_VERSION:-v1.5.0}
+    container_name: plane-space
+    restart: unless-stopped
+    networks:
+      GroupNetwork:
+        ipv4_address: ${PLANE_SPACE_IP:-172.20.29.37}
+        aliases:
+          - plane-space
+  plane-admin:
+    image: makeplane/plane-admin:${PLANE_VERSION:-v1.5.0}
+    container_name: plane-admin
+    restart: unless-stopped
+    networks:
+      GroupNetwork:
+        ipv4_address: ${PLANE_ADMIN_IP:-172.20.29.38}
+        aliases:
+          - plane-admin
+  plane-live:
+    image: makeplane/plane-live:${PLANE_VERSION:-v1.5.0}
+    container_name: plane-live
+    restart: unless-stopped
+    environment:
+      API_BASE_URL: http://plane-api:8000
+      LIVE_SERVER_SECRET_KEY: ${PLANE_LIVE_SECRET_KEY:-local-dev-plane-live-secret-key}
+      REDIS_URL: redis://:${PLANE_REDIS_PASSWORD:-Password123}@redis:6379/${PLANE_REDIS_DB:-6}
+    networks:
+      GroupNetwork:
+        ipv4_address: ${PLANE_LIVE_IP:-172.20.29.39}
+        aliases:
+          - plane-live
+  plane-proxy:
+    image: makeplane/plane-proxy:${PLANE_VERSION:-v1.5.0}
+    container_name: plane-proxy
+    restart: unless-stopped
+    depends_on:
+      plane-api:
+        condition: service_healthy
+    environment:
+      FILE_SIZE_LIMIT: ${PLANE_FILE_SIZE_LIMIT:-5242880}
+      BUCKET_NAME: uploads
+    volumes:
+      - ./config/Caddyfile:/etc/caddy/Caddyfile:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${PLANE_PROXY_IP:-172.20.29.40}
+        aliases:
+          - plane
+    ports:
+      - "${PLANE_PORT:-8156}:80" # UI, API (/api), god mode (/god-mode), spaces (/spaces)
+  plane-init:
+    image: makeplane/plane-backend:${PLANE_VERSION:-v1.5.0}
+    container_name: plane-init
+    restart: "no"
+    depends_on:
+      plane-api:
+        condition: service_healthy
+    environment:
+      <<: *plane-env
+      ADMIN_EMAIL: ${PLANE_ADMIN_EMAIL:-admin@example.com}
+      ADMIN_PASSWORD: ${PLANE_ADMIN_PASSWORD:-Password123}
+      ADMIN_NAME: ${PLANE_ADMIN_NAME:-Admin}
+      INSTANCE_NAME: ${PLANE_INSTANCE_NAME:-docker-scripts}
+    # Same steps as the god-mode signup form: user + profile, instance admin, setup done
+    command:
+      - python
+      - manage.py
+      - shell
+      - -c
+      - |
+        import os, uuid
+        from django.contrib.auth.hashers import make_password
+        from django.utils import timezone
+        from plane.db.models import User, Profile
+        from plane.license.models import Instance, InstanceAdmin
+        instance = Instance.objects.first()
+        if instance.is_setup_done or InstanceAdmin.objects.exists():
+            print("instance already set up")
+        else:
+            email = os.environ["ADMIN_EMAIL"]
+            user = User.objects.filter(email=email).first()
+            if user is None:
+                user = User.objects.create(email=email, username=uuid.uuid4().hex, first_name=os.environ["ADMIN_NAME"],
+                                           password=make_password(os.environ["ADMIN_PASSWORD"]), is_password_autoset=False)
+                Profile.objects.get_or_create(user=user)
+            user.is_active = True
+            user.token_updated_at = timezone.now()
+            user.save()
+            InstanceAdmin.objects.create(user=user, instance=instance, role=20)
+            instance.is_setup_done = True
+            instance.instance_name = os.environ["INSTANCE_NAME"]
+            instance.is_telemetry_enabled = False
+            instance.save()
+            print("created instance admin " + email)
+        # /api/instances/ is cached in Redis - drop the cache so the setup wizard isn't shown
+        from django.core.management import call_command
+        call_command("clear_cache")
+    networks:
+      GroupNetwork:
+        ipv4_address: ${PLANE_INIT_IP:-172.20.29.41}
+volumes:
+  plane_uploads:
+    name: plane_uploads
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Collaboration/Plane/uploads
+  plane_mq:
+    name: plane_mq
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Collaboration/Plane/mq
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

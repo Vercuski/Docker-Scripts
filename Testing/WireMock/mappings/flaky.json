@@ -1,0 +1,11 @@
+{
+  "name": "Sample: slow, flaky endpoint for resilience tests (Polly etc.)",
+  "request": {
+    "urlPath": "/api/flaky",
+    "method": "GET"
+  },
+  "response": {
+    "status": 503,
+    "fixedDelayMilliseconds": 1500
+  }
+}

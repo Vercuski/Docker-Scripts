@@ -1,0 +1,72 @@
+# Selenium Grid 4: hub + Chrome, Firefox and Edge nodes for browser / UI tests (Selenium WebDriver, Playwright via
+# its Selenium Grid support).   Grid UI + WebDriver endpoint: http://localhost:4447 (RemoteWebDriver URL)
+# Watch a browser through noVNC: Chrome http://localhost:7900, Firefox :7901, Edge :7902 (password Password123)
+x-node: &node
+  restart: unless-stopped
+  shm_size: 2gb
+  depends_on:
+    - selenium-hub
+  environment: &node-env
+    SE_EVENT_BUS_HOST: selenium-hub
+    SE_NODE_MAX_SESSIONS: ${SELENIUM_MAX_SESSIONS:-2}
+    SE_NODE_OVERRIDE_MAX_SESSIONS: "true"
+    SE_VNC_PASSWORD: ${SELENIUM_VNC_PASSWORD:-Password123}
+    SE_SCREEN_WIDTH: ${SELENIUM_SCREEN_WIDTH:-1920}
+    SE_SCREEN_HEIGHT: ${SELENIUM_SCREEN_HEIGHT:-1080}
+  extra_hosts:
+    # Test apps running on your machine (dotnet run) on native Linux too
+    - host.docker.internal:host-gateway
+services:
+  selenium-hub:
+    image: selenium/hub:${SELENIUM_VERSION:-4.52.0-20261101}
+    container_name: selenium-hub
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:4444/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SELENIUM_HUB_IP:-172.20.23.60}
+        aliases:
+          - selenium-hub
+    ports:
+      - "${SELENIUM_HUB_PORT:-4447}:4444" # Grid UI + WebDriver (4444 is Ory Hydra)
+  selenium-chrome:
+    <<: *node
+    image: selenium/node-chrome:${SELENIUM_VERSION:-4.52.0-20261101}
+    container_name: selenium-chrome
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SELENIUM_CHROME_IP:-172.20.23.61}
+        aliases:
+          - selenium-chrome
+    ports:
+      - "${SELENIUM_CHROME_VNC_PORT:-7900}:7900" # noVNC
+  selenium-firefox:
+    <<: *node
+    image: selenium/node-firefox:${SELENIUM_VERSION:-4.52.0-20261101}
+    container_name: selenium-firefox
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SELENIUM_FIREFOX_IP:-172.20.23.62}
+        aliases:
+          - selenium-firefox
+    ports:
+      - "${SELENIUM_FIREFOX_VNC_PORT:-7901}:7900" # noVNC
+  selenium-edge:
+    <<: *node
+    image: selenium/node-edge:${SELENIUM_VERSION:-4.52.0-20261101}
+    container_name: selenium-edge
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SELENIUM_EDGE_IP:-172.20.23.63}
+        aliases:
+          - selenium-edge
+    ports:
+      - "${SELENIUM_EDGE_VNC_PORT:-7902}:7900" # noVNC
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

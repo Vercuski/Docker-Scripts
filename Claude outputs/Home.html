@@ -394,16 +394,20 @@
 
                 <div class="nav-section">
                     <div class="nav-section-title">Infrastructure</div>
+                    <a class="nav-item" onclick="openPage(event, 'AI')">AI / LLM</a>
                     <a class="nav-item" onclick="openPage(event, 'Analytics')">Analytics</a>
                     <a class="nav-item" onclick="openPage(event, 'Authentication')">Authentication</a>
                     <a class="nav-item" onclick="openPage(event, 'CloudEmulators')">Cloud Emulators</a>
+                    <a class="nav-item" onclick="openPage(event, 'DataIntegration')">Data Integration</a>
                     <a class="nav-item" onclick="openPage(event, 'Databases')">Databases</a>
                     <a class="nav-item" onclick="openPage(event, 'Email')">Email</a>
                     <a class="nav-item" onclick="openPage(event, 'Messaging')">Messaging</a>
+                    <a class="nav-item" onclick="openPage(event, 'ObjectStorage')">Object Storage</a>
                     <a class="nav-item" onclick="openPage(event, 'Observability')">Observability</a>
                     <a class="nav-item" onclick="openPage(event, 'Orchestration')">Orchestration</a>
                     <a class="nav-item" onclick="openPage(event, 'Proxy')">Proxy / Load Balancing</a>
                     <a class="nav-item" onclick="openPage(event, 'Scheduling')">Scheduling</a>
+                    <a class="nav-item" onclick="openPage(event, 'ServiceMesh')">Service Mesh</a>
                     <a class="nav-item" onclick="openPage(event, 'Search')">Search</a>
                     <a class="nav-item" onclick="openPage(event, 'Security')">Security</a>
                     <a class="nav-item" onclick="openPage(event, 'SIEM')">SIEM</a>
@@ -412,11 +416,16 @@
 
                 <div class="nav-section">
                     <div class="nav-section-title">Development</div>
+                    <a class="nav-item" onclick="openPage(event, 'CICD')">CI / CD</a>
                     <a class="nav-item" onclick="openPage(event, 'CodeAnalysis')">Code Analysis</a>
+                    <a class="nav-item" onclick="openPage(event, 'Collaboration')">Collaboration</a>
                     <a class="nav-item" onclick="openPage(event, 'Containerization')">Containerization</a>
+                    <a class="nav-item" onclick="openPage(event, 'DevTools')">Dev Tools</a>
+                    <a class="nav-item" onclick="openPage(event, 'FeatureFlags')">Feature Flags</a>
                     <a class="nav-item" onclick="openPage(event, 'IaC')">IaC</a>
                     <a class="nav-item" onclick="openPage(event, 'Packages')">Packages</a>
                     <a class="nav-item" onclick="openPage(event, 'SourceControl')">Source Control</a>
+                    <a class="nav-item" onclick="openPage(event, 'Testing')">Testing</a>
                     <a class="nav-item" onclick="openPage(event, 'Visualization')">Visualization</a>
                 </div>
 
@@ -1125,6 +1134,18 @@
                             <td>15.51</td>
                         </tr>
                         <tr>
+                            <td>Scheduling</td>
+                            <td>Camunda 8</td>
+                            <td><a href="http://localhost:8152/operate" target="_blank">:8152</a>, :26500 gRPC, :8153 connectors</td>
+                            <td>15.60 / 15.61</td>
+                        </tr>
+                        <tr>
+                            <td>Scheduling</td>
+                            <td>Node-RED</td>
+                            <td><a href="http://localhost:1880/" target="_blank">:1880</a></td>
+                            <td>15.70</td>
+                        </tr>
+                        <tr>
                             <td>Search</td>
                             <td>Elasticsearch / Kibana</td>
                             <td>:9200 (https), <a href="http://localhost:5601/" target="_blank">:5601</a> Kibana</td>
@@ -1259,12 +1280,255 @@
                             <td><a href="http://localhost:8083/" target="_blank">:8083</a></td>
                             <td>21.10</td>
                         </tr>
+                        <tr>
+                            <td>CI / CD</td>
+                            <td>Jenkins</td>
+                            <td><a href="http://localhost:8144/" target="_blank">:8144</a></td>
+                            <td>22.10</td>
+                        </tr>
+                        <tr>
+                            <td>CI / CD</td>
+                            <td>TeamCity / agent</td>
+                            <td><a href="http://localhost:8145/" target="_blank">:8145</a></td>
+                            <td>22.20 / 22.21</td>
+                        </tr>
+                        <tr>
+                            <td>CI / CD</td>
+                            <td>Woodpecker server / agent</td>
+                            <td><a href="http://localhost:8146/" target="_blank">:8146</a></td>
+                            <td>22.31 / 22.32</td>
+                        </tr>
+                        <tr>
+                            <td>Testing</td>
+                            <td>WireMock</td>
+                            <td><a href="http://localhost:8147/" target="_blank">:8147</a></td>
+                            <td>23.10</td>
+                        </tr>
+                        <tr>
+                            <td>Testing</td>
+                            <td>Microcks</td>
+                            <td><a href="http://localhost:8148/" target="_blank">:8148</a>, :9005 gRPC</td>
+                            <td>23.20</td>
+                        </tr>
+                        <tr>
+                            <td>Testing</td>
+                            <td>Mockoon CLI</td>
+                            <td><a href="http://localhost:3009/" target="_blank">:3009</a></td>
+                            <td>23.30</td>
+                        </tr>
+                        <tr>
+                            <td>Testing</td>
+                            <td>k6 (one-shot)</td>
+                            <td>:5665 dashboard while running</td>
+                            <td>23.40</td>
+                        </tr>
+                        <tr>
+                            <td>Testing</td>
+                            <td>Toxiproxy</td>
+                            <td><a href="http://localhost:8474/" target="_blank">:8474</a> API, :15432 :11433 :16379 :15673 :18147 proxies</td>
+                            <td>23.50</td>
+                        </tr>
+                        <tr>
+                            <td>Testing</td>
+                            <td>Selenium Grid</td>
+                            <td><a href="http://localhost:4447/" target="_blank">:4447</a>, :7900-:7902 noVNC</td>
+                            <td>23.60 / nodes 23.61-23.63</td>
+                        </tr>
+                        <tr>
+                            <td>Testing</td>
+                            <td>Pact Broker</td>
+                            <td><a href="http://localhost:9292/" target="_blank">:9292</a></td>
+                            <td>23.71</td>
+                        </tr>
+                        <tr>
+                            <td>Testing</td>
+                            <td>Hoppscotch</td>
+                            <td><a href="http://localhost:3010/" target="_blank">:3010</a></td>
+                            <td>23.82</td>
+                        </tr>
+                        <tr>
+                            <td>Feature Flags</td>
+                            <td>Unleash</td>
+                            <td><a href="http://localhost:4242/" target="_blank">:4242</a></td>
+                            <td>24.11</td>
+                        </tr>
+                        <tr>
+                            <td>Feature Flags</td>
+                            <td>Flagsmith</td>
+                            <td><a href="http://localhost:8149/" target="_blank">:8149</a></td>
+                            <td>24.21</td>
+                        </tr>
+                        <tr>
+                            <td>Feature Flags</td>
+                            <td>GrowthBook</td>
+                            <td><a href="http://localhost:3011/" target="_blank">:3011</a> UI, :3012 API</td>
+                            <td>24.31 / mongo 24.30</td>
+                        </tr>
+                        <tr>
+                            <td>Feature Flags</td>
+                            <td>flagd</td>
+                            <td>:8013 eval, :8014 health, :8016 OFREP</td>
+                            <td>24.40</td>
+                        </tr>
+                        <tr>
+                            <td>Feature Flags</td>
+                            <td>Consul</td>
+                            <td><a href="http://localhost:8500/ui/" target="_blank">:8500</a>, :8600 DNS</td>
+                            <td>24.50</td>
+                        </tr>
+                        <tr>
+                            <td>Object Storage</td>
+                            <td>RustFS</td>
+                            <td>:9008 S3, <a href="http://localhost:9009/rustfs/console/" target="_blank">:9009</a> console</td>
+                            <td>25.10</td>
+                        </tr>
+                        <tr>
+                            <td>Object Storage</td>
+                            <td>SeaweedFS</td>
+                            <td>:8333 S3, <a href="http://localhost:12535/" target="_blank">:12535</a> admin, <a href="http://localhost:8150/" target="_blank">:8150</a> filer, :9333 master</td>
+                            <td>25.20</td>
+                        </tr>
+                        <tr>
+                            <td>Object Storage</td>
+                            <td>Garage / web UI</td>
+                            <td>:3900 S3, :3902 web, :3903 admin, <a href="http://localhost:3909/" target="_blank">:3909</a> UI</td>
+                            <td>25.30 / 25.32</td>
+                        </tr>
+                        <tr>
+                            <td>Service Mesh</td>
+                            <td>Dapr sidecar / placement / scheduler</td>
+                            <td>:3500, :50001, :50005, :50006</td>
+                            <td>26.20 / 26.10 / 26.11</td>
+                        </tr>
+                        <tr>
+                            <td>Service Mesh</td>
+                            <td>Dapr dashboard</td>
+                            <td><a href="http://localhost:8151/" target="_blank">:8151</a></td>
+                            <td>26.12</td>
+                        </tr>
+                        <tr>
+                            <td>AI</td>
+                            <td>Ollama</td>
+                            <td><a href="http://localhost:11434/api/tags" target="_blank">:11434</a></td>
+                            <td>27.10</td>
+                        </tr>
+                        <tr>
+                            <td>AI</td>
+                            <td>Open WebUI</td>
+                            <td><a href="http://localhost:3013/" target="_blank">:3013</a></td>
+                            <td>27.20</td>
+                        </tr>
+                        <tr>
+                            <td>AI</td>
+                            <td>LiteLLM</td>
+                            <td><a href="http://localhost:4000/ui" target="_blank">:4000</a> (API /v1)</td>
+                            <td>27.31</td>
+                        </tr>
+                        <tr>
+                            <td>AI</td>
+                            <td>Langfuse</td>
+                            <td><a href="http://localhost:3014/" target="_blank">:3014</a></td>
+                            <td>27.43 / worker 27.44</td>
+                        </tr>
+                        <tr>
+                            <td>Data Integration</td>
+                            <td>Apache NiFi</td>
+                            <td><a href="https://localhost:8155/nifi" target="_blank">:8155</a> (HTTPS)</td>
+                            <td>28.10</td>
+                        </tr>
+                        <tr>
+                            <td>Data Integration</td>
+                            <td>Airbyte (K3s, via proxy)</td>
+                            <td><a href="http://localhost:8154/" target="_blank">:8154</a></td>
+                            <td>28.22</td>
+                        </tr>
+                        <tr>
+                            <td>Collaboration</td>
+                            <td>Mattermost</td>
+                            <td><a href="http://localhost:8065/" target="_blank">:8065</a></td>
+                            <td>29.11</td>
+                        </tr>
+                        <tr>
+                            <td>Collaboration</td>
+                            <td>Rocket.Chat</td>
+                            <td><a href="http://localhost:3015/" target="_blank">:3015</a></td>
+                            <td>29.22</td>
+                        </tr>
+                        <tr>
+                            <td>Collaboration</td>
+                            <td>Plane</td>
+                            <td><a href="http://localhost:8156/" target="_blank">:8156</a></td>
+                            <td>29.40 (proxy)</td>
+                        </tr>
+                        <tr>
+                            <td>Dev Tools</td>
+                            <td>Homepage</td>
+                            <td><a href="http://localhost:3016/" target="_blank">:3016</a></td>
+                            <td>30.10</td>
+                        </tr>
+                        <tr>
+                            <td>Dev Tools</td>
+                            <td>Homarr</td>
+                            <td><a href="http://localhost:7575/" target="_blank">:7575</a></td>
+                            <td>30.20</td>
+                        </tr>
+                        <tr>
+                            <td>Dev Tools</td>
+                            <td>IT-Tools</td>
+                            <td><a href="http://localhost:8157/" target="_blank">:8157</a></td>
+                            <td>30.30</td>
+                        </tr>
+                        <tr>
+                            <td>Dev Tools</td>
+                            <td>CyberChef</td>
+                            <td><a href="http://localhost:8158/" target="_blank">:8158</a></td>
+                            <td>30.40</td>
+                        </tr>
+                        <tr>
+                            <td>Dev Tools</td>
+                            <td>code-server (.NET)</td>
+                            <td><a href="http://localhost:8159/" target="_blank">:8159</a>, :5080 app</td>
+                            <td>30.50</td>
+                        </tr>
                     </table>
                 </div>
                 <p class="note">IPs are on GroupNetwork (172.20.0.0/16) and shown without the <code>172.20.</code>
-                    prefix as <i>category.tool</i>: the 3rd octet is the category folder (alphabetical from 1), the 4th
+                    prefix as <i>category.tool</i>: the 3rd octet is the category folder (alphabetical from 1; CI-CD 22, Testing 23, FeatureFlags 24, ObjectStorage 25, ServiceMesh 26, AI 27, DataIntegration 28, Collaboration 29 and DevTools 30 were added later), the 4th
                     is the tool folder&rsquo;s block of 10 (1st tool .10, 2nd .20, &hellip;) with extra containers on
                     consecutive addresses. Full table in <code>README.md</code>.</p>
+            </div>
+
+            <div id="AI" class="page-content">
+                <h2>AI / LLM</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Ollama</font><br />
+                        API: <a href="http://localhost:11434/api/tags" target="_blank">http://localhost:11434/api/tags</a> (OpenAI-compatible: /v1)<br />
+                        <span class="note">Models from <code>OLLAMA_MODELS</code>; GPU: add <code>-f docker-compose.gpu.yml</code>.</span><br />
+                        INFO: <a href="https://docs.ollama.com/" target="_blank">https://docs.ollama.com/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Open WebUI</font><br />
+                        UI: <a href="http://localhost:3013/" target="_blank">http://localhost:3013/</a> (admin@example.com / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">Requires the Ollama stack.</span><br />
+                        INFO: <a href="https://docs.openwebui.com/" target="_blank">https://docs.openwebui.com/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">LiteLLM</font><br />
+                        API: http://localhost:4000/v1<br />
+                        Admin UI: <a href="http://localhost:4000/ui" target="_blank">http://localhost:4000/ui</a> (admin / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        Master key: sk-local-dev-litellm-master-key <span style="cursor: pointer" onclick="ClipBoardText('sk-local-dev-litellm-master-key')"><i class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Requires the PostgreSQL stack; models in <code>config.yaml</code>; traces to Langfuse.</span><br />
+                        INFO: <a href="https://docs.litellm.ai/" target="_blank">https://docs.litellm.ai/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Langfuse</font><br />
+                        UI: <a href="http://localhost:3014/" target="_blank">http://localhost:3014/</a> (admin@example.com / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        Keys: pk-lf-local-dev <span style="cursor: pointer" onclick="ClipBoardText('pk-lf-local-dev')"><i class="fa-regular fa-copy"></i></span> / sk-lf-local-dev <span style="cursor: pointer" onclick="ClipBoardText('sk-lf-local-dev')"><i class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Requires the PostgreSQL, Redis and RustFS stacks. OTLP: <code>/api/public/otel/v1/traces</code>.</span><br />
+                        INFO: <a href="https://langfuse.com/docs" target="_blank">https://langfuse.com/docs</a><br />
+                    </li>
+                </ul>
             </div>
 
             <div id="Analytics" class="page-content">
@@ -1502,6 +1766,30 @@
                 </ul>
             </div>
 
+            <div id="CICD" class="page-content">
+                <h2>CI / CD</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Jenkins</font><br />
+                        UI: <a href="http://localhost:8144/" target="_blank">http://localhost:8144/</a> (admin / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">Built image with plugins + Docker CLI; configured by <code>casc/jenkins.yaml</code>. Pipelines can use <code>agent { docker { ... } }</code>.</span><br />
+                        INFO: <a href="https://www.jenkins.io/doc/" target="_blank">https://www.jenkins.io/doc/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">TeamCity + agent</font><br />
+                        UI: <a href="http://localhost:8145/" target="_blank">http://localhost:8145/</a><br />
+                        <span class="note">First visit: accept the license and create the admin, then authorize <code>docker-agent</code> under Agents. Agent has the .NET SDK and Docker CLI.</span><br />
+                        INFO: <a href="https://www.jetbrains.com/help/teamcity/" target="_blank">https://www.jetbrains.com/help/teamcity/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Woodpecker CI</font><br />
+                        UI: <a href="http://localhost:8146/" target="_blank">http://localhost:8146/</a> (Login with your Gitea account)<br />
+                        <span class="note">Requires the Gitea stack (installer done; admin login in <code>.env</code>). Pipelines: <code>.woodpecker.yaml</code>; steps run on GroupNetwork.</span><br />
+                        INFO: <a href="https://woodpecker-ci.org/docs/intro" target="_blank">https://woodpecker-ci.org/docs/intro</a><br />
+                    </li>
+                </ul>
+            </div>
+
             <div id="CodeAnalysis" class="page-content">
                 <h2>Code Analysis</h2>
                 <ul>
@@ -1553,6 +1841,31 @@
                 </ul>
             </div>
 
+            <div id="Collaboration" class="page-content">
+                <h2>Collaboration</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Mattermost</font><br />
+                        UI: <a href="http://localhost:8065/" target="_blank">http://localhost:8065/</a> (admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span> / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">Start PostgreSQL first. Team "docker-scripts"; incoming webhooks: http://mattermost:8065/hooks/&lt;id&gt;.</span><br />
+                        INFO: <a href="https://docs.mattermost.com/" target="_blank">https://docs.mattermost.com/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Rocket.Chat</font><br />
+                        UI: <a href="http://localhost:3015/" target="_blank">http://localhost:3015/</a> (admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span> / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">Self-contained (own MongoDB replica set).</span><br />
+                        INFO: <a href="https://docs.rocket.chat/" target="_blank">https://docs.rocket.chat/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Plane</font><br />
+                        UI: <a href="http://localhost:8156/" target="_blank">http://localhost:8156/</a> (admin@example.com <span style="cursor: pointer" onclick="ClipBoardText('admin@example.com')"><i class="fa-regular fa-copy"></i></span> / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        God mode: <a href="http://localhost:8156/god-mode/" target="_blank">http://localhost:8156/god-mode/</a><br />
+                        <span class="note">Start PostgreSQL and Redis first; the first login asks you to create a workspace.</span><br />
+                        INFO: <a href="https://docs.plane.so/" target="_blank">https://docs.plane.so/</a><br />
+                    </li>
+                </ul>
+            </div>
+
             <div id="Containerization" class="page-content">
                 <h2>Containerization</h2>
                 <ul>
@@ -1590,6 +1903,24 @@
                                 class="fa-regular fa-copy"></i></span><br />
                         <span class="note">Requires the PostgreSQL stack; the role and database are created automatically.</span><br />
                         INFO: <a href="https://goharbor.io/docs/" target="_blank">https://goharbor.io/docs/</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="DataIntegration" class="page-content">
+                <h2>Data Integration / ETL</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Apache NiFi</font><br />
+                        UI: <a href="https://localhost:8155/nifi" target="_blank">https://localhost:8155/nifi</a> (admin / Password123! <span style="cursor: pointer" onclick="ClipBoardText('Password123!')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">HTTPS with a self-signed certificate; open it as localhost (not 127.0.0.1).</span><br />
+                        INFO: <a href="https://nifi.apache.org/documentation/" target="_blank">https://nifi.apache.org/documentation/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Airbyte (on K3s)</font><br />
+                        UI: <a href="http://localhost:8154/" target="_blank">http://localhost:8154/</a> (password Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">Start PostgreSQL and Orchestration/K3s first; the first Helm install takes 10-20 minutes.</span><br />
+                        INFO: <a href="https://docs.airbyte.com/" target="_blank">https://docs.airbyte.com/</a><br />
                     </li>
                 </ul>
             </div>
@@ -1936,6 +2267,83 @@
                 </ul>
             </div>
 
+            <div id="DevTools" class="page-content">
+                <h2>Dev Tools</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Homepage</font><br />
+                        UI: <a href="http://localhost:3016/" target="_blank">http://localhost:3016/</a><br />
+                        <span class="note">YAML config in DevTools/Homepage/config; tiles for every stack with running/stopped status.</span><br />
+                        INFO: <a href="https://gethomepage.dev/" target="_blank">https://gethomepage.dev/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Homarr</font><br />
+                        UI: <a href="http://localhost:7575/" target="_blank">http://localhost:7575/</a> (admin <span style="cursor: pointer" onclick="ClipBoardText('admin')"><i class="fa-regular fa-copy"></i></span> / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">Dashboard edited in the browser.</span><br />
+                        INFO: <a href="https://homarr.dev/docs/" target="_blank">https://homarr.dev/docs/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">IT-Tools</font><br />
+                        UI: <a href="http://localhost:8157/" target="_blank">http://localhost:8157/</a><br />
+                        <span class="note">GUIDs, hashes, JWT, cron, converters and more - all client-side.</span><br />
+                        INFO: <a href="https://github.com/CorentinTh/it-tools" target="_blank">https://github.com/CorentinTh/it-tools</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">CyberChef</font><br />
+                        UI: <a href="http://localhost:8158/" target="_blank">http://localhost:8158/</a><br />
+                        <span class="note">Encode / decode / hash / parse recipes - all client-side.</span><br />
+                        INFO: <a href="https://gchq.github.io/CyberChef/" target="_blank">https://gchq.github.io/CyberChef/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">code-server (.NET)</font><br />
+                        IDE: <a href="http://localhost:8159/" target="_blank">http://localhost:8159/</a> (password Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        App port: <a href="http://localhost:5080/" target="_blank">http://localhost:5080/</a><br />
+                        <span class="note">VS Code in the browser with the .NET 10 SDK and C# extension; image built on first up.</span><br />
+                        INFO: <a href="https://coder.com/docs/code-server" target="_blank">https://coder.com/docs/code-server</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="FeatureFlags" class="page-content">
+                <h2>Feature Flags / Configuration</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Unleash</font><br />
+                        UI: <a href="http://localhost:4242/" target="_blank">http://localhost:4242/</a> (admin / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        Client token: default:development.local-dev-unleash-client-token <span style="cursor: pointer" onclick="ClipBoardText('default:development.local-dev-unleash-client-token')"><i class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Requires the PostgreSQL stack. Frontend token: <code>default:development.local-dev-unleash-frontend-token</code>.</span><br />
+                        INFO: <a href="https://docs.getunleash.io/" target="_blank">https://docs.getunleash.io/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Flagsmith</font><br />
+                        UI: <a href="http://localhost:8149/" target="_blank">http://localhost:8149/</a> (admin@example.com / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">Requires the PostgreSQL stack. Environment keys: <code>docker logs flagsmith-init</code>.</span><br />
+                        INFO: <a href="https://docs.flagsmith.com/" target="_blank">https://docs.flagsmith.com/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">GrowthBook</font><br />
+                        UI: <a href="http://localhost:3011/" target="_blank">http://localhost:3011/</a> (admin@example.com / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        API: <a href="http://localhost:3012/" target="_blank">http://localhost:3012/</a><br />
+                        <span class="note">Own MongoDB 8.0. SDK client key: <code>docker logs growthbook-init</code>.</span><br />
+                        INFO: <a href="https://docs.growthbook.io/" target="_blank">https://docs.growthbook.io/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">flagd (OpenFeature)</font><br />
+                        Evaluation: localhost:8013 (gRPC / Connect)<br />
+                        OFREP: <a href="http://localhost:8016/" target="_blank">http://localhost:8016/</a><br />
+                        <span class="note">Flags as code in <code>FeatureFlags/Flagd/flags/flags.json</code>.</span><br />
+                        INFO: <a href="https://flagd.dev/" target="_blank">https://flagd.dev/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Consul</font><br />
+                        UI + API: <a href="http://localhost:8500/ui/" target="_blank">http://localhost:8500/ui/</a><br />
+                        DNS: localhost:8600<br />
+                        <span class="note">KV config seeded from <code>kv/seed.json</code> (<code>config/my-api/...</code>).</span><br />
+                        INFO: <a href="https://developer.hashicorp.com/consul/docs" target="_blank">https://developer.hashicorp.com/consul/docs</a><br />
+                    </li>
+                </ul>
+            </div>
+
             <div id="IaC" class="page-content">
                 <h2>Infrastructure as Code</h2>
                 <ul>
@@ -2049,6 +2457,36 @@
                         UI: <a href="http://localhost:8120/" target="_blank">http://localhost:8120/</a><br />
                         Confluent-compatible API: http://localhost:8119/apis/ccompat/v7 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:8119/apis/ccompat/v7')"><i
                                 class="fa-regular fa-copy"></i></span><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="ObjectStorage" class="page-content">
+                <h2>Object Storage</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">RustFS (MinIO replacement)</font><br />
+                        S3: http://localhost:9008 (admin / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        Console: <a href="http://localhost:9009/rustfs/console/" target="_blank">http://localhost:9009/rustfs/console/</a><br />
+                        <span class="note">S3-compatible, MinIO drop-in; bucket <code>dev-bucket</code>. GroupNetwork: <code>http://rustfs:9000</code>.</span><br />
+                        INFO: <a href="https://docs.rustfs.com/" target="_blank">https://docs.rustfs.com/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">SeaweedFS</font><br />
+                        S3: http://localhost:8333 (admin / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        Admin UI: <a href="http://localhost:12535/" target="_blank">http://localhost:12535/</a> (admin / Password123)<br />
+                        Filer: <a href="http://localhost:8150/" target="_blank">http://localhost:8150/</a><br />
+                        <span class="note">Single-container <code>weed mini</code>; bucket <code>dev-bucket</code>.</span><br />
+                        INFO: <a href="https://github.com/seaweedfs/seaweedfs/wiki" target="_blank">https://github.com/seaweedfs/seaweedfs/wiki</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Garage</font><br />
+                        S3: http://localhost:3900 (region <code>garage</code>)<br />
+                        Access key: GK6d7662022c03a786ac8be692 <span style="cursor: pointer" onclick="ClipBoardText('GK6d7662022c03a786ac8be692')"><i class="fa-regular fa-copy"></i></span><br />
+                        Secret: b023faab5141afc5bac2c975f74fd1bcc0ea0bb1bacb6bb75aac2715c2b96587 <span style="cursor: pointer" onclick="ClipBoardText('b023faab5141afc5bac2c975f74fd1bcc0ea0bb1bacb6bb75aac2715c2b96587')"><i class="fa-regular fa-copy"></i></span><br />
+                        Web UI: <a href="http://localhost:3909/" target="_blank">http://localhost:3909/</a><br />
+                        <span class="note">Layout, key and <code>dev-bucket</code> set up by <code>garage-init</code>.</span><br />
+                        INFO: <a href="https://garagehq.deuxfleurs.fr/documentation/" target="_blank">https://garagehq.deuxfleurs.fr/documentation/</a><br />
                     </li>
                 </ul>
             </div>
@@ -2355,6 +2793,20 @@
                         <span class="note">Webhooks: <code>http://localhost:5678/webhook/...</code>; Code nodes run in <code>n8n-runners</code>.</span><br />
                         INFO: <a href="https://docs.n8n.io/" target="_blank">https://docs.n8n.io/</a><br />
                     </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Camunda 8</font><br />
+                        Operate: <a href="http://localhost:8152/operate" target="_blank">http://localhost:8152/operate</a> (admin / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        Tasklist: <a href="http://localhost:8152/tasklist" target="_blank">http://localhost:8152/tasklist</a>, Admin: <a href="http://localhost:8152/admin" target="_blank">http://localhost:8152/admin</a><br />
+                        REST API: http://localhost:8152/v2, gRPC: localhost:26500<br />
+                        <span class="note">Orchestration Cluster on H2 + Connectors (:8153). Free for dev/test.</span><br />
+                        INFO: <a href="https://docs.camunda.io/" target="_blank">https://docs.camunda.io/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Node-RED</font><br />
+                        Editor: <a href="http://localhost:1880/" target="_blank">http://localhost:1880/</a> (admin / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">Flow-based automation; HTTP-in endpoints on the same port.</span><br />
+                        INFO: <a href="https://nodered.org/docs/" target="_blank">https://nodered.org/docs/</a><br />
+                    </li>
                 </ul>
             </div>
 
@@ -2459,6 +2911,20 @@
                 </ul>
             </div>
 
+            <div id="ServiceMesh" class="page-content">
+                <h2>Service Mesh / Runtime</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Dapr</font><br />
+                        Sidecar HTTP: <a href="http://localhost:3500/v1.0/metadata" target="_blank">http://localhost:3500/v1.0/metadata</a> (gRPC :50001)<br />
+                        Dashboard: <a href="http://localhost:8151/" target="_blank">http://localhost:8151/</a><br />
+                        Placement :50005, Scheduler :50006<br />
+                        <span class="note">Sidecar serves app <code>my-app</code> running on your machine at port 5000. Requires the Redis stack (state + pub/sub).</span><br />
+                        INFO: <a href="https://docs.dapr.io/" target="_blank">https://docs.dapr.io/</a><br />
+                    </li>
+                </ul>
+            </div>
+
             <div id="SIEM" class="page-content">
                 <h2>SIEM</h2>
                 <ul>
@@ -2518,6 +2984,64 @@
                                 class="fa-regular fa-copy"></i></span>)<br />
                         <span class="note">Built-in CI: jobs from <code>.onedev-buildspec.yml</code> run on the host Docker daemon.</span><br />
                         INFO: <a href="https://docs.onedev.io/" target="_blank">https://docs.onedev.io/</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Testing" class="page-content">
+                <h2>Testing</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">WireMock</font><br />
+                        Mocks + admin API: <a href="http://localhost:8147/__admin/mappings" target="_blank">http://localhost:8147/__admin/mappings</a><br />
+                        <span class="note">Stubs in <code>mappings/</code>, bodies in <code>__files/</code>; GroupNetwork: <code>http://wiremock:8080</code>.</span><br />
+                        INFO: <a href="https://wiremock.org/docs/" target="_blank">https://wiremock.org/docs/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Microcks</font><br />
+                        UI: <a href="http://localhost:8148/" target="_blank">http://localhost:8148/</a> (no login), gRPC :9005<br />
+                        <span class="note">In-memory; <code>artifacts/</code> is imported on every start. Mocks: <code>/rest/&lt;API&gt;/&lt;version&gt;/...</code></span><br />
+                        INFO: <a href="https://microcks.io/documentation/" target="_blank">https://microcks.io/documentation/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Mockoon CLI</font><br />
+                        Mock API: <a href="http://localhost:3009/api/products" target="_blank">http://localhost:3009/api/products</a><br />
+                        Admin API token: local-dev-mockoon-admin-token <span style="cursor: pointer" onclick="ClipBoardText('local-dev-mockoon-admin-token')"><i class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Serves <code>data/sample-api.json</code>; edit it in the Mockoon desktop app.</span><br />
+                        INFO: <a href="https://mockoon.com/cli/" target="_blank">https://mockoon.com/cli/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">k6</font><br />
+                        Dashboard while running: <a href="http://localhost:5665/" target="_blank">http://localhost:5665/</a><br />
+                        <span class="note">One-shot: <code>docker compose up</code> runs <code>scripts/smoke.js</code> (against WireMock); HTML report in the <code>Testing/K6/results</code> volume.</span><br />
+                        INFO: <a href="https://grafana.com/docs/k6/latest/" target="_blank">https://grafana.com/docs/k6/latest/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Toxiproxy</font><br />
+                        API: <a href="http://localhost:8474/proxies" target="_blank">http://localhost:8474/proxies</a><br />
+                        Proxies: postgresql :15432, mssql :11433, redis :16379, rabbitmq :15673, wiremock :18147<br />
+                        <span class="note">Add latency / outages with toxics to test retries and timeouts.</span><br />
+                        INFO: <a href="https://github.com/Shopify/toxiproxy" target="_blank">https://github.com/Shopify/toxiproxy</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Selenium Grid</font><br />
+                        Grid + WebDriver: <a href="http://localhost:4447/" target="_blank">http://localhost:4447/</a><br />
+                        noVNC: Chrome <a href="http://localhost:7900/" target="_blank">http://localhost:7900/</a>, Firefox :7901, Edge :7902 (Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">RemoteWebDriver URL <code>http://localhost:4447</code>; apps on your machine: <code>host.docker.internal</code>.</span><br />
+                        INFO: <a href="https://www.selenium.dev/documentation/grid/" target="_blank">https://www.selenium.dev/documentation/grid/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Pact Broker</font><br />
+                        UI: <a href="http://localhost:9292/" target="_blank">http://localhost:9292/</a> (pact / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i class="fa-regular fa-copy"></i></span>, read-only pact-reader)<br />
+                        <span class="note">Requires the PostgreSQL stack.</span><br />
+                        INFO: <a href="https://docs.pact.io/pact_broker" target="_blank">https://docs.pact.io/pact_broker</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Hoppscotch</font><br />
+                        App: <a href="http://localhost:3010/" target="_blank">http://localhost:3010/</a><br />
+                        Admin: <a href="http://localhost:3010/admin" target="_blank">http://localhost:3010/admin</a><br />
+                        <span class="note">Requires the PostgreSQL and Mailpit stacks; sign in with any email, open the magic link in Mailpit (:8025).</span><br />
+                        INFO: <a href="https://docs.hoppscotch.io/" target="_blank">https://docs.hoppscotch.io/</a><br />
                     </li>
                 </ul>
             </div>

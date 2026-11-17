@@ -1,0 +1,72 @@
+# Homarr: dashboard / start page with boards, app tiles, widgets and integrations (Docker container status and
+# control, Prometheus-style health checks, calendars, media/download apps...), all edited in the UI.
+#   UI: http://localhost:7575 (admin / Password123)
+# Standalone: SQLite + built-in Redis in /appdata. The Docker socket is mounted read-only for the container list.
+# homarr-init creates the admin with the Homarr CLI and finishes the onboarding wizard on an empty database.
+services:
+  homarr:
+    image: ghcr.io/homarr-labs/homarr:${HOMARR_VERSION:-v2.13.1}
+    container_name: homarr
+    restart: unless-stopped
+    environment:
+      # 64 hex chars; encrypts integration secrets in the database - keep it with the data folder
+      SECRET_ENCRYPTION_KEY: ${HOMARR_SECRET_ENCRYPTION_KEY:-0d1b7b1c5c2e4f6a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a}
+      TZ: ${HOMARR_TZ:-America/New_York}
+    volumes:
+      - homarr_appdata:/appdata
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7575/api/health/live >/dev/null || curl -fs http://localhost:7575/api/health/live >/dev/null"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${HOMARR_IP:-172.20.30.20}
+        aliases:
+          - homarr
+    ports:
+      - "${HOMARR_PORT:-7575}:7575" # UI
+  homarr-init:
+    image: ghcr.io/homarr-labs/homarr:${HOMARR_VERSION:-v2.13.1}
+    container_name: homarr-init
+    restart: "no"
+    depends_on:
+      homarr:
+        condition: service_healthy
+    environment:
+      SECRET_ENCRYPTION_KEY: ${HOMARR_SECRET_ENCRYPTION_KEY:-0d1b7b1c5c2e4f6a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a}
+      ADMIN_USER: ${HOMARR_ADMIN_USER:-admin}
+      ADMIN_PASSWORD: ${HOMARR_ADMIN_PASSWORD:-Password123}
+    volumes:
+      - homarr_appdata:/appdata
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        cd /app
+        sql() { node -e 'const D=require("better-sqlite3");const d=new D("/appdata/db/db.sqlite");const r=d.prepare(process.argv[1]);console.log(r.reader?JSON.stringify(r.get()):r.run().changes)' "$$1"; }
+        if [ "$$(sql 'select count(*) n from user')" != '{"n":0}' ]; then echo "users exist - nothing to do"; exit 0; fi
+        # The CLI keeps its database connection open after printing, so it is cut off by timeout
+        timeout 60 homarr recreate-admin -u "$$ADMIN_USER" >/dev/null 2>&1 || true
+        timeout 60 homarr users update-password -u "$$ADMIN_USER" -p "$$ADMIN_PASSWORD" 2>&1 | grep -i password || true
+        # recreate-admin names the admin group randomly; skip the onboarding wizard (same end state as its last step)
+        sql "update \"group\" set name='admins' where name<>'everyone'" >/dev/null
+        sql "update onboarding set step='finish', previous_step='setup'" >/dev/null
+        echo "created admin $$ADMIN_USER and finished onboarding"
+    networks:
+      GroupNetwork:
+        ipv4_address: ${HOMARR_INIT_IP:-172.20.30.21}
+volumes:
+  homarr_appdata:
+    name: homarr_appdata
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/DevTools/Homarr/appdata
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

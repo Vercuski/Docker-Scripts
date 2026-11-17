@@ -1,0 +1,7 @@
+{
+  "id": "{{request.path.id}}",
+  "status": "Shipped",
+  "lines": [
+    { "sku": "ABC-123", "quantity": 2, "price": 9.99 }
+  ]
+}

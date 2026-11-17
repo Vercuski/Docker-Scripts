@@ -20,7 +20,7 @@ If `ROOT_VOLUME_DIR` is missing, `docker compose` stops with *run CreateVolumes.
 instead of binding volumes to the wrong place. To point a single stack somewhere else, uncomment `ROOT_VOLUME_DIR` in its `.env`.
 
 On native Linux the script also `chown`s the folders of images that run as a fixed non-root user (Grafana, Prometheus,
-Tempo/Loki, Elasticsearch, OpenSearch, Solr, SonarQube, Dependency-Track, DefectDojo, pgAdmin, Vault, authentik, Kafka, Spark, Flink, JupyterLab, Airflow, n8n, Rundeck, Nexus, Verdaccio, Jaeger, Pyroscope, SigNoz, Artemis, Redpanda, Pulsar, Atlantis, Semaphore, Wiki.js, Outline, Structurizr, Oracle, KurrentDB, Garnet, RavenDB, ScyllaDB, Wazuh), using `sudo`.
+Tempo/Loki, Elasticsearch, OpenSearch, Solr, SonarQube, Dependency-Track, DefectDojo, pgAdmin, Vault, authentik, Kafka, Spark, Flink, JupyterLab, Airflow, n8n, Rundeck, Nexus, Verdaccio, Jaeger, Pyroscope, SigNoz, TeamCity, Woodpecker, k6, GrowthBook, RustFS, Dapr scheduler, Langfuse ClickHouse, Camunda, Node-RED, NiFi, Mattermost, Plane S3 store, code-server, Artemis, Redpanda, Pulsar, Atlantis, Semaphore, Wiki.js, Outline, Structurizr, Oracle, KurrentDB, Garnet, RavenDB, ScyllaDB, Wazuh), using `sudo`.
 Docker Desktop ignores bind-mount ownership, so Windows and macOS skip this. Set `SKIP_CHOWN=1` or `SKIP_PERSIST=1` to opt out.
 
 ## Configuration (.env)
@@ -73,6 +73,15 @@ Every stack joins the external `GroupNetwork` bridge, **172.20.0.0/16**, with a 
 |SourceControl| 172.20.19.0/24|
 |Visualization| 172.20.20.0/24|
 |WebServers| 172.20.21.0/24|
+|CI-CD| 172.20.22.0/24|
+|Testing| 172.20.23.0/24|
+|FeatureFlags| 172.20.24.0/24|
+|ObjectStorage| 172.20.25.0/24|
+|ServiceMesh| 172.20.26.0/24|
+|AI| 172.20.27.0/24|
+|DataIntegration| 172.20.28.0/24|
+|Collaboration| 172.20.29.0/24|
+|DevTools| 172.20.30.0/24|
 
 ## Analytics (172.20.1.x)
 |Folder|Name|IP Address|
@@ -319,6 +328,9 @@ Every stack joins the external `GroupNetwork` bridge, **172.20.0.0/16**, with a 
 |N8n|n8n| 172.20.15.51|
 |N8n|n8n owner setup (one-shot)| 172.20.15.52|
 |N8n|n8n task runners| 172.20.15.53|
+|Camunda|Camunda 8 Orchestration Cluster| 172.20.15.60|
+|Camunda|Camunda 8 Connectors| 172.20.15.61|
+|NodeRed|Node-RED| 172.20.15.70|
 
 ## Search (172.20.16.x)
 |Folder|Name|IP Address|
@@ -392,3 +404,122 @@ Every stack joins the external `GroupNetwork` bridge, **172.20.0.0/16**, with a 
 |Apache|Apache| 172.20.21.10|
 |Nginx|Nginx| 172.20.21.20|
 |Nginx|Nginx UI| 172.20.21.21|
+
+## CI-CD (172.20.22.x)
+|Folder|Name|IP Address|
+|:----------|:----------|:----------|
+|Jenkins|Jenkins| 172.20.22.10|
+|TeamCity|TeamCity server| 172.20.22.20|
+|TeamCity|TeamCity build agent| 172.20.22.21|
+|Woodpecker|Woodpecker Gitea OAuth2 setup (one-shot)| 172.20.22.30|
+|Woodpecker|Woodpecker server| 172.20.22.31|
+|Woodpecker|Woodpecker agent| 172.20.22.32|
+
+## Testing (172.20.23.x)
+|Folder|Name|IP Address|
+|:----------|:----------|:----------|
+|WireMock|WireMock| 172.20.23.10|
+|Microcks|Microcks (uber)| 172.20.23.20|
+|Microcks|Microcks artifact import (one-shot)| 172.20.23.21|
+|Mockoon|Mockoon CLI| 172.20.23.30|
+|K6|k6 (one-shot test run)| 172.20.23.40|
+|Toxiproxy|Toxiproxy| 172.20.23.50|
+|SeleniumGrid|Selenium hub| 172.20.23.60|
+|SeleniumGrid|Selenium Chrome node| 172.20.23.61|
+|SeleniumGrid|Selenium Firefox node| 172.20.23.62|
+|SeleniumGrid|Selenium Edge node| 172.20.23.63|
+|PactBroker|Pact Broker database setup (one-shot)| 172.20.23.70|
+|PactBroker|Pact Broker| 172.20.23.71|
+|Hoppscotch|Hoppscotch database setup (one-shot)| 172.20.23.80|
+|Hoppscotch|Hoppscotch migrations (one-shot)| 172.20.23.81|
+|Hoppscotch|Hoppscotch| 172.20.23.82|
+|Hoppscotch|Hoppscotch onboarding (one-shot)| 172.20.23.83|
+
+## FeatureFlags (172.20.24.x)
+|Folder|Name|IP Address|
+|:----------|:----------|:----------|
+|Unleash|Unleash database setup (one-shot)| 172.20.24.10|
+|Unleash|Unleash| 172.20.24.11|
+|Flagsmith|Flagsmith database setup (one-shot)| 172.20.24.20|
+|Flagsmith|Flagsmith| 172.20.24.21|
+|Flagsmith|Flagsmith admin + environments setup (one-shot)| 172.20.24.22|
+|GrowthBook|GrowthBook MongoDB 8.0| 172.20.24.30|
+|GrowthBook|GrowthBook| 172.20.24.31|
+|GrowthBook|GrowthBook first-time setup (one-shot)| 172.20.24.32|
+|Flagd|flagd| 172.20.24.40|
+|Consul|Consul server| 172.20.24.50|
+|Consul|Consul KV seed (one-shot)| 172.20.24.51|
+
+## ObjectStorage (172.20.25.x)
+|Folder|Name|IP Address|
+|:----------|:----------|:----------|
+|RustFS|RustFS| 172.20.25.10|
+|RustFS|RustFS bucket setup (one-shot)| 172.20.25.11|
+|SeaweedFS|SeaweedFS (weed mini)| 172.20.25.20|
+|Garage|Garage| 172.20.25.30|
+|Garage|Garage layout/key/bucket setup (one-shot)| 172.20.25.31|
+|Garage|Garage web UI| 172.20.25.32|
+
+## ServiceMesh (172.20.26.x)
+|Folder|Name|IP Address|
+|:----------|:----------|:----------|
+|Dapr|Dapr placement| 172.20.26.10|
+|Dapr|Dapr scheduler| 172.20.26.11|
+|Dapr|Dapr dashboard| 172.20.26.12|
+|Dapr|Dapr sidecar (daprd for an app on the host)| 172.20.26.20|
+
+## AI (172.20.27.x)
+|Folder|Name|IP Address|
+|:----------|:----------|:----------|
+|Ollama|Ollama| 172.20.27.10|
+|Ollama|Ollama model pull (one-shot)| 172.20.27.11|
+|OpenWebUI|Open WebUI| 172.20.27.20|
+|LiteLLM|LiteLLM database setup (one-shot)| 172.20.27.30|
+|LiteLLM|LiteLLM proxy| 172.20.27.31|
+|Langfuse|Langfuse database setup (one-shot)| 172.20.27.40|
+|Langfuse|Langfuse S3 bucket setup (one-shot)| 172.20.27.41|
+|Langfuse|Langfuse ClickHouse| 172.20.27.42|
+|Langfuse|Langfuse web| 172.20.27.43|
+|Langfuse|Langfuse worker| 172.20.27.44|
+
+## DataIntegration (172.20.28.x)
+|Folder|Name|IP Address|
+|:----------|:----------|:----------|
+|NiFi|Apache NiFi| 172.20.28.10|
+|NiFi|NiFi conf setup (one-shot)| 172.20.28.11|
+|Airbyte|Airbyte database setup (one-shot)| 172.20.28.20|
+|Airbyte|Airbyte Helm install into K3s (one-shot)| 172.20.28.21|
+|Airbyte|Airbyte proxy (localhost:8154 -> K3s NodePort 30081)| 172.20.28.22|
+
+## Collaboration (172.20.29.x)
+|Folder|Name|IP Address|
+|:----------|:----------|:----------|
+|Mattermost|Mattermost database setup (one-shot)| 172.20.29.10|
+|Mattermost|Mattermost| 172.20.29.11|
+|Mattermost|Mattermost admin/team setup (one-shot)| 172.20.29.12|
+|RocketChat|Rocket.Chat MongoDB (replica set)| 172.20.29.20|
+|RocketChat|Rocket.Chat replica set init (one-shot)| 172.20.29.21|
+|RocketChat|Rocket.Chat| 172.20.29.22|
+|Plane|Plane database setup (one-shot)| 172.20.29.30|
+|Plane|Plane S3 store (RustFS)| 172.20.29.31|
+|Plane|Plane migrator (one-shot)| 172.20.29.32|
+|Plane|Plane API| 172.20.29.33|
+|Plane|Plane worker| 172.20.29.34|
+|Plane|Plane beat worker| 172.20.29.35|
+|Plane|Plane web| 172.20.29.36|
+|Plane|Plane space| 172.20.29.37|
+|Plane|Plane admin (god mode)| 172.20.29.38|
+|Plane|Plane live| 172.20.29.39|
+|Plane|Plane proxy| 172.20.29.40|
+|Plane|Plane admin setup (one-shot)| 172.20.29.41|
+|Plane|Plane RabbitMQ broker| 172.20.29.42|
+
+## DevTools (172.20.30.x)
+|Folder|Name|IP Address|
+|:----------|:----------|:----------|
+|Homepage|Homepage| 172.20.30.10|
+|Homarr|Homarr| 172.20.30.20|
+|Homarr|Homarr admin/onboarding setup (one-shot)| 172.20.30.21|
+|ITTools|IT-Tools| 172.20.30.30|
+|CyberChef|CyberChef| 172.20.30.40|
+|CodeServer|code-server (.NET SDK)| 172.20.30.50|

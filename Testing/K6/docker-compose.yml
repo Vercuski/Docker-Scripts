@@ -1,0 +1,57 @@
+# Grafana k6: load / performance tests written in JavaScript. One-shot: "docker compose up" runs K6_SCRIPT once
+# (default scripts/smoke.js against the WireMock stack) and exits. Live dashboard while it runs:
+# http://localhost:5665 - an HTML report is saved to the results volume when the run is long enough (~30 s+).
+# Other scripts: docker compose run --rm --service-ports k6 <script>.js   (files in ./scripts)
+services:
+  k6:
+    image: grafana/k6:${K6_VERSION:-2.4.0}
+    container_name: k6
+    restart: "no"
+    environment:
+      SCRIPT: ${K6_SCRIPT:-smoke.js}
+      # Optional second output, e.g. opentelemetry (-> Observability/OpenTelemetry, metrics end up in Prometheus)
+      EXTRA_OUTPUT: ${K6_EXTRA_OUTPUT:-}
+      K6_OTEL_GRPC_EXPORTER_ENDPOINT: otel-collector:4317
+      K6_OTEL_GRPC_EXPORTER_INSECURE: "true"
+      K6_OTEL_SERVICE_NAME: k6
+      K6_WEB_DASHBOARD_HOST: 0.0.0.0
+      K6_WEB_DASHBOARD_PERIOD: 5s
+      K6_NO_USAGE_REPORT: "true"
+      # Passed to scripts as __ENV.TARGET_URL (smoke.js defaults to the WireMock sample stub)
+      TARGET_URL: ${K6_TARGET_URL:-}
+    # "docker compose run k6 other.js" replaces SCRIPT with its first argument
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        script="$${1:-$$SCRIPT}"
+        set -- run -o web-dashboard
+        [ -n "$$EXTRA_OUTPUT" ] && set -- "$$@" -o "$$EXTRA_OUTPUT"
+        export K6_WEB_DASHBOARD_EXPORT="/results/$${script%.js}-report.html"
+        exec k6 "$$@" "/scripts/$$script"
+      - k6
+    volumes:
+      - ./scripts:/scripts:ro
+      - k6_results:/results
+    extra_hosts:
+      # Reach services running on your machine (e.g. dotnet run) on native Linux too
+      - host.docker.internal:host-gateway
+    networks:
+      GroupNetwork:
+        ipv4_address: ${K6_IP:-172.20.23.40}
+        aliases:
+          - k6
+    ports:
+      - "${K6_DASHBOARD_PORT:-5665}:5665" # web dashboard (only while a test runs)
+volumes:
+  k6_results:
+    name: k6_results
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Testing/K6/results
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

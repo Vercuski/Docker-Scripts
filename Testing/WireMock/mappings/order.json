@@ -1,0 +1,14 @@
+{
+  "name": "Sample: GET /api/orders/{id} with the body from __files",
+  "request": {
+    "urlPathTemplate": "/api/orders/{id}",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "order.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

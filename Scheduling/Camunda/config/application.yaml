@@ -1,0 +1,39 @@
+# Camunda 8 Orchestration Cluster (Zeebe + Operate + Tasklist + Identity) - single node for local development.
+# Based on the official lightweight Docker Compose configuration (H2 secondary storage). ${...} values come from the
+# container environment (docker-compose.yml / .env).
+management.endpoints.configprops.show-values: always
+camunda:
+  backup:
+    webapps:
+      enabled: false
+  system:
+    cpu-thread-count: "3"
+    io-thread-count: "3"
+  security:
+    authentication:
+      method: "basic"
+      # true: the REST/gRPC APIs accept unauthenticated calls (handy for local workers and tests)
+      unprotectedApi: ${CAMUNDA_UNPROTECTED_API:true}
+    authorizations:
+      enabled: false
+    initialization:
+      # Created on first start; the user gets the admin role
+      users:
+        - username: "${CAMUNDA_ADMIN_USER:admin}"
+          password: "${CAMUNDA_ADMIN_PASSWORD:Password123}"
+          name: "Admin"
+          email: "${CAMUNDA_ADMIN_EMAIL:admin@example.com}"
+      defaultRoles.admin.users:
+        - "${CAMUNDA_ADMIN_USER:admin}"
+  data:
+    secondary-storage:
+      type: rdbms
+      rdbms:
+        # File-based H2 in the h2 volume (Operate/Tasklist/search data); Zeebe's own log is in the data volume
+        url: jdbc:h2:file:/usr/local/camunda/camunda-data/h2db
+        username: sa
+        password:
+        flushInterval: PT0.5S
+        queueSize: 1000
+  mcp:
+    enabled: true

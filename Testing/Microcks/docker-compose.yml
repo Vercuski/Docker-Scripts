@@ -1,0 +1,49 @@
+# Microcks (all-in-one "uber" image): mocks and contract tests from OpenAPI, AsyncAPI, gRPC/Protobuf, GraphQL, SOAP
+# and Postman collections.   UI + API: http://localhost:8148 (no login)   gRPC mocks: localhost:9005
+# The uber image keeps its data in memory, so microcks-init re-imports every file in ./artifacts on each start.
+services:
+  microcks:
+    image: microcks/microcks-uber:${MICROCKS_VERSION:-1.16.0}
+    container_name: microcks
+    restart: unless-stopped
+    environment:
+      # Read by the JVM itself (the image starts java directly)
+      JAVA_TOOL_OPTIONS: ${MICROCKS_JAVA_OPTIONS:--Xmx512m}
+    networks:
+      GroupNetwork:
+        ipv4_address: ${MICROCKS_IP:-172.20.23.20}
+        aliases:
+          - microcks
+    ports:
+      - "${MICROCKS_PORT:-8148}:8080" # UI + REST API + REST/SOAP/GraphQL mocks
+      - "${MICROCKS_GRPC_PORT:-9005}:9090" # gRPC mocks (9090 is Prometheus)
+  microcks-init:
+    image: ${MICROCKS_CURL_IMAGE:-curlimages/curl:8.23.0}
+    container_name: microcks-init
+    restart: "no"
+    depends_on:
+      microcks:
+        condition: service_started
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        # The image is distroless (no shell for a healthcheck), so wait for the API here
+        for i in $$(seq 60); do curl -fs http://microcks:8080/api/health >/dev/null && break; sleep 2; done
+        n=0
+        for f in /artifacts/*; do
+          [ -f "$$f" ] || continue
+          case "$$f" in *.md) continue ;; esac
+          code=$$(curl -s -o /tmp/out -w '%{http_code}' -F "file=@$$f" "http://microcks:8080/api/artifact/upload?mainArtifact=true")
+          echo "$$(basename "$$f"): HTTP $$code $$(cat /tmp/out)"
+          n=$$((n+1))
+        done
+        echo "imported $$n artifact(s)"
+    volumes:
+      - ./artifacts:/artifacts:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${MICROCKS_INIT_IP:-172.20.23.21}
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

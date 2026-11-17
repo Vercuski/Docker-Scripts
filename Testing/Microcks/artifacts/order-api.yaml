@@ -1,0 +1,54 @@
+openapi: 3.0.3
+# Sample artifact imported by microcks-init. Microcks builds one mock response per named example; the example names
+# must match between the request parameters and the responses.
+info:
+  title: Order API
+  version: 1.0.0
+  description: Sample contract for the Docker-Scripts Microcks stack
+paths:
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      summary: Get one order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          examples:
+            shipped:
+              value: "42"
+            pending:
+              value: "43"
+      responses:
+        "200":
+          description: The order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+              examples:
+                shipped:
+                  value:
+                    id: "42"
+                    status: Shipped
+                    total: 19.98
+                pending:
+                  value:
+                    id: "43"
+                    status: Pending
+                    total: 5.00
+components:
+  schemas:
+    Order:
+      type: object
+      required: [id, status]
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum: [Pending, Shipped, Cancelled]
+        total:
+          type: number
