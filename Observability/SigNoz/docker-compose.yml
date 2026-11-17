@@ -1,0 +1,209 @@
+# SigNoz: OpenTelemetry-native observability (APM, traces, logs, metrics, dashboards, alerts) on ClickHouse.
+# UI: http://localhost:8122 (first visit creates the admin). Send OTLP to localhost:34317 (gRPC) / localhost:34318 (HTTP),
+# or from other containers to signoz-collector:4317 / :4318.
+# Layout follows SigNoz Foundry's generated Compose file (foundryctl forge; the old deploy/ Compose files are
+# deprecated), adapted to this repo: metadata in the PostgreSQL stack, pinned images, bind-mounted data.
+# Requires the PostgreSQL stack. Needs ~4 GB RAM for Docker. First start downloads ClickHouse's histogramQuantile UDF
+# from GitHub (internet required once).
+services:
+  signoz-db-init:
+    image: ${SIGNOZ_DB_INIT_IMAGE:-postgres:18}
+    container_name: signoz-db-init
+    restart: "no"
+    environment:
+      PGHOST: postgresql
+      PGUSER: ${SIGNOZ_DB_ADMIN_USER:-user@user.com}
+      PGPASSWORD: ${SIGNOZ_DB_ADMIN_PASSWORD:-Password123}
+      DB_NAME: ${SIGNOZ_DB_NAME:-signoz}
+      DB_USER: ${SIGNOZ_DB_USER:-signoz}
+      DB_PASSWORD: ${SIGNOZ_DB_PASSWORD:-Password123}
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        for i in $$(seq 30); do pg_isready -q -d postgres && break; echo "waiting for postgresql (start Databases/PostgreSQL)"; sleep 2; done
+        psql -d postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$$DB_USER'" | grep -q 1 \
+          || psql -d postgres -c "CREATE ROLE \"$$DB_USER\" LOGIN PASSWORD '$$DB_PASSWORD'"
+        psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$$DB_NAME'" | grep -q 1 \
+          && echo "database $$DB_NAME exists" \
+          || psql -d postgres -c "CREATE DATABASE \"$$DB_NAME\" OWNER \"$$DB_USER\""
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SIGNOZ_DB_INIT_IP:-172.20.11.90}
+
+  signoz-keeper:
+    image: clickhouse/clickhouse-keeper:${SIGNOZ_CLICKHOUSE_VERSION:-25.12.5}
+    container_name: signoz-keeper
+    restart: unless-stopped
+    entrypoint: ["/usr/bin/clickhouse-keeper", "--config-file=/etc/clickhouse-keeper/keeper.yaml"]
+    healthcheck:
+      test: ["CMD", "clickhouse-keeper-client", "-h", "localhost", "-p", "9181", "-q", "ls"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 20s
+    volumes:
+      - signoz_keeper:/var/lib/clickhouse-keeper
+      - ./keeper/keeper.yaml:/etc/clickhouse-keeper/keeper.yaml:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SIGNOZ_KEEPER_IP:-172.20.11.91}
+        aliases:
+          - signoz-keeper
+
+  # Puts the histogramQuantile user-defined function where ClickHouse expects it (skipped once it is there)
+  signoz-clickhouse-scripts:
+    image: clickhouse/clickhouse-server:${SIGNOZ_CLICKHOUSE_VERSION:-25.12.5}
+    container_name: signoz-clickhouse-scripts
+    restart: "no"
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        set -e
+        if [ -x /var/lib/clickhouse/user_scripts/histogramQuantile ]; then echo "histogramQuantile present"; exit 0; fi
+        version="v0.0.1"
+        node_os=$$(uname -s | tr '[:upper:]' '[:lower:]')
+        node_arch=$$(uname -m | sed s/aarch64/arm64/ | sed s/x86_64/amd64/)
+        cd /tmp
+        wget -O histogram-quantile.tar.gz "https://github.com/SigNoz/signoz/releases/download/histogram-quantile%2F$${version}/histogram-quantile_$${node_os}_$${node_arch}.tar.gz"
+        tar -xzf histogram-quantile.tar.gz
+        mv histogram-quantile /var/lib/clickhouse/user_scripts/histogramQuantile
+        chmod 755 /var/lib/clickhouse/user_scripts/histogramQuantile
+    volumes:
+      - signoz_user_scripts:/var/lib/clickhouse/user_scripts
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SIGNOZ_CLICKHOUSE_SCRIPTS_IP:-172.20.11.92}
+
+  signoz-clickhouse:
+    image: clickhouse/clickhouse-server:${SIGNOZ_CLICKHOUSE_VERSION:-25.12.5}
+    container_name: signoz-clickhouse
+    restart: unless-stopped
+    depends_on:
+      signoz-keeper:
+        condition: service_healthy
+      signoz-clickhouse-scripts:
+        condition: service_completed_successfully
+    environment:
+      CLICKHOUSE_SKIP_USER_SETUP: 1
+      CLICKHOUSE_CONFIG: /etc/clickhouse-server/config-0-0.yaml
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8123/ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 20s
+    volumes:
+      - signoz_clickhouse:/var/lib/clickhouse
+      - signoz_user_scripts:/var/lib/clickhouse/user_scripts:ro
+      - ./clickhouse/config-0-0.yaml:/etc/clickhouse-server/config-0-0.yaml:ro
+      - ./clickhouse/functions.yaml:/etc/clickhouse-server/functions.yaml:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SIGNOZ_CLICKHOUSE_IP:-172.20.11.93}
+        aliases:
+          - signoz-clickhouse
+
+  # Creates / upgrades the ClickHouse schemas, then exits
+  signoz-migrator:
+    image: signoz/signoz-otel-collector:${SIGNOZ_COLLECTOR_VERSION:-v0.144.15}
+    container_name: signoz-migrator
+    restart: "no"
+    depends_on:
+      signoz-clickhouse:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        /signoz-otel-collector migrate ready &&
+        /signoz-otel-collector migrate bootstrap &&
+        /signoz-otel-collector migrate sync up &&
+        /signoz-otel-collector migrate async up
+    environment:
+      SIGNOZ_OTEL_COLLECTOR_CLICKHOUSE_DSN: tcp://signoz-clickhouse:9000
+      SIGNOZ_OTEL_COLLECTOR_TIMEOUT: 10m
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SIGNOZ_MIGRATOR_IP:-172.20.11.94}
+
+  signoz:
+    image: signoz/signoz:${SIGNOZ_VERSION:-v0.150.0}
+    container_name: signoz
+    restart: unless-stopped
+    depends_on:
+      signoz-db-init:
+        condition: service_completed_successfully
+      signoz-migrator:
+        condition: service_completed_successfully
+    environment:
+      SIGNOZ_SQLSTORE_PROVIDER: postgres
+      SIGNOZ_SQLSTORE_POSTGRES_DSN: postgres://${SIGNOZ_DB_USER:-signoz}:${SIGNOZ_DB_PASSWORD:-Password123}@postgresql:5432/${SIGNOZ_DB_NAME:-signoz}?sslmode=disable
+      SIGNOZ_TELEMETRYSTORE_PROVIDER: clickhouse
+      SIGNOZ_TELEMETRYSTORE_CLICKHOUSE_DSN: tcp://signoz-clickhouse:9000
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/api/v1/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 18
+      start_period: 30s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SIGNOZ_IP:-172.20.11.95}
+        aliases:
+          - signoz
+    ports:
+      - "${SIGNOZ_UI_PORT:-8122}:8080" # UI + API
+
+  signoz-collector:
+    image: signoz/signoz-otel-collector:${SIGNOZ_COLLECTOR_VERSION:-v0.144.15}
+    container_name: signoz-collector
+    restart: unless-stopped
+    depends_on:
+      signoz-migrator:
+        condition: service_completed_successfully
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        /signoz-otel-collector migrate sync check &&
+        /signoz-otel-collector --config=/etc/otel-collector-config.yaml --manager-config=/etc/opamp-config.yaml --copy-path=/var/tmp/collector-config.yaml
+    environment:
+      SIGNOZ_OTEL_COLLECTOR_CLICKHOUSE_DSN: tcp://signoz-clickhouse:9000
+      SIGNOZ_OTEL_COLLECTOR_TIMEOUT: 10m
+    volumes:
+      - ./collector/collector.yaml:/etc/otel-collector-config.yaml:ro
+      - ./collector/opamp.yaml:/etc/opamp-config.yaml:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SIGNOZ_COLLECTOR_IP:-172.20.11.96}
+        aliases:
+          - signoz-collector
+    ports:
+      - "${SIGNOZ_OTLP_GRPC_PORT:-34317}:4317" # OTLP/gRPC
+      - "${SIGNOZ_OTLP_HTTP_PORT:-34318}:4318" # OTLP/HTTP
+volumes:
+  signoz_keeper:
+    name: signoz_keeper
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Observability/SigNoz/keeper
+  signoz_clickhouse:
+    name: signoz_clickhouse
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Observability/SigNoz/clickhouse
+  signoz_user_scripts:
+    name: signoz_user_scripts
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Observability/SigNoz/user_scripts
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

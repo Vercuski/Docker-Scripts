@@ -1,0 +1,22 @@
+# Envoy proxy with a static configuration (./envoy.yaml).
+#   http://localhost:8130   Admin: http://localhost:9902 (/stats, /clusters, /config_dump)
+services:
+  envoy:
+    image: envoyproxy/envoy:${ENVOY_VERSION:-v1.39.6}
+    container_name: envoy
+    restart: unless-stopped
+    command: ["envoy", "-c", "/etc/envoy/envoy.yaml"]
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${ENVOY_IP:-172.20.14.60}
+        aliases:
+          - envoy
+    ports:
+      - "${ENVOY_PORT:-8130}:10000" # HTTP listener
+      - "${ENVOY_ADMIN_PORT:-9902}:9901" # Admin
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

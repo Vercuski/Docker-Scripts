@@ -117,19 +117,36 @@ call :mk Messaging\RabbitMQ\data
 call :mk Messaging\RabbitMQ\log
 call :mk Messaging\Redpanda\data
 
+call :mk Observability\Jaeger\badger
 call :mk Observability\OpenTelemetry\tempo
 call :mk Observability\OpenTelemetry\loki
 call :mk Observability\Prometheus\prometheus_data
+call :mk Observability\OtelLgtm\data
 call :mk Observability\Prometheus\alertmanager
+call :mk Observability\Pyroscope\data
+call :mk Observability\SigNoz\clickhouse
+call :mk Observability\SigNoz\keeper
+call :mk Observability\SigNoz\user_scripts
+call :mk Observability\UptimeKuma\data
 
+call :mk Orchestration\K3s\server
+call :mk Orchestration\K3s\kubeconfig
 call :mk Orchestration\Rancher\data
 call :mk Orchestration\Portainer\data
 
+call :mk Packages\BaGetter\data
+call :mk Packages\Nexus\data
 call :mk Packages\ProGet\packages
 call :mk Packages\ProGet\ssl
+call :mk Packages\Verdaccio\storage
 
+call :mk RP-LB\Caddy\config
+call :mk RP-LB\Caddy\data
 call :mk RP-LB\NginxProxyManager\data
 call :mk RP-LB\NginxProxyManager\letsencrypt
+call :mk Scheduling\Airflow\logs
+call :mk Scheduling\N8n\data
+call :mk Scheduling\Rundeck\logs
 
 call :mk Search\OpenSearch\node1
 call :mk Search\OpenSearch\node2
@@ -139,9 +156,18 @@ call :mk Search\ElasticSearch\kibanadata
 call :mk Search\ElasticSearch\metricbeatdata01
 call :mk Search\ElasticSearch\filebeatdata01
 call :mk Search\ElasticSearch\logstashdata01
+call :mk Search\Meilisearch\data
+call :mk Search\Solr\data
+call :mk Search\Typesense\data
 
+call :mk Security\OpenBao\data
+call :mk Security\StepCa\data
 call :mk Security\Vault\data
+call :mk Security\Zap\wrk
 
+call :mk SIEM\Graylog\datanode
+call :mk SIEM\Graylog\mongodb
+call :mk SIEM\Graylog\server
 call :mk SIEM\Wazuh\certs
 call :mk SIEM\Wazuh\manager\api_configuration
 call :mk SIEM\Wazuh\manager\etc
@@ -160,6 +186,12 @@ call :mk SIEM\Wazuh\dashboard\custom
 
 call :mk SourceControl\Gitea\data
 call :mk SourceControl\Gitea\runner
+call :mk SourceControl\Forgejo\data
+call :mk SourceControl\Forgejo\runner
+call :mk SourceControl\GitLab\config
+call :mk SourceControl\GitLab\data
+call :mk SourceControl\GitLab\logs
+call :mk SourceControl\OneDev\data
 
 call :mk Visualization\Grafana\storage
 

@@ -34,9 +34,11 @@ When adding or changing a stack, these must stay consistent across the repo:
 
 Stacks talk to each other over `GroupNetwork` by alias, so some require another stack to be running:
 - Keycloak and SuperTokens → PostgreSQL stack (their own databases must exist)
+- Infisical → PostgreSQL stack (`infisical-db-init` creates its role/database) and Redis stack (`redis`, password from `INFISICAL_REDIS_PASSWORD`, DB 2); `infisical-init` bootstraps the admin
 - Authentik, Zitadel and Ory (Kratos + Hydra) → PostgreSQL stack; their one-shot `*-db-init` containers create their databases. Authentik, Authelia and Kratos send mail to Mailpit
 - Authelia forward-auth → Nginx Proxy Manager, which mounts the nginx snippets in `RP-LB/NginxProxyManager/snippets` at `/snippets`
 - Azure Service Bus emulator, Hangfire → MSSQL stack (`mssqldb`)
+- Temporal, Airflow, Rundeck and n8n → PostgreSQL stack (their `*-db-init` containers create roles and databases; `temporal-schema` creates/upgrades the Temporal schemas, `airflow-init` runs migrations and sets the admin, `n8n-init` creates the owner). Airflow's sample DAG calls `temporal-ui`; nothing else depends on another scheduler
 - Azure Event Hubs emulator → Azurite stack (`azurite`) for checkpoints and metadata
 - Dependency-Track and DefectDojo → PostgreSQL stack (their `*-db-init` containers create the databases); DefectDojo brings its own Valkey. Trivy (server) output feeds DefectDojo (`Trivy Scan` import) and Dependency-Track (CycloneDX SBOMs)
 - Harbor → PostgreSQL stack (`harbor-db-init` creates a `harbor` role and database); its own services are prefixed `harbor-*` so generic names like `redis`/`registry` don't collide. Dozzle mounts the Docker socket read-only
@@ -47,8 +49,15 @@ Stacks talk to each other over `GroupNetwork` by alias, so some require another 
 - Wiki.js and Outline → PostgreSQL stack, BookStack → MariaDB stack (their `*-db-init` containers create the databases); BookStack and Outline send mail to Mailpit. Outline logs in through the Dex container in its own stack
 - Atlantis → Gitea stack: `atlantis-init` creates the `atlantis` bot user and token with the Gitea admin login from its `.env`; Gitea's `webhook.ALLOWED_HOST_LIST` includes `private` so it can call `http://atlantis:4141/events`, and Atlantis rewrites Gitea's public clone URLs to `http://gitea:3000`. Semaphore → PostgreSQL stack (`semaphore-db-init`)
 - Debezium → Kafka stack (`kafka:29092`) and, for its PostgreSQL connector, the PostgreSQL stack running with `wal_level=logical`. Apicurio → PostgreSQL stack (`apicurio-db-init`). Kafka UI lists the Debezium Connect cluster and uses Apicurio's ccompat API as schema registry (both optional). Redpanda, NATS, Mosquitto, Artemis and Pulsar are standalone
-- Grafana provisions Prometheus, Tempo, Loki and InfluxDB data sources from `Visualization/Grafana/provisioning/datasources/datasources.yaml`
-- HAProxy round-robins to the Nginx and Apache web server stacks
+- Prometheus also scrapes cAdvisor (`cadvisor:8080`, Observability/cAdvisor). SigNoz → PostgreSQL stack (`signoz-db-init`); its own ClickHouse/keeper live in the SigNoz stack, and its collector only accepts OTLP after the first admin is created. Jaeger, Pyroscope, Uptime Kuma and otel-lgtm are standalone
+- Headlamp stack reads the K3s stack's `kubeconfig-groupnetwork.yaml` (same host folder, mounted read-only). Pods in K3s reach GroupNetwork services through CoreDNS zones generated from `K3S_GROUPNETWORK_HOSTS` (name=IP, keep in step with the IP table), e.g. Argo CD → `http://gitea:3000`. Nomad mounts `/var/run/docker.sock` and a fixed Docker-host path (`NOMAD_DATA_DIR`, deliberately not under `ROOT_VOLUME_DIR`)
+- Nexus, BaGetter and Verdaccio are standalone (their nuget.org / npmjs.org proxies need internet). `nexus-init` accepts the Nexus CE EULA only when `NEXUS_ACCEPT_EULA=true`
+- Meilisearch, Typesense and Solr are standalone (no other stack needed); Typesense is on host port 8137 because Couchbase owns 8108
+- Graylog is self-contained (own MongoDB 8.0: Graylog 7.2 supports MongoDB 7.x-8.3.x, while `Databases/MongoDB` floats on `latest` = 9.x). `GRAYLOG_SELFSIGNED_STARTUP` replaces the preflight wizard
+- Forgejo, GitLab and OneDev are standalone. Forgejo mirrors the Gitea stack (runner + jobs on `GroupNetwork` via the Docker socket) but needs no installer: `forgejo-init` creates the admin and a runner registration token. GitLab and ZAP listen on their host port numbers inside the container (GitLab `external_url`)
+- Metabase, Superset and Redash → PostgreSQL stack (`*-db-init` creates each role/database); Redash also → Redis stack (DB 3). Superset builds `superset-drivers` from `Visualization/Superset/image` (the official image has no DB drivers)
+- Grafana provisions Prometheus, Tempo, Loki, Pyroscope and InfluxDB data sources from `Visualization/Grafana/provisioning/datasources/datasources.yaml`
+- HAProxy, Traefik (`/web` file route), Caddy, YARP (`/web`), Envoy and Kong (`/web`) all round-robin to the Nginx and Apache web server stacks; Traefik also routes any container labelled `traefik.enable=true` (Docker socket mounted read-only). YARP is built from `RP-LB/Yarp/src` (no stable official image)
 - Trino → PostgreSQL, MSSQL, MySQL, MongoDB, ClickHouse and Cassandra stacks, one catalog each in `Analytics/Trino/etc/catalog` (credentials in Trino's `.env` must match those stacks; Trino starts even when they are down)
 - JupyterLab → Apache Spark (both define the same `spark_data` bind volume and the notebook runs as UID 185) and Trino
 - Apache Flink → Kafka (`kafka:29092`) for streaming jobs; connector JARs go in the Flink `jobs` volume

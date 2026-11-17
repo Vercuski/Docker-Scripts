@@ -1,0 +1,30 @@
+# Kong declarative configuration (DB-less). Edit, then reload without a restart:
+#   curl -X POST http://localhost:8132/config -F config=@kong.yml
+_format_version: "3.0"
+
+upstreams:
+  - name: webservers
+    algorithm: round-robin
+    healthchecks:
+      active:
+        http_path: /
+        healthy: { interval: 10, successes: 1 }
+        unhealthy: { interval: 10, http_failures: 2, tcp_failures: 2, timeouts: 2 }
+    targets:
+      - target: nginx:80
+      - target: apache:80
+
+services:
+  # http://localhost:8131/web/ - round-robin over the Nginx and Apache stacks, like HAProxy
+  - name: webservers
+    host: webservers
+    protocol: http
+    routes:
+      - name: web
+        paths: [/web]
+        strip_path: true
+    plugins:
+      - name: rate-limiting
+        config: { minute: 600, policy: local }
+      - name: correlation-id
+        config: { header_name: X-Correlation-ID, generator: uuid, echo_downstream: true }

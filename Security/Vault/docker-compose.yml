@@ -1,7 +1,7 @@
 # HashiCorp Vault in server mode with file storage (data survives restarts; needs init + unseal - see ReadMe.md)
 services:
   vault:
-    image: hashicorp/vault:${VAULT_VERSION:-latest}
+    image: hashicorp/vault:${VAULT_VERSION:-2.2.2}
     container_name: vault
     restart: unless-stopped
     command: ["server"]

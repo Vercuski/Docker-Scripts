@@ -1,0 +1,28 @@
+# Grafana Pyroscope: stores and queries continuous profiles. UI: http://localhost:4041 (also a Grafana data source).
+# .NET apps push profiles with the Pyroscope .NET profiler (CLR profiler via env vars) or Grafana Alloy.
+services:
+  pyroscope:
+    image: grafana/pyroscope:${PYROSCOPE_VERSION:-1.21.1}
+    container_name: pyroscope
+    restart: unless-stopped
+    volumes:
+      - pyroscope_data:/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${PYROSCOPE_IP:-172.20.11.50}
+        aliases:
+          - pyroscope
+    ports:
+      - "${PYROSCOPE_PORT:-4041}:4040" # UI + ingest/query API
+volumes:
+  pyroscope_data:
+    name: pyroscope_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Observability/Pyroscope/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

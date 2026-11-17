@@ -1,0 +1,38 @@
+# Jaeger v2: tracing backend and UI. Send OTLP traces to localhost:14317 (gRPC) / localhost:14318 (HTTP)
+# - or from other containers to jaeger:4317 / jaeger:4318. UI: http://localhost:16686
+# Traces are kept in an embedded Badger store on the data volume (see config.yaml).
+services:
+  jaeger:
+    image: jaegertracing/jaeger:${JAEGER_VERSION:-2.23.0}
+    container_name: jaeger
+    restart: unless-stopped
+    command: ["--config", "/etc/jaeger/config.yaml"]
+    environment:
+      JAEGER_RETENTION: ${JAEGER_RETENTION:-168h}
+      # Jaeger would otherwise trace itself and retry exporting to localhost:4317 forever
+      OTEL_TRACES_SAMPLER: always_off
+      OTEL_TRACES_EXPORTER: none
+    volumes:
+      - ./config.yaml:/etc/jaeger/config.yaml:ro
+      - jaeger_badger:/badger
+    networks:
+      GroupNetwork:
+        ipv4_address: ${JAEGER_IP:-172.20.11.40}
+        aliases:
+          - jaeger
+    ports:
+      - "${JAEGER_UI_PORT:-16686}:16686" # UI + query API
+      - "${JAEGER_OTLP_GRPC_PORT:-14317}:4317" # OTLP/gRPC
+      - "${JAEGER_OTLP_HTTP_PORT:-14318}:4318" # OTLP/HTTP
+volumes:
+  jaeger_badger:
+    name: jaeger_badger
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Observability/Jaeger/badger
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

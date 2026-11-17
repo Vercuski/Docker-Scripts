@@ -1,0 +1,158 @@
+# Apache Airflow 3 with the LocalExecutor (tasks run inside the scheduler container; no Celery/Redis).
+#   UI + REST API: http://localhost:8136 (admin / Password123)
+# Requires the PostgreSQL stack. DAG files: ./dags (picked up by the dag-processor within ~30 s).
+# Start order: airflow-db-init (role + database) -> airflow-init (migrations + admin user) -> the four services.
+x-airflow-common: &airflow-common
+  image: apache/airflow:${AIRFLOW_VERSION:-3.4.0}
+  user: "50000:0"
+  environment: &airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${AIRFLOW_DB_USER:-airflow}:${AIRFLOW_DB_PASSWORD:-Password123}@postgresql:5432/${AIRFLOW_DB_NAME:-airflow}
+    AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:-VDb9b6B7r2cRKV9pX6MMV14lorJBIMhlDh4cURFhoRk=}
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    AIRFLOW__CORE__LOAD_EXAMPLES: ${AIRFLOW_LOAD_EXAMPLES:-false}
+    AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://airflow:8080/execution/
+    AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW_JWT_SECRET:-local-dev-airflow-jwt-secret-change-me}
+    AIRFLOW__API_AUTH__JWT_ISSUER: airflow
+    AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: "true"
+    AIRFLOW__DAG_PROCESSOR__REFRESH_INTERVAL: "30"
+    _PIP_ADDITIONAL_REQUIREMENTS: ${AIRFLOW_PIP_ADDITIONAL_REQUIREMENTS:-}
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - airflow_logs:/opt/airflow/logs
+  restart: unless-stopped
+
+services:
+  airflow-db-init:
+    image: ${AIRFLOW_DB_INIT_IMAGE:-postgres:18}
+    container_name: airflow-db-init
+    restart: "no"
+    environment:
+      PGHOST: postgresql
+      PGUSER: ${AIRFLOW_DB_ADMIN_USER:-user@user.com}
+      PGPASSWORD: ${AIRFLOW_DB_ADMIN_PASSWORD:-Password123}
+      DB_NAME: ${AIRFLOW_DB_NAME:-airflow}
+      DB_USER: ${AIRFLOW_DB_USER:-airflow}
+      DB_PASSWORD: ${AIRFLOW_DB_PASSWORD:-Password123}
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        for i in $$(seq 30); do pg_isready -q -d postgres && break; echo "waiting for postgresql (start Databases/PostgreSQL)"; sleep 2; done
+        psql -d postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$$DB_USER'" | grep -q 1 \
+          || psql -d postgres -c "CREATE ROLE \"$$DB_USER\" LOGIN PASSWORD '$$DB_PASSWORD'"
+        psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$$DB_NAME'" | grep -q 1 \
+          && echo "database $$DB_NAME exists" \
+          || psql -d postgres -c "CREATE DATABASE \"$$DB_NAME\" OWNER \"$$DB_USER\""
+    networks:
+      GroupNetwork:
+        ipv4_address: ${AIRFLOW_DB_INIT_IP:-172.20.15.30}
+  airflow-init:
+    <<: *airflow-common
+    container_name: airflow-init
+    restart: "no"
+    depends_on:
+      airflow-db-init:
+        condition: service_completed_successfully
+    environment:
+      <<: *airflow-common-env
+      ADMIN_USER: ${AIRFLOW_ADMIN_USER:-admin}
+      ADMIN_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD:-Password123}
+      _PIP_ADDITIONAL_REQUIREMENTS: ""
+    command:
+      - bash
+      - -c
+      - |
+        set -e
+        airflow db migrate
+        if airflow users list --output plain 2>/dev/null | awk '{print $$2}' | grep -qx "$$ADMIN_USER"; then
+          airflow users reset-password --username "$$ADMIN_USER" --password "$$ADMIN_PASSWORD"
+        else
+          airflow users create --username "$$ADMIN_USER" --password "$$ADMIN_PASSWORD" --role Admin \
+            --firstname Admin --lastname User --email admin@example.com
+        fi
+    networks:
+      GroupNetwork:
+        ipv4_address: ${AIRFLOW_INIT_IP:-172.20.15.31}
+  airflow-apiserver:
+    <<: *airflow-common
+    container_name: airflow-apiserver
+    command: api-server
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/api/v2/monitor/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${AIRFLOW_APISERVER_IP:-172.20.15.32}
+        aliases:
+          - airflow
+    ports:
+      - "${AIRFLOW_PORT:-8136}:8080" # UI + REST API
+  airflow-scheduler:
+    <<: *airflow-common
+    container_name: airflow-scheduler
+    command: scheduler
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${AIRFLOW_SCHEDULER_IP:-172.20.15.33}
+  airflow-dag-processor:
+    <<: *airflow-common
+    container_name: airflow-dag-processor
+    command: dag-processor
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type DagProcessorJob --hostname "$${HOSTNAME}"']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${AIRFLOW_DAG_PROCESSOR_IP:-172.20.15.34}
+  airflow-triggerer:
+    <<: *airflow-common
+    container_name: airflow-triggerer
+    command: triggerer
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${AIRFLOW_TRIGGERER_IP:-172.20.15.35}
+volumes:
+  airflow_logs:
+    name: airflow_logs
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Scheduling/Airflow/logs
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

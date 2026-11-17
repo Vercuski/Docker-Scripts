@@ -1,0 +1,38 @@
+# Apache Solr 10 in standalone (user-managed) mode; the core named by SOLR_CORE is created on the first start.
+#   Admin UI + API: http://localhost:8983/solr/ (from other containers: http://solr:8983/solr/)
+# No authentication (local development). .NET client: the SolrNet NuGet package, or plain HTTP/JSON.
+services:
+  solr:
+    image: solr:${SOLR_VERSION:-10.1.0}
+    container_name: solr
+    restart: unless-stopped
+    command: ["solr-precreate", "${SOLR_CORE:-dev}"]
+    environment:
+      SOLR_HEAP: ${SOLR_HEAP:-512m}
+    volumes:
+      - solr_data:/var/solr
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:8983/solr/admin/info/system >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 12
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SOLR_IP:-172.20.16.50}
+        aliases:
+          - solr
+    ports:
+      - "${SOLR_PORT:-8983}:8983" # Admin UI + API
+volumes:
+  solr_data:
+    name: solr_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Search/Solr/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

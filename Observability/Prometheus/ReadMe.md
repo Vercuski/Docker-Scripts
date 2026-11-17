@@ -9,3 +9,5 @@ Reload after editing: `curl -X POST http://localhost:9090/-/reload`<br>
 Add Prometheus as a Grafana data source with URL `http://prometheus:9090`.<br>
 <br>
 https://mxulises.medium.com/simple-prometheus-setup-on-docker-compose-f702d5f98579
+
+Also scrapes **cAdvisor** (Observability/cAdvisor, job `cadvisor`) for per-container resource metrics when that stack is running.

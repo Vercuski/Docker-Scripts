@@ -20,7 +20,7 @@ If `ROOT_VOLUME_DIR` is missing, `docker compose` stops with *run CreateVolumes.
 instead of binding volumes to the wrong place. To point a single stack somewhere else, uncomment `ROOT_VOLUME_DIR` in its `.env`.
 
 On native Linux the script also `chown`s the folders of images that run as a fixed non-root user (Grafana, Prometheus,
-Tempo/Loki, Elasticsearch, OpenSearch, SonarQube, Dependency-Track, DefectDojo, pgAdmin, Vault, authentik, Kafka, Spark, Flink, JupyterLab, Artemis, Redpanda, Pulsar, Atlantis, Semaphore, Wiki.js, Outline, Structurizr, Oracle, KurrentDB, Garnet, RavenDB, ScyllaDB, Wazuh), using `sudo`.
+Tempo/Loki, Elasticsearch, OpenSearch, Solr, SonarQube, Dependency-Track, DefectDojo, pgAdmin, Vault, authentik, Kafka, Spark, Flink, JupyterLab, Airflow, n8n, Rundeck, Nexus, Verdaccio, Jaeger, Pyroscope, SigNoz, Artemis, Redpanda, Pulsar, Atlantis, Semaphore, Wiki.js, Outline, Structurizr, Oracle, KurrentDB, Garnet, RavenDB, ScyllaDB, Wazuh), using `sudo`.
 Docker Desktop ignores bind-mount ownership, so Windows and macOS skip this. Set `SKIP_CHOWN=1` or `SKIP_PERSIST=1` to opt out.
 
 ## Configuration (.env)
@@ -254,6 +254,18 @@ Every stack joins the external `GroupNetwork` bridge, **172.20.0.0/16**, with a 
 |Prometheus|Prometheus| 172.20.11.30|
 |Prometheus|Prometheus Node Exporter| 172.20.11.31|
 |Prometheus|Prometheus Alertmanager| 172.20.11.32|
+|Jaeger|Jaeger v2| 172.20.11.40|
+|Pyroscope|Grafana Pyroscope| 172.20.11.50|
+|UptimeKuma|Uptime Kuma| 172.20.11.60|
+|cAdvisor|cAdvisor| 172.20.11.70|
+|OtelLgtm|grafana/otel-lgtm| 172.20.11.80|
+|SigNoz|SigNoz DB setup (one-shot)| 172.20.11.90|
+|SigNoz|SigNoz ClickHouse Keeper| 172.20.11.91|
+|SigNoz|SigNoz ClickHouse UDF setup (one-shot)| 172.20.11.92|
+|SigNoz|SigNoz ClickHouse| 172.20.11.93|
+|SigNoz|SigNoz schema migrator (one-shot)| 172.20.11.94|
+|SigNoz|SigNoz| 172.20.11.95|
+|SigNoz|SigNoz collector| 172.20.11.96|
 
 ## Orchestration (172.20.12.x)
 |Folder|Name|IP Address|
@@ -261,22 +273,52 @@ Every stack joins the external `GroupNetwork` bridge, **172.20.0.0/16**, with a 
 |Kubernetes| *(no compose stack - block .10-.19 reserved)*| |
 |Portainer|Portainer| 172.20.12.20|
 |Rancher|Rancher| 172.20.12.30|
+|K3s|K3s (Kubernetes) + Argo CD| 172.20.12.40|
+|K3s|K3s setup (one-shot: kubeconfig, DNS, Argo CD)| 172.20.12.41|
+|Headlamp|Headlamp| 172.20.12.50|
+|Nomad|HashiCorp Nomad| 172.20.12.60|
 
 ## Packages (172.20.13.x)
 |Folder|Name|IP Address|
 |:----------|:----------|:----------|
 |Proget|ProGet| 172.20.13.10|
+|Nexus|Sonatype Nexus CE| 172.20.13.20|
+|Nexus|Nexus setup (one-shot)| 172.20.13.21|
+|BaGetter|BaGetter| 172.20.13.30|
+|Verdaccio|Verdaccio| 172.20.13.40|
 
 ## RP-LB (172.20.14.x)
 |Folder|Name|IP Address|
 |:----------|:----------|:----------|
 |HAProxy|HAProxy| 172.20.14.10|
 |NginxProxyManager|Nginx Proxy Manager| 172.20.14.20|
+|Traefik|Traefik| 172.20.14.30|
+|Caddy|Caddy| 172.20.14.40|
+|Yarp|YARP (.NET reverse proxy)| 172.20.14.50|
+|Envoy|Envoy| 172.20.14.60|
+|Kong|Kong Gateway (OSS, DB-less)| 172.20.14.70|
 
 ## Scheduling (172.20.15.x)
 |Folder|Name|IP Address|
 |:----------|:----------|:----------|
 |Hangfire|Hangfire| 172.20.15.10|
+|Temporal|Temporal database setup (one-shot)| 172.20.15.20|
+|Temporal|Temporal schema setup (one-shot)| 172.20.15.21|
+|Temporal|Temporal server| 172.20.15.22|
+|Temporal|Temporal namespace setup (one-shot)| 172.20.15.23|
+|Temporal|Temporal UI| 172.20.15.24|
+|Airflow|Airflow database setup (one-shot)| 172.20.15.30|
+|Airflow|Airflow init (one-shot)| 172.20.15.31|
+|Airflow|Airflow API server| 172.20.15.32|
+|Airflow|Airflow scheduler| 172.20.15.33|
+|Airflow|Airflow DAG processor| 172.20.15.34|
+|Airflow|Airflow triggerer| 172.20.15.35|
+|Rundeck|Rundeck database setup (one-shot)| 172.20.15.40|
+|Rundeck|Rundeck| 172.20.15.41|
+|N8n|n8n database setup (one-shot)| 172.20.15.50|
+|N8n|n8n| 172.20.15.51|
+|N8n|n8n owner setup (one-shot)| 172.20.15.52|
+|N8n|n8n task runners| 172.20.15.53|
 
 ## Search (172.20.16.x)
 |Folder|Name|IP Address|
@@ -290,11 +332,21 @@ Every stack joins the external `GroupNetwork` bridge, **172.20.0.0/16**, with a 
 |OpenSearch|OpenSearch node 1| 172.20.16.20|
 |OpenSearch|OpenSearch node 2| 172.20.16.21|
 |OpenSearch|OpenSearch Dashboards| 172.20.16.22|
+|Meilisearch|Meilisearch| 172.20.16.30|
+|Typesense|Typesense| 172.20.16.40|
+|Solr|Apache Solr| 172.20.16.50|
 
 ## Security (172.20.17.x)
 |Folder|Name|IP Address|
 |:----------|:----------|:----------|
 |Vault|Vault| 172.20.17.10|
+|OpenBao|OpenBao| 172.20.17.20|
+|StepCa|step-ca| 172.20.17.30|
+|Zap|ZAP (headless proxy + API)| 172.20.17.40|
+|Zap|ZAP desktop UI (profile "ui")| 172.20.17.41|
+|Infisical|Infisical database setup (one-shot)| 172.20.17.50|
+|Infisical|Infisical| 172.20.17.51|
+|Infisical|Infisical admin setup (one-shot)| 172.20.17.52|
 
 ## SIEM (172.20.18.x)
 |Folder|Name|IP Address|
@@ -303,17 +355,36 @@ Every stack joins the external `GroupNetwork` bridge, **172.20.0.0/16**, with a 
 |Wazuh|Wazuh Manager| 172.20.18.11|
 |Wazuh|Wazuh Indexer| 172.20.18.12|
 |Wazuh|Wazuh Dashboard| 172.20.18.13|
+|Graylog|Graylog MongoDB| 172.20.18.20|
+|Graylog|Graylog Data Node| 172.20.18.21|
+|Graylog|Graylog| 172.20.18.22|
 
 ## SourceControl (172.20.19.x)
 |Folder|Name|IP Address|
 |:----------|:----------|:----------|
 |Gitea|Gitea| 172.20.19.10|
 |Gitea|Gitea Actions runner| 172.20.19.11|
+|Forgejo|Forgejo| 172.20.19.20|
+|Forgejo|Forgejo admin + runner token setup (one-shot)| 172.20.19.21|
+|Forgejo|Forgejo Actions runner| 172.20.19.22|
+|GitLab|GitLab CE| 172.20.19.30|
+|OneDev|OneDev| 172.20.19.40|
 
 ## Visualization (172.20.20.x)
 |Folder|Name|IP Address|
 |:----------|:----------|:----------|
 |Grafana|Grafana| 172.20.20.10|
+|Metabase|Metabase database setup (one-shot)| 172.20.20.20|
+|Metabase|Metabase| 172.20.20.21|
+|Metabase|Metabase admin setup (one-shot)| 172.20.20.22|
+|Superset|Superset database setup (one-shot)| 172.20.20.30|
+|Superset|Superset init (one-shot)| 172.20.20.31|
+|Superset|Superset| 172.20.20.32|
+|Redash|Redash database setup (one-shot)| 172.20.20.40|
+|Redash|Redash init (one-shot)| 172.20.20.41|
+|Redash|Redash server| 172.20.20.42|
+|Redash|Redash scheduler| 172.20.20.43|
+|Redash|Redash worker| 172.20.20.44|
 
 ## WebServers (172.20.21.x)
 |Folder|Name|IP Address|

@@ -1,6 +1,7 @@
 NOTE: The Kubernetes Dashboard project has been archived and is no longer maintained.
 Headlamp (https://headlamp.dev) is the recommended replacement - see the kubernetes.io blog post
 "From Kubernetes Dashboard to Headlamp" (2026-06-01). The steps below still work for an existing Dashboard install.
+Headlamp is now in this repo: Orchestration/Headlamp (pointed at the Orchestration/K3s cluster).
 
 https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md
 

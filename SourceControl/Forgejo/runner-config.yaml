@@ -1,0 +1,21 @@
+# Forgejo runner configuration (full reference: docker run --rm data.forgejo.org/forgejo/runner:13.2.1 forgejo-runner generate-config)
+log:
+  level: info
+runner:
+  file: .runner
+  capacity: 1
+  timeout: 3h
+  # runs-on label -> image used for the job container
+  labels:
+    - "ubuntu-latest:docker://data.forgejo.org/oci/node:22-bookworm"
+    - "ubuntu-24.04:docker://data.forgejo.org/oci/node:22-bookworm"
+    - "docker:docker://data.forgejo.org/oci/node:22-bookworm"
+cache:
+  enabled: true
+container:
+  # Job containers join GroupNetwork, so tests can reach mssqldb, postgresql, kafka, ...
+  network: GroupNetwork
+  options: --add-host=host.docker.internal:host-gateway
+  privileged: false
+  valid_volumes: []
+  docker_host: "-"

@@ -1,0 +1,42 @@
+# Traefik v3: routes requests to containers based on their Docker labels (only containers with traefik.enable=true,
+# on GroupNetwork), plus routes defined in ./dynamic/*.yml (reloaded on change).
+#   HTTP: http://localhost:8126   Dashboard: http://localhost:8127/dashboard/
+# Expose any container by adding labels to it, e.g.
+#   labels:
+#     - traefik.enable=true
+#     - traefik.http.routers.myapi.rule=Host(`myapi.localhost`)
+#     - traefik.http.services.myapi.loadbalancer.server.port=8080
+# then browse http://myapi.localhost:8126 (*.localhost resolves to 127.0.0.1).
+services:
+  traefik:
+    image: traefik:${TRAEFIK_VERSION:-v3.7.19}
+    container_name: traefik
+    restart: unless-stopped
+    command:
+      - --entrypoints.web.address=:80
+      - --api.dashboard=true
+      - --api.insecure=true
+      - --ping=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=GroupNetwork
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --providers.file.watch=true
+      - --log.level=${TRAEFIK_LOG_LEVEL:-INFO}
+      - --accesslog=true
+      - --metrics.prometheus=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./dynamic:/etc/traefik/dynamic:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${TRAEFIK_IP:-172.20.14.30}
+        aliases:
+          - traefik
+    ports:
+      - "${TRAEFIK_HTTP_PORT:-8126}:80" # HTTP entrypoint
+      - "${TRAEFIK_DASHBOARD_PORT:-8127}:8080" # Dashboard, API, /ping, /metrics
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

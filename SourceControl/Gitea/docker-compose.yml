@@ -1,7 +1,7 @@
 # Gitea git server + Gitea Actions runner (GitHub Actions compatible CI).
 services:
   gitea:
-    image: gitea/gitea:${GITEA_VERSION:-latest}
+    image: gitea/gitea:${GITEA_VERSION:-28.4.0}
     container_name: gitea
     restart: unless-stopped
     environment:
@@ -35,7 +35,7 @@ services:
         aliases:
           - gitea
   runner:
-    image: gitea/runner:${GITEA_RUNNER_VERSION:-latest}
+    image: gitea/runner:${GITEA_RUNNER_VERSION:-6.0.0}
     container_name: gitea-runner
     restart: unless-stopped
     depends_on:

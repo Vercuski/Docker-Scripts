@@ -1,0 +1,117 @@
+# Graylog Open 7: centralized logs, search, dashboards, alerts and streams.
+#   Web UI + API: http://localhost:9004 (admin / Password123)
+#   Inputs (create them in System > Inputs, using these container ports): GELF 12201 tcp/udp, Syslog 5140 tcp/udp, Beats 5044
+# graylog-datanode runs OpenSearch for Graylog. GRAYLOG_SELFSIGNED_STARTUP creates the internal CA and data node
+# certificates automatically, so the preflight setup wizard is skipped. MongoDB 8.0 is part of this stack because
+# Graylog 7.2 doesn't support the 9.x that the shared MongoDB stack runs.
+# Needs vm.max_map_count >= 262144 on the Docker host (see ReadMe.md).
+services:
+  graylog-mongodb:
+    image: mongo:${GRAYLOG_MONGO_VERSION:-8.0}
+    container_name: graylog-mongodb
+    restart: unless-stopped
+    volumes:
+      - graylog_mongodb:/data/db
+    networks:
+      GroupNetwork:
+        ipv4_address: ${GRAYLOG_MONGO_IP:-172.20.18.20}
+        aliases:
+          - graylog-mongodb
+  graylog-datanode:
+    image: graylog/graylog-datanode:${GRAYLOG_VERSION:-7.2.2}
+    container_name: graylog-datanode
+    hostname: graylog-datanode
+    restart: unless-stopped
+    depends_on:
+      - graylog-mongodb
+    environment:
+      GRAYLOG_DATANODE_NODE_ID_FILE: /var/lib/graylog-datanode/node-id
+      GRAYLOG_DATANODE_PASSWORD_SECRET: ${GRAYLOG_PASSWORD_SECRET:-2c4QnchMWHJlOrpNAloUb8rJ3pnjzb6ii7qXPxAOcojTE9wZi2Cot4fGCa6KkFw0ERCXrhZouifXOqV8kgFr43M0GiUKTgVc}
+      GRAYLOG_DATANODE_MONGODB_URI: mongodb://graylog-mongodb:27017/graylog
+      GRAYLOG_DATANODE_OPENSEARCH_HEAP: ${GRAYLOG_DATANODE_HEAP:-1g}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - graylog_datanode:/var/lib/graylog-datanode
+    networks:
+      GroupNetwork:
+        ipv4_address: ${GRAYLOG_DATANODE_IP:-172.20.18.21}
+        aliases:
+          - graylog-datanode
+  graylog:
+    image: graylog/graylog:${GRAYLOG_VERSION:-7.2.2}
+    container_name: graylog
+    hostname: graylog
+    restart: unless-stopped
+    depends_on:
+      - graylog-mongodb
+      - graylog-datanode
+    environment:
+      GRAYLOG_NODE_ID_FILE: /usr/share/graylog/data/data/node-id
+      GRAYLOG_PASSWORD_SECRET: ${GRAYLOG_PASSWORD_SECRET:-2c4QnchMWHJlOrpNAloUb8rJ3pnjzb6ii7qXPxAOcojTE9wZi2Cot4fGCa6KkFw0ERCXrhZouifXOqV8kgFr43M0GiUKTgVc}
+      ROOT_PASSWORD: ${GRAYLOG_ROOT_PASSWORD:-Password123}
+      GRAYLOG_ROOT_TIMEZONE: ${GRAYLOG_TIMEZONE:-UTC}
+      GRAYLOG_HTTP_BIND_ADDRESS: 0.0.0.0:9000
+      GRAYLOG_HTTP_EXTERNAL_URI: http://localhost:${GRAYLOG_PORT:-9004}/
+      GRAYLOG_MONGODB_URI: mongodb://graylog-mongodb:27017/graylog
+      GRAYLOG_SELFSIGNED_STARTUP: "true"
+      GRAYLOG_SERVER_JAVA_OPTS: -Xms${GRAYLOG_SERVER_HEAP:-1g} -Xmx${GRAYLOG_SERVER_HEAP:-1g} -XX:+UseG1GC
+    # The image wants a SHA-256 of the admin password; derive it from the plain value in .env
+    entrypoint:
+      - sh
+      - -c
+      - |
+        export GRAYLOG_ROOT_PASSWORD_SHA2=$$(printf '%s' "$$ROOT_PASSWORD" | sha256sum | cut -d' ' -f1)
+        unset ROOT_PASSWORD
+        exec tini -- /docker-entrypoint.sh server
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:9000/api/ >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      start_period: 90s
+      retries: 20
+    volumes:
+      - graylog_data:/usr/share/graylog/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${GRAYLOG_IP:-172.20.18.22}
+        aliases:
+          - graylog
+    ports:
+      - "${GRAYLOG_PORT:-9004}:9000" # Web UI + API
+      - "${GRAYLOG_GELF_PORT:-12201}:12201/tcp" # GELF TCP
+      - "${GRAYLOG_GELF_PORT:-12201}:12201/udp" # GELF UDP
+      - "${GRAYLOG_SYSLOG_PORT:-5140}:5140/tcp" # Syslog TCP
+      - "${GRAYLOG_SYSLOG_PORT:-5140}:5140/udp" # Syslog UDP
+      - "${GRAYLOG_BEATS_PORT:-5044}:5044" # Beats
+volumes:
+  graylog_mongodb:
+    name: graylog_mongodb
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SIEM/Graylog/mongodb
+  graylog_datanode:
+    name: graylog_datanode
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SIEM/Graylog/datanode
+  graylog_data:
+    name: graylog_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SIEM/Graylog/server
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

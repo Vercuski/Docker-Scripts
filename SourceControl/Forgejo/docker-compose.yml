@@ -1,0 +1,123 @@
+# Forgejo git server (community fork of Gitea) + Forgejo Actions runner (GitHub Actions compatible CI).
+#   Web UI: http://host.docker.internal:3007 (or http://localhost:3007) - forgejo-admin / Password123
+#   SSH: ssh://git@localhost:2223/<owner>/<repo>.git
+# No installer page: INSTALL_LOCK is set, forgejo-init creates the admin and a runner registration token, and the
+# runner registers itself with that token on its first start.
+services:
+  forgejo:
+    image: codeberg.org/forgejo/forgejo:${FORGEJO_VERSION:-17.0.1}
+    container_name: forgejo
+    restart: unless-stopped
+    environment:
+      USER_UID: "1000"
+      USER_GID: "1000"
+      FORGEJO__database__DB_TYPE: sqlite3
+      FORGEJO__security__INSTALL_LOCK: "true"
+      FORGEJO__server__ROOT_URL: ${FORGEJO_ROOT_URL:-http://host.docker.internal:3007/}
+      FORGEJO__server__SSH_DOMAIN: ${FORGEJO_SSH_DOMAIN:-localhost}
+      FORGEJO__server__SSH_PORT: ${FORGEJO_SSH_PORT:-2223}
+      # Internal API address; forgejo-init's CLI runs in another container and reaches the server through it
+      FORGEJO__server__LOCAL_ROOT_URL: http://forgejo:3000/
+      FORGEJO__actions__ENABLED: "true"
+      # Allow webhooks to GroupNetwork services (e.g. Atlantis, Jenkins)
+      FORGEJO__webhook__ALLOWED_HOST_LIST: external,private
+    volumes:
+      - forgejo_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3000/api/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    networks:
+      GroupNetwork:
+        ipv4_address: ${FORGEJO_IP:-172.20.19.20}
+        aliases:
+          - forgejo
+    ports:
+      - "${FORGEJO_HTTP_PORT:-3007}:3000" # Web UI + git over HTTP
+      - "${FORGEJO_SSH_PORT:-2223}:22" # git over SSH
+  forgejo-init:
+    image: codeberg.org/forgejo/forgejo:${FORGEJO_VERSION:-17.0.1}
+    container_name: forgejo-init
+    restart: "no"
+    user: "1000:1000"
+    depends_on:
+      forgejo:
+        condition: service_healthy
+    environment:
+      GITEA_CUSTOM: /data/gitea
+      ADMIN_USER: ${FORGEJO_ADMIN_USER:-forgejo-admin}
+      ADMIN_PASSWORD: ${FORGEJO_ADMIN_PASSWORD:-Password123}
+      ADMIN_EMAIL: ${FORGEJO_ADMIN_EMAIL:-admin@example.com}
+    entrypoint:
+      - sh
+      - -c
+      - |
+        set -e
+        if forgejo admin user list --admin | awk 'NR>1 {print $$2}' | grep -qx "$$ADMIN_USER"; then
+          forgejo admin user change-password --username "$$ADMIN_USER" --password "$$ADMIN_PASSWORD" --must-change-password=false
+        else
+          forgejo admin user create --admin --username "$$ADMIN_USER" --password "$$ADMIN_PASSWORD" --email "$$ADMIN_EMAIL" --must-change-password=false
+        fi
+        # Registration token for the runner (used only until it has registered)
+        [ -f /runner/.runner ] || forgejo forgejo-cli actions generate-runner-token > /runner/registration-token
+        echo "forgejo-init done"
+    volumes:
+      - forgejo_data:/data
+      - forgejo_runner_data:/runner
+    networks:
+      GroupNetwork:
+        ipv4_address: ${FORGEJO_INIT_IP:-172.20.19.21}
+  forgejo-runner:
+    image: data.forgejo.org/forgejo/runner:${FORGEJO_RUNNER_VERSION:-13.2.1}
+    container_name: forgejo-runner
+    restart: unless-stopped
+    # root so it can use the host Docker socket
+    user: "0:0"
+    depends_on:
+      forgejo-init:
+        condition: service_completed_successfully
+    environment:
+      RUNNER_NAME: ${FORGEJO_RUNNER_NAME:-docker-runner}
+    entrypoint:
+      - sh
+      - -c
+      - |
+        set -e
+        cd /data
+        if [ ! -f .runner ]; then
+          forgejo-runner register --no-interactive --config /config.yaml --instance http://forgejo:3000 \
+            --name "$$RUNNER_NAME" --token "$$(cat registration-token)"
+          rm -f registration-token
+        fi
+        exec forgejo-runner daemon --config /config.yaml
+    volumes:
+      - ./runner-config.yaml:/config.yaml:ro
+      - forgejo_runner_data:/data
+      # Jobs run as sibling containers on the host Docker daemon
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      GroupNetwork:
+        ipv4_address: ${FORGEJO_RUNNER_IP:-172.20.19.22}
+        aliases:
+          - forgejo-runner
+volumes:
+  forgejo_data:
+    name: forgejo_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SourceControl/Forgejo/data
+  forgejo_runner_data:
+    name: forgejo_runner_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SourceControl/Forgejo/runner
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

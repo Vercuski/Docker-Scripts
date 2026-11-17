@@ -19,4 +19,7 @@ Containers on GroupNetwork reach Vault at `http://vault:8200`.
 Want a throwaway in-memory Vault instead (auto-unsealed, root token `root`)? Replace `command` with
 `["server", "-dev", "-dev-root-token-id=root", "-dev-listen-address=0.0.0.0:8200"]` and remove the config volume.
 
+Prefer no init/unseal routine (and an MPL licence)? `Security/OpenBao` is the open-source fork with auto-unseal
+and self-initialization.
+
 Linux hosts: the container runs as the non-root `vault` user - `CreateVolumes.sh` chowns the data folder to `100:1000` to match.

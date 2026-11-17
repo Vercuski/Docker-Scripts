@@ -1,6 +1,6 @@
 services:
   setup:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION:-8.7.1}
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION:-9.5.6}
     container_name: es-setup
     # One-shot job: creates certs and the kibana_system password, then exits.
     # (unless-stopped made it restart forever after "All done!")
@@ -68,7 +68,7 @@ services:
     depends_on:
       setup:
         condition: service_healthy
-    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION:-8.7.1}
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION:-9.5.6}
     labels:
       co.elastic.logs/module: elasticsearch
     volumes:
@@ -118,7 +118,7 @@ services:
     depends_on:
       es01:
         condition: service_healthy
-    image: docker.elastic.co/kibana/kibana:${STACK_VERSION:-8.7.1}
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION:-9.5.6}
     labels:
       co.elastic.logs/module: kibana
     volumes:
@@ -158,8 +158,8 @@ services:
         condition: service_healthy
       kibana:
         condition: service_healthy
-    image: docker.elastic.co/beats/metricbeat:${STACK_VERSION:-8.7.1}
-    command: metricbeat -e -strict.perms=false
+    image: docker.elastic.co/beats/metricbeat:${STACK_VERSION:-9.5.6}
+    command: metricbeat -e --strict.perms=false
     user: root
     volumes:
       - certs:/usr/share/metricbeat/certs
@@ -186,8 +186,8 @@ services:
     depends_on:
       es01:
         condition: service_healthy
-    image: docker.elastic.co/beats/filebeat:${STACK_VERSION:-8.7.1}
-    command: filebeat -e -strict.perms=false
+    image: docker.elastic.co/beats/filebeat:${STACK_VERSION:-9.5.6}
+    command: filebeat -e --strict.perms=false
     user: root
     volumes:
       - certs:/usr/share/filebeat/certs
@@ -215,10 +215,11 @@ services:
         condition: service_healthy
       kibana:
         condition: service_healthy
-    image: docker.elastic.co/logstash/logstash:${STACK_VERSION:-8.7.1}
+    image: docker.elastic.co/logstash/logstash:${STACK_VERSION:-9.5.6}
     labels:
       co.elastic.logs/module: logstash
-    user: root
+    # Logstash 9 refuses to run as root; group 0 lets it read the certs (root:root, 640) written by es-setup
+    user: "1000:0"
     volumes:
       - certs:/usr/share/logstash/certs
       - logstashdata01:/usr/share/logstash/data
@@ -229,6 +230,7 @@ services:
       - ELASTIC_USER=elastic
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD:-Password123}
       - ELASTIC_HOSTS=https://es01:9200
+    mem_limit: ${LS_MEM_LIMIT:-1073741824}
     networks:
       GroupNetwork:
         ipv4_address: ${LOGSTASH_IP:-172.20.16.15}

@@ -1,0 +1,43 @@
+# step-ca: private certificate authority for local HTTPS (ACME, like Let's Encrypt but for your machine).
+#   CA API: https://localhost:9003 (from other containers: https://step-ca:9000)
+#   ACME directory: https://step-ca:9000/acme/acme/directory
+# The root CA, intermediate and config are created on the first start from the STEPCA_* values in .env.
+# Trust the root (see ReadMe.md) and point Caddy, Traefik, certbot or win-acme at the ACME directory.
+services:
+  step-ca:
+    image: smallstep/step-ca:${STEPCA_VERSION:-0.30.2}
+    container_name: step-ca
+    restart: unless-stopped
+    environment:
+      DOCKER_STEPCA_INIT_NAME: ${STEPCA_NAME:-Docker-Scripts Local CA}
+      DOCKER_STEPCA_INIT_DNS_NAMES: ${STEPCA_DNS_NAMES:-step-ca,localhost}
+      DOCKER_STEPCA_INIT_PROVISIONER_NAME: ${STEPCA_PROVISIONER_NAME:-admin}
+      DOCKER_STEPCA_INIT_PASSWORD: ${STEPCA_PASSWORD:-Password123}
+      DOCKER_STEPCA_INIT_ACME: "true"
+    volumes:
+      - stepca_data:/home/step
+    healthcheck:
+      test: ["CMD", "step", "ca", "health", "--ca-url", "https://localhost:9000", "--root", "/home/step/certs/root_ca.crt"]
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 12
+    networks:
+      GroupNetwork:
+        ipv4_address: ${STEPCA_IP:-172.20.17.30}
+        aliases:
+          - step-ca
+    ports:
+      - "${STEPCA_PORT:-9003}:9000" # CA API + ACME (HTTPS)
+volumes:
+  stepca_data:
+    name: stepca_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Security/StepCa/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

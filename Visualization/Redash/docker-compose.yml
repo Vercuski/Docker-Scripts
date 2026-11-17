@@ -1,0 +1,125 @@
+# Redash: write SQL (or MongoDB/Elasticsearch/... queries), visualize, build dashboards, schedule refreshes, alert.
+#   Web UI + API: http://localhost:8143 (admin@example.com / Password123)
+# Requires the PostgreSQL stack (Redash's own database) and the Redis stack (RQ job queues).
+# Add data sources in Settings > Data Sources by their GroupNetwork names (mssqldb, postgresql, mysqldb, ...).
+x-redash: &redash
+  image: redash/redash:${REDASH_VERSION:-26.9.0}
+  environment: &redash-env
+    PYTHONUNBUFFERED: "0"
+    REDASH_LOG_LEVEL: INFO
+    REDASH_HOST: http://localhost:${REDASH_PORT:-8143}
+    REDASH_DATABASE_URL: postgresql://${REDASH_DB_USER:-redash}:${REDASH_DB_PASSWORD:-Password123}@postgresql:5432/${REDASH_DB_NAME:-redash}
+    REDASH_REDIS_URL: redis://:${REDASH_REDIS_PASSWORD:-Password123}@redis:6379/${REDASH_REDIS_DB:-3}
+    REDASH_COOKIE_SECRET: ${REDASH_COOKIE_SECRET:-2234bf83820b37bb6efdfb53d2a38d18ecb394fd3a60f8cd724f24b73d1deb00}
+    REDASH_SECRET_KEY: ${REDASH_SECRET_KEY:-c3557293fb908d5356373732ec6007bfacbdfdbddaee9ba2783b218e7ad5c111}
+    REDASH_WEB_WORKERS: ${REDASH_WEB_WORKERS:-2}
+
+services:
+  redash-db-init:
+    image: ${REDASH_DB_INIT_IMAGE:-postgres:18}
+    container_name: redash-db-init
+    restart: "no"
+    environment:
+      PGHOST: postgresql
+      PGUSER: ${REDASH_DB_ADMIN_USER:-user@user.com}
+      PGPASSWORD: ${REDASH_DB_ADMIN_PASSWORD:-Password123}
+      DB_NAME: ${REDASH_DB_NAME:-redash}
+      DB_USER: ${REDASH_DB_USER:-redash}
+      DB_PASSWORD: ${REDASH_DB_PASSWORD:-Password123}
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        for i in $$(seq 30); do pg_isready -q -d postgres && break; echo "waiting for postgresql (start Databases/PostgreSQL)"; sleep 2; done
+        psql -d postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$$DB_USER'" | grep -q 1 \
+          || psql -d postgres -c "CREATE ROLE \"$$DB_USER\" LOGIN PASSWORD '$$DB_PASSWORD'"
+        psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$$DB_NAME'" | grep -q 1 \
+          && echo "database $$DB_NAME exists" \
+          || psql -d postgres -c "CREATE DATABASE \"$$DB_NAME\" OWNER \"$$DB_USER\""
+    networks:
+      GroupNetwork:
+        ipv4_address: ${REDASH_DB_INIT_IP:-172.20.20.40}
+  redash-init:
+    <<: *redash
+    container_name: redash-init
+    restart: "no"
+    depends_on:
+      redash-db-init:
+        condition: service_completed_successfully
+    environment:
+      <<: *redash-env
+      ADMIN_EMAIL: ${REDASH_ADMIN_EMAIL:-admin@example.com}
+      ADMIN_PASSWORD: ${REDASH_ADMIN_PASSWORD:-Password123}
+    # Tables on an empty database (create_tables), migrations on an existing one, then the first admin
+    entrypoint:
+      - bash
+      - -c
+      - |
+        set -e
+        ./manage.py database create_tables
+        ./manage.py db upgrade
+        if ./manage.py users list | grep -q "Email: $$ADMIN_EMAIL"; then
+          echo "admin $$ADMIN_EMAIL exists"
+        else
+          ./manage.py users create_root "$$ADMIN_EMAIL" Admin --password "$$ADMIN_PASSWORD"
+        fi
+    networks:
+      GroupNetwork:
+        ipv4_address: ${REDASH_INIT_IP:-172.20.20.41}
+  redash-server:
+    <<: *redash
+    container_name: redash-server
+    restart: unless-stopped
+    command: server
+    environment:
+      <<: *redash-env
+      # Default is [::]:5000, which fails on a network without IPv6
+      REDASH_GUNICORN_BIND: 0.0.0.0:5000
+    depends_on:
+      redash-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:5000/ping >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      start_period: 30s
+      retries: 10
+    networks:
+      GroupNetwork:
+        ipv4_address: ${REDASH_SERVER_IP:-172.20.20.42}
+        aliases:
+          - redash
+    ports:
+      - "${REDASH_PORT:-8143}:5000" # Web UI + API
+  redash-scheduler:
+    <<: *redash
+    container_name: redash-scheduler
+    restart: unless-stopped
+    command: scheduler
+    depends_on:
+      redash-init:
+        condition: service_completed_successfully
+    networks:
+      GroupNetwork:
+        ipv4_address: ${REDASH_SCHEDULER_IP:-172.20.20.43}
+  redash-worker:
+    <<: *redash
+    container_name: redash-worker
+    restart: unless-stopped
+    command: worker
+    depends_on:
+      redash-init:
+        condition: service_completed_successfully
+    environment:
+      <<: *redash-env
+      # One worker container for every queue (Redash's own compose splits ad-hoc and scheduled queries)
+      QUEUES: queries,scheduled_queries,schemas,periodic,emails,default
+      WORKERS_COUNT: ${REDASH_QUERY_WORKERS:-2}
+    networks:
+      GroupNetwork:
+        ipv4_address: ${REDASH_WORKER_IP:-172.20.20.44}
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

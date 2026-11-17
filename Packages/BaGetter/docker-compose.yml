@@ -1,0 +1,41 @@
+# BaGetter: minimal NuGet server for your own packages (and an optional nuget.org mirror). UI + feed:
+# http://localhost:5555 - source: http://localhost:5555/v3/index.json (from other containers: http://bagetter:8080/v3/index.json)
+#   dotnet nuget push MyLib.1.0.0.nupkg -s http://localhost:5555/v3/index.json -k Password123
+# SQLite database and package files live in the data volume.
+services:
+  bagetter:
+    image: bagetter/bagetter:${BAGETTER_VERSION:-1.6.5}
+    container_name: bagetter
+    restart: unless-stopped
+    environment:
+      ApiKey: ${BAGETTER_API_KEY:-Password123}
+      Database__Type: Sqlite
+      Database__ConnectionString: Data Source=/data/db/bagetter.db
+      Storage__Type: FileSystem
+      Storage__Path: /data/packages
+      Search__Type: Database
+      Mirror__Enabled: ${BAGETTER_MIRROR_ENABLED:-true}
+      Mirror__PackageSource: https://api.nuget.org/v3/index.json
+      AllowPackageOverwrites: "true"
+      PackageDeletionBehavior: HardDelete
+    volumes:
+      - bagetter_data:/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${BAGETTER_IP:-172.20.13.30}
+        aliases:
+          - bagetter
+    ports:
+      - "${BAGETTER_PORT:-5555}:8080"
+volumes:
+  bagetter_data:
+    name: bagetter_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Packages/BaGetter/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

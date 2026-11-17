@@ -1,0 +1,96 @@
+# Infisical: secrets manager with projects/environments, versioning, access control, .NET SDK and CLI.
+#   UI + API: http://localhost:8138 (admin@example.com / Password123)   From other containers: http://infisical:8080
+# Requires the PostgreSQL and Redis stacks. infisical-db-init creates the role/database, the server runs its
+# migrations on start, and infisical-init creates the first admin + organization (skipped once set up).
+services:
+  infisical-db-init:
+    image: ${INFISICAL_DB_INIT_IMAGE:-postgres:18}
+    container_name: infisical-db-init
+    restart: "no"
+    environment:
+      PGHOST: postgresql
+      PGUSER: ${INFISICAL_DB_ADMIN_USER:-user@user.com}
+      PGPASSWORD: ${INFISICAL_DB_ADMIN_PASSWORD:-Password123}
+      DB_NAME: ${INFISICAL_DB_NAME:-infisical}
+      DB_USER: ${INFISICAL_DB_USER:-infisical}
+      DB_PASSWORD: ${INFISICAL_DB_PASSWORD:-Password123}
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        for i in $$(seq 30); do pg_isready -q -d postgres && break; echo "waiting for postgresql (start Databases/PostgreSQL)"; sleep 2; done
+        psql -d postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$$DB_USER'" | grep -q 1 \
+          || psql -d postgres -c "CREATE ROLE \"$$DB_USER\" LOGIN PASSWORD '$$DB_PASSWORD'"
+        psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$$DB_NAME'" | grep -q 1 \
+          && echo "database $$DB_NAME exists" \
+          || psql -d postgres -c "CREATE DATABASE \"$$DB_NAME\" OWNER \"$$DB_USER\""
+    networks:
+      GroupNetwork:
+        ipv4_address: ${INFISICAL_DB_INIT_IP:-172.20.17.50}
+  infisical:
+    image: infisical/infisical:${INFISICAL_VERSION:-v0.167.11}
+    container_name: infisical
+    restart: unless-stopped
+    depends_on:
+      infisical-db-init:
+        condition: service_completed_successfully
+    environment:
+      NODE_ENV: production
+      SITE_URL: http://localhost:${INFISICAL_PORT:-8138}
+      ENCRYPTION_KEY: ${INFISICAL_ENCRYPTION_KEY:-42097e21e2594cf821d5f59aaa819e2c}
+      AUTH_SECRET: ${INFISICAL_AUTH_SECRET:-+X/tp6YHL3p0cB67Kxz5gN3tW3O5HoFIJTFzgThuPhY=}
+      DB_CONNECTION_URI: postgres://${INFISICAL_DB_USER:-infisical}:${INFISICAL_DB_PASSWORD:-Password123}@postgresql:5432/${INFISICAL_DB_NAME:-infisical}
+      REDIS_URL: redis://:${INFISICAL_REDIS_PASSWORD:-Password123}@redis:6379/${INFISICAL_REDIS_DB:-2}
+      TELEMETRY_ENABLED: ${INFISICAL_TELEMETRY_ENABLED:-false}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/api/status >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      start_period: 60s
+      retries: 30
+    networks:
+      GroupNetwork:
+        ipv4_address: ${INFISICAL_IP:-172.20.17.51}
+        aliases:
+          - infisical
+    ports:
+      - "${INFISICAL_PORT:-8138}:8080" # UI + API
+  infisical-init:
+    image: infisical/infisical:${INFISICAL_VERSION:-v0.167.11}
+    container_name: infisical-init
+    restart: "no"
+    depends_on:
+      infisical:
+        condition: service_healthy
+    environment:
+      ADMIN_EMAIL: ${INFISICAL_ADMIN_EMAIL:-admin@example.com}
+      ADMIN_PASSWORD: ${INFISICAL_ADMIN_PASSWORD:-Password123}
+      ORGANIZATION: ${INFISICAL_ORGANIZATION:-Local Dev}
+    # Instance bootstrap API (same as the first-run signup page); answers 400 once the instance is set up
+    entrypoint:
+      - node
+      - -e
+      - |
+        (async () => {
+          const r = await fetch("http://infisical:8080/api/v1/admin/bootstrap", { method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: process.env.ADMIN_EMAIL, password: process.env.ADMIN_PASSWORD, organization: process.env.ORGANIZATION }) });
+          const text = await r.text();
+          if (r.ok) {
+            const d = JSON.parse(text);
+            console.log("admin created:", process.env.ADMIN_EMAIL, "- organization:", d.organization?.name);
+            // Returned only once: an admin machine identity token for the API (docker logs infisical-init)
+            console.log("admin machine identity token:", d.identity?.credentials?.token);
+            return;
+          }
+          if (/already been set up|already initialized|already/i.test(text)) { console.log("instance already set up"); return; }
+          console.error("bootstrap failed:", r.status, text); process.exit(1);
+        })().catch(e => { console.error(e); process.exit(1); });
+    networks:
+      GroupNetwork:
+        ipv4_address: ${INFISICAL_INIT_IP:-172.20.17.52}
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

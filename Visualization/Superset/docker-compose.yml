@@ -1,0 +1,95 @@
+# Apache Superset: SQL Lab, charts and dashboards over your databases.
+#   Web UI + API: http://localhost:8142 (admin / Password123)
+# Requires the PostgreSQL stack for Superset's metadata. The image is built from ./image (Superset + PostgreSQL,
+# SQL Server and MySQL drivers) on the first "docker compose up". Connect databases in Settings > Database
+# Connections with GroupNetwork names, e.g. mssql+pymssql://sa:Password123@mssqldb:1433/master
+x-superset: &superset
+  build:
+    context: ./image
+    args:
+      SUPERSET_VERSION: ${SUPERSET_VERSION:-6.1.0}
+  image: superset-drivers:${SUPERSET_VERSION:-6.1.0}
+  environment: &superset-env
+    SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:-KEJqz48ky1PwpQQbbvSFpIUR/8ws2IPZedDWyw2lYu3MMRH+A4KXl+hz}
+    SUPERSET_DATABASE_URI: postgresql+psycopg2://${SUPERSET_DB_USER:-superset}:${SUPERSET_DB_PASSWORD:-Password123}@postgresql:5432/${SUPERSET_DB_NAME:-superset}
+  volumes:
+    - ./superset_config.py:/app/pythonpath/superset_config.py:ro
+
+services:
+  superset-db-init:
+    image: ${SUPERSET_DB_INIT_IMAGE:-postgres:18}
+    container_name: superset-db-init
+    restart: "no"
+    environment:
+      PGHOST: postgresql
+      PGUSER: ${SUPERSET_DB_ADMIN_USER:-user@user.com}
+      PGPASSWORD: ${SUPERSET_DB_ADMIN_PASSWORD:-Password123}
+      DB_NAME: ${SUPERSET_DB_NAME:-superset}
+      DB_USER: ${SUPERSET_DB_USER:-superset}
+      DB_PASSWORD: ${SUPERSET_DB_PASSWORD:-Password123}
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        for i in $$(seq 30); do pg_isready -q -d postgres && break; echo "waiting for postgresql (start Databases/PostgreSQL)"; sleep 2; done
+        psql -d postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$$DB_USER'" | grep -q 1 \
+          || psql -d postgres -c "CREATE ROLE \"$$DB_USER\" LOGIN PASSWORD '$$DB_PASSWORD'"
+        psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$$DB_NAME'" | grep -q 1 \
+          && echo "database $$DB_NAME exists" \
+          || psql -d postgres -c "CREATE DATABASE \"$$DB_NAME\" OWNER \"$$DB_USER\""
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SUPERSET_DB_INIT_IP:-172.20.20.30}
+  superset-init:
+    <<: *superset
+    container_name: superset-init
+    restart: "no"
+    depends_on:
+      superset-db-init:
+        condition: service_completed_successfully
+    environment:
+      <<: *superset-env
+      ADMIN_USER: ${SUPERSET_ADMIN_USER:-admin}
+      ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:-Password123}
+      ADMIN_EMAIL: ${SUPERSET_ADMIN_EMAIL:-admin@example.com}
+    command:
+      - bash
+      - -c
+      - |
+        set -e
+        superset db upgrade
+        if superset fab list-users 2>/dev/null | grep -q "username:$$ADMIN_USER "; then
+          superset fab reset-password --username "$$ADMIN_USER" --password "$$ADMIN_PASSWORD"
+        else
+          superset fab create-admin --username "$$ADMIN_USER" --password "$$ADMIN_PASSWORD" \
+            --firstname Admin --lastname User --email "$$ADMIN_EMAIL"
+        fi
+        superset init
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SUPERSET_INIT_IP:-172.20.20.31}
+  superset:
+    <<: *superset
+    container_name: superset
+    restart: unless-stopped
+    depends_on:
+      superset-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:8088/health >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      start_period: 30s
+      retries: 10
+    networks:
+      GroupNetwork:
+        ipv4_address: ${SUPERSET_IP:-172.20.20.32}
+        aliases:
+          - superset
+    ports:
+      - "${SUPERSET_PORT:-8142}:8088" # Web UI + API
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

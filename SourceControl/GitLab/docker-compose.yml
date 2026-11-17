@@ -1,0 +1,62 @@
+# GitLab CE (Omnibus: Rails, Puma, Sidekiq, Gitaly, PostgreSQL, Redis and nginx in one container).
+#   Web UI: http://localhost:8141 (root / GITLAB_ROOT_PASSWORD)   From containers: http://gitlab:8141
+#   SSH: ssh://git@localhost:2224/<group>/<project>.git
+# First start takes 3-5 minutes and needs ~3 GB RAM; this config trims memory for a dev box (single-process Puma,
+# fewer Sidekiq threads, bundled Prometheus monitoring off, container registry off).
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:${GITLAB_VERSION:-19.5.6-ce.0}
+    container_name: gitlab
+    hostname: gitlab
+    restart: unless-stopped
+    shm_size: ${GITLAB_SHM_SIZE:-256m}
+    environment:
+      GITLAB_ROOT_PASSWORD: ${GITLAB_ROOT_PASSWORD:-1NRCkjlt2xBp!7q}
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://localhost:${GITLAB_HTTP_PORT:-8141}'
+        gitlab_rails['gitlab_shell_ssh_port'] = ${GITLAB_SSH_PORT:-2224}
+        gitlab_rails['initial_root_password'] = ENV['GITLAB_ROOT_PASSWORD']
+        gitlab_rails['usage_ping_enabled'] = false
+        puma['worker_processes'] = 0
+        sidekiq['concurrency'] = ${GITLAB_SIDEKIQ_CONCURRENCY:-10}
+        prometheus_monitoring['enable'] = false
+        registry['enable'] = false
+        gitlab_kas['enable'] = false
+    volumes:
+      - gitlab_config:/etc/gitlab
+      - gitlab_logs:/var/log/gitlab
+      - gitlab_data:/var/opt/gitlab
+    networks:
+      GroupNetwork:
+        ipv4_address: ${GITLAB_IP:-172.20.19.30}
+        aliases:
+          - gitlab
+    ports:
+      - "${GITLAB_HTTP_PORT:-8141}:${GITLAB_HTTP_PORT:-8141}" # Web UI + git over HTTP (same number inside: external_url)
+      - "${GITLAB_SSH_PORT:-2224}:22" # git over SSH
+volumes:
+  gitlab_config:
+    name: gitlab_config
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SourceControl/GitLab/config
+  gitlab_logs:
+    name: gitlab_logs
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SourceControl/GitLab/logs
+  gitlab_data:
+    name: gitlab_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SourceControl/GitLab/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

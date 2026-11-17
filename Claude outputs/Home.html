@@ -406,6 +406,7 @@
                     <a class="nav-item" onclick="openPage(event, 'Scheduling')">Scheduling</a>
                     <a class="nav-item" onclick="openPage(event, 'Search')">Search</a>
                     <a class="nav-item" onclick="openPage(event, 'Security')">Security</a>
+                    <a class="nav-item" onclick="openPage(event, 'SIEM')">SIEM</a>
                     <a class="nav-item" onclick="openPage(event, 'WebServers')">Web Servers</a>
                 </div>
 
@@ -955,6 +956,42 @@
                             <td>11.30 / 11.31 / 11.32</td>
                         </tr>
                         <tr>
+                            <td>Observability</td>
+                            <td>Jaeger v2</td>
+                            <td><a href="http://localhost:16686/" target="_blank">:16686</a> UI, :14317/:14318 OTLP</td>
+                            <td>11.40</td>
+                        </tr>
+                        <tr>
+                            <td>Observability</td>
+                            <td>Pyroscope</td>
+                            <td><a href="http://localhost:4041/" target="_blank">:4041</a></td>
+                            <td>11.50</td>
+                        </tr>
+                        <tr>
+                            <td>Observability</td>
+                            <td>Uptime Kuma</td>
+                            <td><a href="http://localhost:3005/" target="_blank">:3005</a></td>
+                            <td>11.60</td>
+                        </tr>
+                        <tr>
+                            <td>Observability</td>
+                            <td>cAdvisor</td>
+                            <td><a href="http://localhost:8121/" target="_blank">:8121</a></td>
+                            <td>11.70</td>
+                        </tr>
+                        <tr>
+                            <td>Observability</td>
+                            <td>otel-lgtm</td>
+                            <td><a href="http://localhost:3006/" target="_blank">:3006</a> Grafana, :24317/:24318 OTLP</td>
+                            <td>11.80</td>
+                        </tr>
+                        <tr>
+                            <td>Observability</td>
+                            <td>SigNoz</td>
+                            <td><a href="http://localhost:8122/" target="_blank">:8122</a> UI, :34317/:34318 OTLP</td>
+                            <td>11.90-11.96</td>
+                        </tr>
+                        <tr>
                             <td>Orchestration</td>
                             <td>Kubernetes</td>
                             <td>:8001 (<code>kubectl proxy</code>)</td>
@@ -973,10 +1010,46 @@
                             <td>12.20</td>
                         </tr>
                         <tr>
+                            <td>Orchestration</td>
+                            <td>K3s + Argo CD</td>
+                            <td>:6443 API, <a href="http://localhost:8124/" target="_blank">:8124</a> Argo CD</td>
+                            <td>12.40</td>
+                        </tr>
+                        <tr>
+                            <td>Orchestration</td>
+                            <td>Headlamp</td>
+                            <td><a href="http://localhost:4466/" target="_blank">:4466</a></td>
+                            <td>12.50</td>
+                        </tr>
+                        <tr>
+                            <td>Orchestration</td>
+                            <td>Nomad</td>
+                            <td><a href="http://localhost:4646/ui/" target="_blank">:4646</a></td>
+                            <td>12.60</td>
+                        </tr>
+                        <tr>
                             <td>Packages</td>
                             <td>ProGet</td>
                             <td><a href="http://localhost:8091/" target="_blank">:8091</a>, :8092 HTTPS</td>
                             <td>13.10</td>
+                        </tr>
+                        <tr>
+                            <td>Packages</td>
+                            <td>Sonatype Nexus CE</td>
+                            <td><a href="http://localhost:8125/" target="_blank">:8125</a></td>
+                            <td>13.20</td>
+                        </tr>
+                        <tr>
+                            <td>Packages</td>
+                            <td>BaGetter</td>
+                            <td><a href="http://localhost:5555/" target="_blank">:5555</a></td>
+                            <td>13.30</td>
+                        </tr>
+                        <tr>
+                            <td>Packages</td>
+                            <td>Verdaccio</td>
+                            <td><a href="http://localhost:4873/" target="_blank">:4873</a></td>
+                            <td>13.40</td>
                         </tr>
                         <tr>
                             <td>Proxy / LB</td>
@@ -992,10 +1065,64 @@
                             <td>14.20</td>
                         </tr>
                         <tr>
+                            <td>Proxy / LB</td>
+                            <td>Traefik</td>
+                            <td><a href="http://localhost:8126/web/" target="_blank">:8126</a>, <a href="http://localhost:8127/dashboard/" target="_blank">:8127</a> dashboard</td>
+                            <td>14.30</td>
+                        </tr>
+                        <tr>
+                            <td>Proxy / LB</td>
+                            <td>Caddy</td>
+                            <td><a href="http://localhost:8128/" target="_blank">:8128</a>, <a href="https://localhost:8134/" target="_blank">:8134</a> HTTPS</td>
+                            <td>14.40</td>
+                        </tr>
+                        <tr>
+                            <td>Proxy / LB</td>
+                            <td>YARP</td>
+                            <td><a href="http://localhost:8129/web/" target="_blank">:8129</a></td>
+                            <td>14.50</td>
+                        </tr>
+                        <tr>
+                            <td>Proxy / LB</td>
+                            <td>Envoy</td>
+                            <td><a href="http://localhost:8130/" target="_blank">:8130</a>, <a href="http://localhost:9902/" target="_blank">:9902</a> admin</td>
+                            <td>14.60</td>
+                        </tr>
+                        <tr>
+                            <td>Proxy / LB</td>
+                            <td>Kong</td>
+                            <td><a href="http://localhost:8131/web/" target="_blank">:8131</a> proxy, <a href="http://localhost:8132/" target="_blank">:8132</a> admin, <a href="http://localhost:8133/" target="_blank">:8133</a> Manager</td>
+                            <td>14.70</td>
+                        </tr>
+                        <tr>
                             <td>Scheduling</td>
                             <td>Hangfire</td>
                             <td><a href="http://localhost:5010/hangfire" target="_blank">:5010</a></td>
                             <td>15.10</td>
+                        </tr>
+                        <tr>
+                            <td>Scheduling</td>
+                            <td>Temporal</td>
+                            <td>:7233 gRPC, <a href="http://localhost:8135/" target="_blank">:8135</a> UI</td>
+                            <td>15.22</td>
+                        </tr>
+                        <tr>
+                            <td>Scheduling</td>
+                            <td>Airflow</td>
+                            <td><a href="http://localhost:8136/" target="_blank">:8136</a></td>
+                            <td>15.32</td>
+                        </tr>
+                        <tr>
+                            <td>Scheduling</td>
+                            <td>Rundeck</td>
+                            <td><a href="http://localhost:4440/" target="_blank">:4440</a></td>
+                            <td>15.41</td>
+                        </tr>
+                        <tr>
+                            <td>Scheduling</td>
+                            <td>n8n</td>
+                            <td><a href="http://localhost:5678/" target="_blank">:5678</a></td>
+                            <td>15.51</td>
                         </tr>
                         <tr>
                             <td>Search</td>
@@ -1011,10 +1138,52 @@
                             <td>16.20 / 16.21 / 16.22</td>
                         </tr>
                         <tr>
+                            <td>Search</td>
+                            <td>Meilisearch</td>
+                            <td><a href="http://localhost:7700/" target="_blank">:7700</a></td>
+                            <td>16.30</td>
+                        </tr>
+                        <tr>
+                            <td>Search</td>
+                            <td>Typesense</td>
+                            <td>:8137 API</td>
+                            <td>16.40</td>
+                        </tr>
+                        <tr>
+                            <td>Search</td>
+                            <td>Solr</td>
+                            <td><a href="http://localhost:8983/solr/" target="_blank">:8983</a></td>
+                            <td>16.50</td>
+                        </tr>
+                        <tr>
                             <td>Security</td>
                             <td>Vault</td>
                             <td><a href="http://localhost:8200/ui" target="_blank">:8200</a></td>
                             <td>17.10</td>
+                        </tr>
+                        <tr>
+                            <td>Security</td>
+                            <td>OpenBao</td>
+                            <td><a href="http://localhost:8202/ui" target="_blank">:8202</a></td>
+                            <td>17.20</td>
+                        </tr>
+                        <tr>
+                            <td>Security</td>
+                            <td>step-ca</td>
+                            <td>:9003 (https) ACME</td>
+                            <td>17.30</td>
+                        </tr>
+                        <tr>
+                            <td>Security</td>
+                            <td>ZAP</td>
+                            <td>:8140 proxy + API, <a href="http://localhost:8139/zap/" target="_blank">:8139</a> UI</td>
+                            <td>17.40 / 17.41</td>
+                        </tr>
+                        <tr>
+                            <td>Security</td>
+                            <td>Infisical</td>
+                            <td><a href="http://localhost:8138/" target="_blank">:8138</a></td>
+                            <td>17.51</td>
                         </tr>
                         <tr>
                             <td>SIEM</td>
@@ -1024,16 +1193,58 @@
                             <td>manager 18.11 / indexer 18.12 / dashboard 18.13 / certs 18.10</td>
                         </tr>
                         <tr>
+                            <td>SIEM</td>
+                            <td>Graylog</td>
+                            <td><a href="http://localhost:9004/" target="_blank">:9004</a>, :12201 GELF, :5140 syslog, :5044 Beats</td>
+                            <td>18.22 / data node 18.21 / mongodb 18.20</td>
+                        </tr>
+                        <tr>
                             <td>Source Control</td>
                             <td>Gitea / runner</td>
                             <td><a href="http://localhost:3001/" target="_blank">:3001</a>, :2222 SSH</td>
                             <td>19.10 / 19.11</td>
                         </tr>
                         <tr>
+                            <td>Source Control</td>
+                            <td>Forgejo / runner</td>
+                            <td><a href="http://localhost:3007/" target="_blank">:3007</a>, :2223 SSH</td>
+                            <td>19.20 / 19.22</td>
+                        </tr>
+                        <tr>
+                            <td>Source Control</td>
+                            <td>GitLab CE</td>
+                            <td><a href="http://localhost:8141/" target="_blank">:8141</a>, :2224 SSH</td>
+                            <td>19.30</td>
+                        </tr>
+                        <tr>
+                            <td>Source Control</td>
+                            <td>OneDev</td>
+                            <td><a href="http://localhost:6610/" target="_blank">:6610</a>, :6611 SSH</td>
+                            <td>19.40</td>
+                        </tr>
+                        <tr>
                             <td>Visualization</td>
                             <td>Grafana</td>
                             <td><a href="http://localhost:3000/" target="_blank">:3000</a></td>
                             <td>20.10</td>
+                        </tr>
+                        <tr>
+                            <td>Visualization</td>
+                            <td>Metabase</td>
+                            <td><a href="http://localhost:3008/" target="_blank">:3008</a></td>
+                            <td>20.21</td>
+                        </tr>
+                        <tr>
+                            <td>Visualization</td>
+                            <td>Superset</td>
+                            <td><a href="http://localhost:8142/" target="_blank">:8142</a></td>
+                            <td>20.32</td>
+                        </tr>
+                        <tr>
+                            <td>Visualization</td>
+                            <td>Redash</td>
+                            <td><a href="http://localhost:8143/" target="_blank">:8143</a></td>
+                            <td>20.42</td>
                         </tr>
                         <tr>
                             <td>Web Servers</td>
@@ -1899,6 +2110,40 @@
                             Reload: <code>curl -X POST http://localhost:9090/-/reload</code>. Scrapes the OTel collector
                             and accepts remote write from Tempo.</span><br />
                     </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Jaeger v2</font><br />
+                        UI: <a href="http://localhost:16686/" target="_blank">http://localhost:16686/</a><br />
+                        OTLP gRPC: http://localhost:14317 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:14317')"><i
+                                class="fa-regular fa-copy"></i></span> &mdash; HTTP: http://localhost:14318<br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Grafana Pyroscope</font><br />
+                        UI: <a href="http://localhost:4041/" target="_blank">http://localhost:4041/</a><br />
+                        <span class="note">Also available in Grafana (data source "Pyroscope").</span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Uptime Kuma</font><br />
+                        UI: <a href="http://localhost:3005/" target="_blank">http://localhost:3005/</a><br />
+                        <span class="note">The first visit creates the admin account.</span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">cAdvisor</font><br />
+                        UI: <a href="http://localhost:8121/" target="_blank">http://localhost:8121/</a><br />
+                        <span class="note">Scraped by Prometheus (job <code>cadvisor</code>).</span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">otel-lgtm (all-in-one)</font><br />
+                        Grafana: <a href="http://localhost:3006/" target="_blank">http://localhost:3006/</a> (anonymous admin)<br />
+                        OTLP HTTP: http://localhost:24318 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:24318')"><i
+                                class="fa-regular fa-copy"></i></span> &mdash; gRPC: http://localhost:24317<br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">SigNoz</font><br />
+                        UI: <a href="http://localhost:8122/" target="_blank">http://localhost:8122/</a><br />
+                        OTLP gRPC: http://localhost:34317 <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:34317')"><i
+                                class="fa-regular fa-copy"></i></span> &mdash; HTTP: http://localhost:34318<br />
+                        <span class="note">Create the admin on first visit; ingestion starts after that. Uses the PostgreSQL stack.</span><br />
+                    </li>
                 </ul>
                 <div style="margin-top: 1rem;">
                     <b>App settings</b> <span style="cursor: pointer"
@@ -1951,6 +2196,24 @@
                         <span class="note">Create the admin user within 5 minutes of the first start.</span><br />
                         INFO: <a href="https://docs.portainer.io/" target="_blank">https://docs.portainer.io/</a><br />
                     </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">K3s (Kubernetes) + Argo CD</font><br />
+                        API: https://localhost:6443 &mdash; kubeconfig: <code>docker/volumes/Orchestration/K3s/kubeconfig/kubeconfig.yaml</code><br />
+                        Argo CD: <a href="http://localhost:8124/" target="_blank">http://localhost:8124/</a> (admin / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">Pods reach GroupNetwork services by name (e.g. <code>http://gitea:3000</code>) via <code>K3S_GROUPNETWORK_HOSTS</code>.</span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Headlamp</font><br />
+                        URL: <a href="http://localhost:4466/" target="_blank">http://localhost:4466/</a><br />
+                        <span class="note">Kubernetes Dashboard replacement; shows the K3s cluster (start K3s first).</span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">HashiCorp Nomad</font><br />
+                        UI: <a href="http://localhost:4646/ui/" target="_blank">http://localhost:4646/ui/</a><br />
+                        Example: <code>docker exec nomad nomad job run /jobs/example.nomad.hcl</code> <span style="cursor: pointer" onclick="ClipBoardText('docker exec nomad nomad job run /jobs/example.nomad.hcl')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                    </li>
                 </ul>
             </div>
 
@@ -1966,6 +2229,27 @@
                             Password123).</span><br />
                         INFO: <a href="https://docs.inedo.com/docs/proget/overview"
                             target="_blank">https://docs.inedo.com/docs/proget/overview</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Sonatype Nexus CE</font><br />
+                        UI: <a href="http://localhost:8125/" target="_blank">http://localhost:8125/</a> (admin / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span>)<br />
+                        NuGet feed: http://localhost:8125/repository/nuget-group/index.json <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:8125/repository/nuget-group/index.json')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Push to <code>nuget-hosted</code> with the NuGet API key from the user menu.</span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">BaGetter</font><br />
+                        Feed: http://localhost:5555/v3/index.json <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:5555/v3/index.json')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        API key (push): Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Verdaccio</font><br />
+                        Registry: http://localhost:4873/ <span style="cursor: pointer" onclick="ClipBoardText('http://localhost:4873/')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        <span class="note"><code>npm adduser --registry http://localhost:4873/</code> once; the <code>@local</code> scope is private.</span><br />
                     </li>
                 </ul>
             </div>
@@ -1991,6 +2275,37 @@
                             to reload.</span><br />
                         INFO: <a href="https://docs.haproxy.org/" target="_blank">https://docs.haproxy.org/</a><br />
                     </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Traefik</font><br />
+                        Web route: <a href="http://localhost:8126/web/" target="_blank">http://localhost:8126/web/</a> (round-robins Nginx and Apache)<br />
+                        Dashboard: <a href="http://localhost:8127/dashboard/" target="_blank">http://localhost:8127/dashboard/</a><br />
+                        <span class="note">Expose a container with labels: <code>traefik.enable=true</code> and a <code>Host(`name.localhost`)</code> router rule.</span><br />
+                        INFO: <a href="https://doc.traefik.io/traefik/" target="_blank">https://doc.traefik.io/traefik/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Caddy</font><br />
+                        HTTP: <a href="http://localhost:8128/" target="_blank">http://localhost:8128/</a> HTTPS: <a href="https://localhost:8134/" target="_blank">https://localhost:8134/</a> (local CA)<br />
+                        <span class="note">Edit <code>Caddyfile</code>, then <code>docker exec caddy caddy reload --config /etc/caddy/Caddyfile</code>.</span><br />
+                        INFO: <a href="https://caddyserver.com/docs/" target="_blank">https://caddyserver.com/docs/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">YARP</font><br />
+                        Proxy: <a href="http://localhost:8129/web/" target="_blank">http://localhost:8129/web/</a> (round-robins Nginx and Apache)<br />
+                        <span class="note">Routes in <code>config/proxy.json</code> (reloaded on change); <code>docker compose up -d --build</code> after changing <code>src/</code>.</span><br />
+                        INFO: <a href="https://learn.microsoft.com/aspnet/core/fundamentals/servers/yarp/yarp-overview" target="_blank">https://learn.microsoft.com/aspnet/core/fundamentals/servers/yarp/yarp-overview</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Envoy</font><br />
+                        Listener: <a href="http://localhost:8130/" target="_blank">http://localhost:8130/</a> Admin: <a href="http://localhost:9902/" target="_blank">http://localhost:9902/</a><br />
+                        INFO: <a href="https://www.envoyproxy.io/docs/envoy/latest/" target="_blank">https://www.envoyproxy.io/docs/envoy/latest/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Kong</font><br />
+                        Proxy: <a href="http://localhost:8131/web/" target="_blank">http://localhost:8131/web/</a> Admin API: <a href="http://localhost:8132/" target="_blank">http://localhost:8132/</a><br />
+                        Kong Manager: <a href="http://localhost:8133/" target="_blank">http://localhost:8133/</a><br />
+                        <span class="note">DB-less: edit <code>kong.yml</code>, then <code>curl -X POST http://localhost:8132/config -F config=@kong.yml</code>.</span><br />
+                        INFO: <a href="https://developer.konghq.com/gateway/" target="_blank">https://developer.konghq.com/gateway/</a><br />
+                    </li>
                 </ul>
             </div>
 
@@ -2010,6 +2325,36 @@
                             <code>hangfire</code> database.</span><br />
                         INFO: <a href="https://docs.hangfire.io/" target="_blank">https://docs.hangfire.io/</a><br />
                     </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Temporal</font><br />
+                        Web UI: <a href="http://localhost:8135/" target="_blank">http://localhost:8135/</a><br />
+                        Frontend (gRPC): localhost:7233 <span style="cursor: pointer" onclick="ClipBoardText('localhost:7233')"><i
+                                class="fa-regular fa-copy"></i></span> namespace <code>default</code><br />
+                        <span class="note">.NET SDK: <code>Temporalio</code> NuGet package. Requires the PostgreSQL stack.</span><br />
+                        INFO: <a href="https://docs.temporal.io/develop/dotnet" target="_blank">https://docs.temporal.io/develop/dotnet</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Apache Airflow</font><br />
+                        UI: <a href="http://localhost:8136/" target="_blank">http://localhost:8136/</a> (admin / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">DAGs in <code>Scheduling/Airflow/dags</code>; requires the PostgreSQL stack.</span><br />
+                        INFO: <a href="https://airflow.apache.org/docs/apache-airflow/stable/" target="_blank">https://airflow.apache.org/docs/apache-airflow/stable/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Rundeck</font><br />
+                        UI: <a href="http://localhost:4440/" target="_blank">http://localhost:4440/</a> (admin / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span>)<br />
+                        API token: local-dev-rundeck-api-token <span style="cursor: pointer" onclick="ClipBoardText('local-dev-rundeck-api-token')"><i
+                                class="fa-regular fa-copy"></i></span> (header <code>X-Rundeck-Auth-Token</code>)<br />
+                        INFO: <a href="https://docs.rundeck.com/docs/" target="_blank">https://docs.rundeck.com/docs/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">n8n</font><br />
+                        UI: <a href="http://localhost:5678/" target="_blank">http://localhost:5678/</a> (admin@example.com / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">Webhooks: <code>http://localhost:5678/webhook/...</code>; Code nodes run in <code>n8n-runners</code>.</span><br />
+                        INFO: <a href="https://docs.n8n.io/" target="_blank">https://docs.n8n.io/</a><br />
+                    </li>
                 </ul>
             </div>
 
@@ -2026,7 +2371,7 @@
                             target="_blank">https://localhost:9200/</a><br />
                         Kibana URL (http): <a href="http://localhost:5601/"
                             target="_blank">http://localhost:5601/</a><br />
-                        <span class="note">Stack version 8.7.1 with Logstash, Filebeat and Metricbeat.</span><br />
+                        <span class="note">Stack version 9.5.6 with Logstash, Filebeat and Metricbeat.</span><br />
                     </li>
                     <li>
                         <font style="font-size: 1.2rem; font-weight: bold">Open Search</font><br />
@@ -2041,6 +2386,23 @@
                             target="_blank">http://localhost:5602/</a><br />
                         <span class="note">The admin password is only applied when the data folders are
                             empty.</span><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Meilisearch</font><br />
+                        API + mini dashboard: <a href="http://localhost:7700/" target="_blank">http://localhost:7700/</a><br />
+                        <span class="note">Master key in <code>Search/Meilisearch/.env</code>; get the search key from <code>GET /keys</code>.</span><br />
+                        INFO: <a href="https://www.meilisearch.com/docs" target="_blank">https://www.meilisearch.com/docs</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Typesense</font><br />
+                        API: <a href="http://localhost:8137/health" target="_blank">http://localhost:8137/health</a><br />
+                        <span class="note">API key (<code>X-TYPESENSE-API-KEY</code>) in <code>Search/Typesense/.env</code>; no UI.</span><br />
+                        INFO: <a href="https://typesense.org/docs/" target="_blank">https://typesense.org/docs/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Apache Solr</font><br />
+                        Admin UI: <a href="http://localhost:8983/solr/" target="_blank">http://localhost:8983/solr/</a> (core <code>dev</code>, no auth)<br />
+                        INFO: <a href="https://solr.apache.org/guide/solr/latest/" target="_blank">https://solr.apache.org/guide/solr/latest/</a><br />
                     </li>
                 </ul>
             </div>
@@ -2066,6 +2428,56 @@
                         INFO: <a href="https://developer.hashicorp.com/vault/docs"
                             target="_blank">https://developer.hashicorp.com/vault/docs</a><br />
                     </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">OpenBao</font><br />
+                        UI: <a href="http://localhost:8202/ui" target="_blank">http://localhost:8202/ui</a> (Username: admin / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">Unseals and initializes itself (static key in <code>.env</code>); KV v2 at <code>secret/</code>.</span><br />
+                        INFO: <a href="https://openbao.org/docs/" target="_blank">https://openbao.org/docs/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">step-ca</font><br />
+                        ACME directory: https://step-ca:9000/acme/acme/directory <span style="cursor: pointer" onclick="ClipBoardText('https://step-ca:9000/acme/acme/directory')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        Root CA: <code>docker cp step-ca:/home/step/certs/root_ca.crt .</code> (trust it once)<br />
+                        INFO: <a href="https://smallstep.com/docs/step-ca/" target="_blank">https://smallstep.com/docs/step-ca/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">ZAP</font><br />
+                        API: http://localhost:8140 (key local-dev-zap-api-key <span style="cursor: pointer" onclick="ClipBoardText('local-dev-zap-api-key')"><i
+                                class="fa-regular fa-copy"></i></span>)<br />
+                        UI (optional): <a href="http://localhost:8139/zap/" target="_blank">http://localhost:8139/zap/</a> after <code>docker compose --profile ui up -d</code><br />
+                        INFO: <a href="https://www.zaproxy.org/docs/" target="_blank">https://www.zaproxy.org/docs/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Infisical</font><br />
+                        UI: <a href="http://localhost:8138/" target="_blank">http://localhost:8138/</a> (admin@example.com / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">Requires the PostgreSQL and Redis stacks; admin API token: <code>docker logs infisical-init</code>.</span><br />
+                        INFO: <a href="https://infisical.com/docs/self-hosting/overview" target="_blank">https://infisical.com/docs/self-hosting/overview</a><br />
+                    </li>
+                </ul>
+            </div>
+
+            <div id="SIEM" class="page-content">
+                <h2>SIEM</h2>
+                <ul>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Wazuh</font><br />
+                        Dashboard: <a href="https://localhost:5603/" target="_blank">https://localhost:5603/</a> (admin / SecretPassword <span style="cursor: pointer" onclick="ClipBoardText('SecretPassword')"><i
+                                class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">Needs ~8 GB RAM and <code>vm.max_map_count=262144</code>; the first start downloads the cert tool.</span><br />
+                        INFO: <a href="https://documentation.wazuh.com/current/deployment-options/docker/wazuh-container.html" target="_blank">https://documentation.wazuh.com/current/deployment-options/docker/wazuh-container.html</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Graylog</font><br />
+                        UI: <a href="http://localhost:9004/" target="_blank">http://localhost:9004/</a> (admin / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span>)<br />
+                        GELF: localhost:12201 udp/tcp <span style="cursor: pointer" onclick="ClipBoardText('localhost:12201')"><i
+                                class="fa-regular fa-copy"></i></span> (create the input in System &gt; Inputs)<br />
+                        <span class="note">Own MongoDB 8.0 and Data Node; needs <code>vm.max_map_count=262144</code>.</span><br />
+                        INFO: <a href="https://go2docs.graylog.org/current/home.htm" target="_blank">https://go2docs.graylog.org/current/home.htm</a><br />
+                    </li>
                 </ul>
             </div>
 
@@ -2087,6 +2499,26 @@
                         INFO: <a href="https://docs.gitea.com/usage/actions/overview"
                             target="_blank">https://docs.gitea.com/usage/actions/overview</a><br />
                     </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Forgejo + Actions Runner</font><br />
+                        UI: <a href="http://host.docker.internal:3007/" target="_blank">http://host.docker.internal:3007/</a> (forgejo-admin / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">No installer; the runner registers itself. Workflows in <code>.forgejo/workflows/</code>.</span><br />
+                        INFO: <a href="https://forgejo.org/docs/latest/" target="_blank">https://forgejo.org/docs/latest/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">GitLab CE</font><br />
+                        UI: <a href="http://localhost:8141/" target="_blank">http://localhost:8141/</a> (root / <code>GITLAB_ROOT_PASSWORD</code> in <code>SourceControl/GitLab/.env</code>)<br />
+                        <span class="note">First start takes 3-5 minutes and ~3 GB RAM.</span><br />
+                        INFO: <a href="https://docs.gitlab.com/install/docker/" target="_blank">https://docs.gitlab.com/install/docker/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">OneDev</font><br />
+                        UI: <a href="http://localhost:6610/" target="_blank">http://localhost:6610/</a> (admin / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">Built-in CI: jobs from <code>.onedev-buildspec.yml</code> run on the host Docker daemon.</span><br />
+                        INFO: <a href="https://docs.onedev.io/" target="_blank">https://docs.onedev.io/</a><br />
+                    </li>
                 </ul>
             </div>
 
@@ -2105,6 +2537,29 @@
                             Prometheus, Tempo, Loki, InfluxDB.</span><br />
                         INFO: <a href="https://grafana.com/docs/grafana/latest/"
                             target="_blank">https://grafana.com/docs/grafana/latest/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Metabase</font><br />
+                        UI: <a href="http://localhost:3008/" target="_blank">http://localhost:3008/</a> (admin@example.com / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">Requires the PostgreSQL stack. Add databases in Admin &gt; Databases (e.g. <code>mssqldb</code>).</span><br />
+                        INFO: <a href="https://www.metabase.com/docs/latest/" target="_blank">https://www.metabase.com/docs/latest/</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Apache Superset</font><br />
+                        UI: <a href="http://localhost:8142/" target="_blank">http://localhost:8142/</a> (admin / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span>)<br />
+                        SQL Server URI: mssql+pymssql://sa:Password123@mssqldb:1433/master <span style="cursor: pointer" onclick="ClipBoardText('mssql+pymssql://sa:Password123@mssqldb:1433/master')"><i
+                                class="fa-regular fa-copy"></i></span><br />
+                        <span class="note">Requires the PostgreSQL stack; the first start builds the image with DB drivers.</span><br />
+                        INFO: <a href="https://superset.apache.org/docs/intro" target="_blank">https://superset.apache.org/docs/intro</a><br />
+                    </li>
+                    <li>
+                        <font style="font-size: 1.2rem; font-weight: bold">Redash</font><br />
+                        UI: <a href="http://localhost:8143/" target="_blank">http://localhost:8143/</a> (admin@example.com / Password123 <span style="cursor: pointer" onclick="ClipBoardText('Password123')"><i
+                                class="fa-regular fa-copy"></i></span>)<br />
+                        <span class="note">Requires the PostgreSQL and Redis stacks.</span><br />
+                        INFO: <a href="https://redash.io/help/" target="_blank">https://redash.io/help/</a><br />
                     </li>
                 </ul>
             </div>

@@ -1,0 +1,74 @@
+# Sonatype Nexus Repository CE: hosted, proxy (cache) and group repositories for NuGet, npm, Docker, Maven, PyPI, Helm
+# and more. UI: http://localhost:8125 (admin / Password123). A fresh instance already has nuget-hosted,
+# nuget.org-proxy and nuget-group repositories; NuGet feed: http://localhost:8125/repository/nuget-group/index.json
+# Community Edition has usage limits (components and requests per day) - plenty for a dev machine.
+# nexus-init does the first-login wizard's work: anonymous read access, NuGet API-key and npm token realms, and -
+# when NEXUS_ACCEPT_EULA=true - accepts the Community Edition EULA and acknowledges its mandatory telemetry
+# (uploads are refused until then).
+services:
+  nexus:
+    image: sonatype/nexus3:${NEXUS_VERSION:-3.98.1}
+    container_name: nexus
+    restart: unless-stopped
+    environment:
+      NEXUS_SECURITY_RANDOMPASSWORD: "false"
+      NEXUS_SECURITY_INITIAL_PASSWORD: ${NEXUS_ADMIN_PASSWORD:-Password123}
+      INSTALL4J_ADD_VM_PARAMS: ${NEXUS_JVM_OPTS:--Xms1g -Xmx2g -XX:MaxDirectMemorySize=2g}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:8081/service/rest/v1/status || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+    volumes:
+      - nexus_data:/nexus-data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${NEXUS_IP:-172.20.13.20}
+        aliases:
+          - nexus
+    ports:
+      - "${NEXUS_PORT:-8125}:8081" # UI + repositories
+  nexus-init:
+    image: sonatype/nexus3:${NEXUS_VERSION:-3.98.1}
+    container_name: nexus-init
+    restart: "no"
+    depends_on:
+      nexus:
+        condition: service_healthy
+    environment:
+      ADMIN_PASSWORD: ${NEXUS_ADMIN_PASSWORD:-Password123}
+      ACCEPT_EULA: ${NEXUS_ACCEPT_EULA:-true}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        API=http://nexus:8081/service/rest/v1
+        C="curl -fsS -u admin:$$ADMIN_PASSWORD -H Content-Type:application/json"
+        if [ "$$ACCEPT_EULA" = "true" ]; then
+          # Post the disclaimer back exactly as returned, with accepted set to true (Nexus requires the same text)
+          $$C "$$API/system/eula" | sed 's/"accepted" *: *false/"accepted": true/' > /tmp/eula.json
+          $$C -X POST "$$API/system/eula" --data @/tmp/eula.json
+          $$C -X POST "$$API/system/mandatory-telemetry-acknowledgement" -d '{"acknowledgement": true}'
+          echo "EULA accepted, telemetry acknowledged"
+        else
+          echo "NEXUS_ACCEPT_EULA is not true: accept the EULA in the UI before uploading"
+        fi
+        $$C -X PUT "$$API/security/anonymous" -d '{"enabled":true,"userId":"anonymous","realmName":"NexusAuthorizingRealm"}'
+        $$C -X PUT "$$API/security/realms/active" -d '["NexusAuthenticatingRealm","NuGetApiKey","NpmToken","DockerToken"]'
+        echo "anonymous read and NuGet/npm/Docker token realms enabled"
+    networks:
+      GroupNetwork:
+        ipv4_address: ${NEXUS_INIT_IP:-172.20.13.21}
+volumes:
+  nexus_data:
+    name: nexus_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Packages/Nexus/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

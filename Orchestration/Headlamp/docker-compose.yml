@@ -1,0 +1,34 @@
+# Headlamp: Kubernetes web UI (workloads, logs, exec, YAML editing, Helm releases, plugins). UI: http://localhost:4466
+# Reads the kubeconfig that the K3s stack's k3s-setup writes for containers (server https://k3s:6443), so start
+# Orchestration/K3s first. No login needed: Headlamp uses that kubeconfig's admin credentials (local use only).
+services:
+  headlamp:
+    image: ghcr.io/headlamp-k8s/headlamp:${HEADLAMP_VERSION:-v0.46.0}
+    container_name: headlamp
+    restart: unless-stopped
+    # Appended to the image's entrypoint (headlamp-server with the static/plugin dirs)
+    command:
+      - -kubeconfig
+      - /kube/${HEADLAMP_KUBECONFIG:-kubeconfig-groupnetwork.yaml}
+    volumes:
+      - headlamp_kubeconfig:/kube:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${HEADLAMP_IP:-172.20.12.50}
+        aliases:
+          - headlamp
+    ports:
+      - "${HEADLAMP_PORT:-4466}:4466"
+volumes:
+  # Same host folder as the K3s stack's k3s_kubeconfig volume, mounted read-only
+  headlamp_kubeconfig:
+    name: headlamp_kubeconfig
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Orchestration/K3s/kubeconfig
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

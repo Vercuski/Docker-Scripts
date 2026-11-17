@@ -1,0 +1,92 @@
+# Metabase: self-service BI - questions, dashboards, SQL editor, alerts.
+#   Web UI + API: http://localhost:3008 (admin@example.com / Password123)
+# Requires the PostgreSQL stack for Metabase's own application database. Add the databases you want to explore
+# in Admin > Databases, by their GroupNetwork names (mssqldb, postgresql, mysqldb, mongodb, clickhouse, ...).
+services:
+  metabase-db-init:
+    image: ${METABASE_DB_INIT_IMAGE:-postgres:18}
+    container_name: metabase-db-init
+    restart: "no"
+    environment:
+      PGHOST: postgresql
+      PGUSER: ${METABASE_DB_ADMIN_USER:-user@user.com}
+      PGPASSWORD: ${METABASE_DB_ADMIN_PASSWORD:-Password123}
+      DB_NAME: ${METABASE_DB_NAME:-metabase}
+      DB_USER: ${METABASE_DB_USER:-metabase}
+      DB_PASSWORD: ${METABASE_DB_PASSWORD:-Password123}
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        for i in $$(seq 30); do pg_isready -q -d postgres && break; echo "waiting for postgresql (start Databases/PostgreSQL)"; sleep 2; done
+        psql -d postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$$DB_USER'" | grep -q 1 \
+          || psql -d postgres -c "CREATE ROLE \"$$DB_USER\" LOGIN PASSWORD '$$DB_PASSWORD'"
+        psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$$DB_NAME'" | grep -q 1 \
+          && echo "database $$DB_NAME exists" \
+          || psql -d postgres -c "CREATE DATABASE \"$$DB_NAME\" OWNER \"$$DB_USER\""
+    networks:
+      GroupNetwork:
+        ipv4_address: ${METABASE_DB_INIT_IP:-172.20.20.20}
+  metabase:
+    image: metabase/metabase:${METABASE_VERSION:-v0.65.4.5}
+    container_name: metabase
+    restart: unless-stopped
+    depends_on:
+      metabase-db-init:
+        condition: service_completed_successfully
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_HOST: postgresql
+      MB_DB_PORT: 5432
+      MB_DB_DBNAME: ${METABASE_DB_NAME:-metabase}
+      MB_DB_USER: ${METABASE_DB_USER:-metabase}
+      MB_DB_PASS: ${METABASE_DB_PASSWORD:-Password123}
+      MB_ENCRYPTION_SECRET_KEY: ${METABASE_ENCRYPTION_KEY:-AcyH5snDujSYfDHYY6tRidDpZfjVhRcw}
+      MB_SITE_URL: http://localhost:${METABASE_PORT:-3008}/
+      MB_ANON_TRACKING_ENABLED: "false"
+      MB_CHECK_FOR_UPDATES: "false"
+      # "weak" allows the repo's Password123 dev default (the normal policy rejects it as too common)
+      MB_PASSWORD_COMPLEXITY: ${METABASE_PASSWORD_COMPLEXITY:-weak}
+      JAVA_OPTS: -Xmx${METABASE_JAVA_HEAP:-1g}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:3000/api/health >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      start_period: 60s
+      retries: 30
+    networks:
+      GroupNetwork:
+        ipv4_address: ${METABASE_IP:-172.20.20.21}
+        aliases:
+          - metabase
+    ports:
+      - "${METABASE_PORT:-3008}:3000" # Web UI + API
+  metabase-init:
+    image: ${METABASE_CURL_IMAGE:-curlimages/curl:8.23.0}
+    container_name: metabase-init
+    restart: "no"
+    depends_on:
+      metabase:
+        condition: service_healthy
+    environment:
+      ADMIN_EMAIL: ${METABASE_ADMIN_EMAIL:-admin@example.com}
+      ADMIN_PASSWORD: ${METABASE_ADMIN_PASSWORD:-Password123}
+      SITE_NAME: ${METABASE_SITE_NAME:-Local Dev}
+    # Same as the "Let's get started" pages: only possible while Metabase still has a setup token
+    entrypoint:
+      - sh
+      - -c
+      - |
+        TOKEN=$$(curl -fs http://metabase:3000/api/session/properties | sed -n 's/.*"setup-token":"\([^"]*\)".*/\1/p')
+        if [ -z "$$TOKEN" ]; then echo "Metabase already set up"; exit 0; fi
+        BODY="{\"token\":\"$$TOKEN\",\"user\":{\"email\":\"$$ADMIN_EMAIL\",\"password\":\"$$ADMIN_PASSWORD\",\"first_name\":\"Admin\",\"last_name\":\"User\",\"site_name\":\"$$SITE_NAME\"},\"prefs\":{\"site_name\":\"$$SITE_NAME\",\"allow_tracking\":false}}"
+        curl -fsS -X POST http://metabase:3000/api/setup -H "Content-Type: application/json" -d "$$BODY" -o /dev/null \
+          && echo "admin created: $$ADMIN_EMAIL" || { echo "Metabase setup failed"; exit 1; }
+    networks:
+      GroupNetwork:
+        ipv4_address: ${METABASE_INIT_IP:-172.20.20.22}
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

@@ -1,0 +1,28 @@
+# Caddyfile (mounted read-only; reload with: docker exec caddy caddy reload --config /etc/caddy/Caddyfile)
+{
+	# Local development: never ask Let's Encrypt for certificates; serve HTTPS from Caddy's internal CA
+	local_certs
+	# Keep http://localhost:8128 plain HTTP instead of redirecting it to the HTTPS site
+	auto_https disable_redirects
+	# The container can't add the root to your OS/browser trust store; do that by hand (see ReadMe)
+	skip_install_trust
+	admin 0.0.0.0:2019
+}
+
+# http://localhost:8128 - round-robin over the Nginx and Apache stacks, like HAProxy
+:80 {
+	reverse_proxy nginx:80 apache:80 {
+		lb_policy round_robin
+		health_uri /
+		health_interval 10s
+	}
+}
+
+# https://localhost:8134 - same backends over HTTPS with a certificate from Caddy's local CA. Trust the root
+# certificate (data volume: caddy/pki/authorities/local/root.crt) to remove the browser warning.
+https://localhost:443 {
+	tls internal
+	reverse_proxy nginx:80 apache:80 {
+		lb_policy round_robin
+	}
+}

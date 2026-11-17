@@ -1,0 +1,32 @@
+# Uptime Kuma: HTTP / TCP / ping / DNS / Docker / database monitors with alerts and status pages.
+# UI: http://localhost:3005 - the first visit creates the admin account. Monitor other stacks by their GroupNetwork
+# alias (e.g. http://keycloak:8080, postgresql:5432).
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:${UPTIME_KUMA_VERSION:-2.5.11}
+    container_name: uptime-kuma
+    restart: unless-stopped
+    environment:
+      # Skips the "choose a database" page on first start (sqlite = embedded, nothing else to run)
+      UPTIME_KUMA_DB_TYPE: sqlite
+    volumes:
+      - uptime_kuma_data:/app/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${UPTIME_KUMA_IP:-172.20.11.60}
+        aliases:
+          - uptime-kuma
+    ports:
+      - "${UPTIME_KUMA_PORT:-3005}:3001"
+volumes:
+  uptime_kuma_data:
+    name: uptime_kuma_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Observability/UptimeKuma/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

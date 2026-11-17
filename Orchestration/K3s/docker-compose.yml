@@ -1,0 +1,110 @@
+# K3s: lightweight single-node Kubernetes running as a container on GroupNetwork, with Argo CD installed into it.
+#   Kubernetes API:  https://localhost:6443   - kubeconfig: <volume folder>/kubeconfig/kubeconfig.yaml (for the host)
+#                                               and kubeconfig-groupnetwork.yaml (for containers, server https://k3s:6443)
+#   Argo CD:         http://localhost:8124    - admin / Password123
+# k3s-setup runs once per start: writes the GroupNetwork kubeconfig, lets pods resolve GroupNetwork names
+# (K3S_GROUPNETWORK_HOSTS), installs/updates Argo CD and exposes its UI. Re-running it is safe.
+services:
+  k3s:
+    image: rancher/k3s:${K3S_VERSION:-v1.37.2-k3s1}
+    container_name: k3s
+    hostname: k3s
+    restart: unless-stopped
+    privileged: true
+    command:
+      - server
+      - --node-name=k3s
+      - --https-listen-port=${K3S_API_PORT:-6443}
+      - --tls-san=k3s
+      - --tls-san=localhost
+      - --disable=traefik
+      - --write-kubeconfig-mode=644
+    environment:
+      K3S_KUBECONFIG_OUTPUT: /output/kubeconfig.yaml
+    tmpfs:
+      - /run
+      - /var/run
+    volumes:
+      - k3s_server:/var/lib/rancher/k3s
+      - k3s_kubeconfig:/output
+    networks:
+      GroupNetwork:
+        ipv4_address: ${K3S_IP:-172.20.12.40}
+        aliases:
+          - k3s
+    ports:
+      - "${K3S_API_PORT:-6443}:${K3S_API_PORT:-6443}" # Kubernetes API
+      - "${ARGOCD_PORT:-8124}:30080" # Argo CD (NodePort 30080)
+
+  k3s-setup:
+    image: rancher/k3s:${K3S_VERSION:-v1.37.2-k3s1}
+    container_name: k3s-setup
+    restart: "no"
+    depends_on:
+      - k3s
+    environment:
+      API_PORT: ${K3S_API_PORT:-6443}
+      ARGOCD_VERSION: ${ARGOCD_VERSION:-v3.6.1}
+      GROUPNETWORK_HOSTS: ${K3S_GROUPNETWORK_HOSTS:-gitea=172.20.19.10 postgresql=172.20.6.130 mssqldb=172.20.6.90 redis=172.20.6.150 kafka=172.20.10.10 rabbitmq=172.20.10.20 keycloak=172.20.2.10 dockerregistry=172.20.5.10}
+      # bcrypt of Password123 (generate another with: htpasswd -nbBC 10 "" NewPassword | tr -d ':\n')
+      ARGOCD_ADMIN_HASH: $$2b$$10$$V21UAlAqgMH0kSqj/xPrYuRChM8IJUKP8P5ZLpv79weS9hyGCqoRe
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        echo "waiting for the k3s kubeconfig"
+        for i in $$(seq 120); do [ -s /output/kubeconfig.yaml ] && break; sleep 2; done
+        sed "s#https://127.0.0.1:$$API_PORT#https://k3s:$$API_PORT#" /output/kubeconfig.yaml > /output/kubeconfig-groupnetwork.yaml
+        export KUBECONFIG=/output/kubeconfig-groupnetwork.yaml
+        until kubectl get --raw /readyz >/dev/null 2>&1; do sleep 2; done
+        until kubectl get nodes -o name 2>/dev/null | grep -q node/; do sleep 2; done
+        kubectl wait --for=condition=Ready node --all --timeout=300s
+
+        # Pods cannot use Docker's DNS, so give CoreDNS a zone per GroupNetwork name
+        BLOCKS=""
+        for entry in $$GROUPNETWORK_HOSTS; do
+          name=$${entry%%=*}; ip=$${entry#*=}
+          BLOCKS="$$BLOCKS$$name:53 {\n    hosts {\n        $$ip $$name\n    }\n}\n"
+        done
+        printf "$$BLOCKS" > /tmp/groupnetwork.server
+        kubectl -n kube-system create configmap coredns-custom --from-file=groupnetwork.server=/tmp/groupnetwork.server \
+          --dry-run=client -o yaml | kubectl apply -f -
+        kubectl -n kube-system rollout restart deployment coredns
+
+        # Argo CD: install or upgrade, plain HTTP on NodePort 30080, known admin password
+        kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
+        if [ -s /manifests/argocd-install.yaml ]; then SRC=/manifests/argocd-install.yaml
+        else SRC=https://raw.githubusercontent.com/argoproj/argo-cd/$$ARGOCD_VERSION/manifests/install.yaml; fi
+        kubectl apply -n argocd --server-side --force-conflicts -f "$$SRC"
+        kubectl -n argocd patch configmap argocd-cmd-params-cm --type merge -p '{"data":{"server.insecure":"true"}}'
+        kubectl -n argocd patch service argocd-server --type merge -p \
+          '{"spec":{"type":"NodePort","ports":[{"name":"http","port":80,"targetPort":8080,"nodePort":30080,"protocol":"TCP"},{"name":"https","port":443,"targetPort":8080,"nodePort":30443,"protocol":"TCP"}]}}'
+        kubectl -n argocd patch secret argocd-secret --type merge -p \
+          "{\"stringData\":{\"admin.password\":\"$$ARGOCD_ADMIN_HASH\",\"admin.passwordMtime\":\"$$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}}"
+        kubectl -n argocd rollout restart deployment argocd-server
+        kubectl -n argocd rollout status deployment argocd-server --timeout=600s
+        echo "Argo CD ready"
+    volumes:
+      - k3s_kubeconfig:/output
+    networks:
+      GroupNetwork:
+        ipv4_address: ${K3S_SETUP_IP:-172.20.12.41}
+volumes:
+  k3s_server:
+    name: k3s_server
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Orchestration/K3s/server
+  k3s_kubeconfig:
+    name: k3s_kubeconfig
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Orchestration/K3s/kubeconfig
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

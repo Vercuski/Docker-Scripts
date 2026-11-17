@@ -1,0 +1,33 @@
+# Typesense: typo-tolerant search with in-memory indexes (RAM-bound, very fast), facets, geo and vector search.
+#   API: http://localhost:8137 (from other containers: http://typesense:8108)   Health: /health
+# .NET client: the Typesense NuGet package. No built-in UI.
+services:
+  typesense:
+    image: typesense/typesense:${TYPESENSE_VERSION:-30.2}
+    container_name: typesense
+    restart: unless-stopped
+    command:
+      - --data-dir=/data
+      - --api-key=${TYPESENSE_API_KEY:-uE0aCzMxoCDCfy84mWiS9T1dfjzas39h}
+      - --enable-cors
+    volumes:
+      - typesense_data:/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${TYPESENSE_IP:-172.20.16.40}
+        aliases:
+          - typesense
+    ports:
+      - "${TYPESENSE_PORT:-8137}:8108" # API
+volumes:
+  typesense_data:
+    name: typesense_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Search/Typesense/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

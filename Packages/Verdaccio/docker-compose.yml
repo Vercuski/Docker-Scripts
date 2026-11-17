@@ -1,0 +1,32 @@
+# Verdaccio: private npm registry that also caches npmjs.org. UI + registry: http://localhost:4873
+#   npm set registry http://localhost:4873/      npm adduser --registry http://localhost:4873/
+# Packages under the @local scope stay private; everything else is proxied from npmjs.org and cached.
+services:
+  verdaccio:
+    image: verdaccio/verdaccio:${VERDACCIO_VERSION:-7.1.1}
+    container_name: verdaccio
+    restart: unless-stopped
+    environment:
+      VERDACCIO_PUBLIC_URL: http://localhost:${VERDACCIO_PORT:-4873}
+    volumes:
+      - ./config.yaml:/verdaccio/conf/config.yaml:ro
+      - verdaccio_storage:/verdaccio/storage
+    networks:
+      GroupNetwork:
+        ipv4_address: ${VERDACCIO_IP:-172.20.13.40}
+        aliases:
+          - verdaccio
+    ports:
+      - "${VERDACCIO_PORT:-4873}:4873"
+volumes:
+  verdaccio_storage:
+    name: verdaccio_storage
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Packages/Verdaccio/storage
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

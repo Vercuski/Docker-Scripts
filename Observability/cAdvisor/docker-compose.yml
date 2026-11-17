@@ -1,0 +1,41 @@
+# cAdvisor: resource usage of every container on this Docker host. UI: http://localhost:8121
+# Metrics at http://cadvisor:8080/metrics are scraped by the Prometheus stack (job "cadvisor"); node-exporter in that
+# stack covers the host itself. Reads the Docker host's filesystem read-only (on Docker Desktop: the Linux VM).
+services:
+  cadvisor:
+    image: ghcr.io/google/cadvisor:${CADVISOR_VERSION:-0.61.0}
+    container_name: cadvisor
+    restart: unless-stopped
+    privileged: true
+    environment:
+      HOUSEKEEPING_INTERVAL: ${CADVISOR_HOUSEKEEPING_INTERVAL:-15s}
+    # cAdvisor reads Docker containers through containerd. Its socket is /run/containerd/containerd.sock when containerd
+    # runs as its own service, or /var/run/docker/containerd/containerd.sock when dockerd manages it: use whichever exists.
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        SOCK=/var/run/containerd/containerd.sock
+        [ -S "$$SOCK" ] || SOCK=/var/run/docker/containerd/containerd.sock
+        exec /usr/bin/entrypoint.sh --containerd="$$SOCK" --housekeeping_interval="$$HOUSEKEEPING_INTERVAL" \
+          --docker_only=true --store_container_labels=false \
+          --whitelisted_container_labels=com.docker.compose.project,com.docker.compose.service
+    devices:
+      - /dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${CADVISOR_IP:-172.20.11.70}
+        aliases:
+          - cadvisor
+    ports:
+      - "${CADVISOR_PORT:-8121}:8080"
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

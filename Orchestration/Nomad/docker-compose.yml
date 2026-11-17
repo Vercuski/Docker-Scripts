@@ -1,0 +1,28 @@
+# HashiCorp Nomad, single node (server + client). Jobs using the docker driver run as sibling containers on this
+# Docker host. UI / API: http://localhost:4646
+# Try it: docker exec nomad nomad job run /jobs/example.nomad.hcl   (or NOMAD_ADDR=http://localhost:4646 with a local CLI)
+# No ACLs - local development only. Nomad is under the Business Source License (free for this use).
+services:
+  nomad:
+    image: hashicorp/nomad:${NOMAD_VERSION:-2.1.1}
+    container_name: nomad
+    restart: unless-stopped
+    privileged: true
+    command: ["agent", "-config=/etc/nomad.d/nomad.hcl", "-data-dir=${NOMAD_DATA_DIR:-/var/lib/nomad-docker}"]
+    volumes:
+      - ./nomad.hcl:/etc/nomad.d/nomad.hcl:ro
+      - ./example.nomad.hcl:/jobs/example.nomad.hcl:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Same path on both sides (see NOMAD_DATA_DIR in .env)
+      - ${NOMAD_DATA_DIR:-/var/lib/nomad-docker}:${NOMAD_DATA_DIR:-/var/lib/nomad-docker}
+    networks:
+      GroupNetwork:
+        ipv4_address: ${NOMAD_IP:-172.20.12.60}
+        aliases:
+          - nomad
+    ports:
+      - "${NOMAD_PORT:-4646}:4646" # HTTP API + UI
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

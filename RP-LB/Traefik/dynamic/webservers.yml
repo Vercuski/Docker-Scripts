@@ -1,0 +1,22 @@
+# File-provider example (reloaded on change): round-robin over the Nginx and Apache stacks, like HAProxy.
+#   http://localhost:8126/web/
+http:
+  routers:
+    webservers:
+      rule: PathPrefix(`/web`)
+      entryPoints: [web]
+      middlewares: [strip-web]
+      service: webservers
+  middlewares:
+    strip-web:
+      stripPrefix:
+        prefixes: [/web]
+  services:
+    webservers:
+      loadBalancer:
+        healthCheck:
+          path: /
+          interval: 10s
+        servers:
+          - url: http://nginx:80
+          - url: http://apache:80

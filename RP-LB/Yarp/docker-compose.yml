@@ -1,0 +1,31 @@
+# YARP: Microsoft's .NET reverse proxy, hosted in the small ASP.NET Core app in ./src (built on first `up`).
+#   http://localhost:8129/web/  (round-robin over the Nginx and Apache stacks)   Health: /healthz
+# Routes and clusters live in ./config/proxy.json; the folder is mounted into the container and reloaded on change.
+# After changing Program.cs or the package version: docker compose up -d --build
+services:
+  yarp:
+    build:
+      context: ./src
+      args:
+        DOTNET_VERSION: ${DOTNET_VERSION:-10.0}
+        YARP_PACKAGE_VERSION: ${YARP_PACKAGE_VERSION:-2.3.0}
+    image: yarp-proxy:${YARP_PACKAGE_VERSION:-2.3.0}
+    container_name: yarp
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      # Poll for config/proxy.json changes: file events don't reliably cross Windows bind mounts
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    volumes:
+      - ./config:/app/config:ro
+    networks:
+      GroupNetwork:
+        ipv4_address: ${YARP_IP:-172.20.14.50}
+        aliases:
+          - yarp
+    ports:
+      - "${YARP_PORT:-8129}:8080" # HTTP
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

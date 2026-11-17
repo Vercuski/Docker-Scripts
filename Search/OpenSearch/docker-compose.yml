@@ -1,6 +1,6 @@
 services:
   opensearch-node1:
-    image: opensearchproject/opensearch:${OPENSEARCH_VERSION:-latest}
+    image: opensearchproject/opensearch:${OPENSEARCH_VERSION:-3.9.0}
     container_name: opensearch-node1
     restart: unless-stopped
     environment:
@@ -30,7 +30,7 @@ services:
         aliases:
           - opensearch-node1
   opensearch-node2:
-    image: opensearchproject/opensearch:${OPENSEARCH_VERSION:-latest}
+    image: opensearchproject/opensearch:${OPENSEARCH_VERSION:-3.9.0}
     container_name: opensearch-node2
     restart: unless-stopped
     environment:
@@ -56,7 +56,7 @@ services:
         aliases:
           - opensearch-node2
   opensearch-dashboards:
-    image: opensearchproject/opensearch-dashboards:${OPENSEARCH_DASHBOARDS_VERSION:-latest}
+    image: opensearchproject/opensearch-dashboards:${OPENSEARCH_DASHBOARDS_VERSION:-3.9.0}
     container_name: opensearch-dashboards
     restart: unless-stopped
     depends_on:

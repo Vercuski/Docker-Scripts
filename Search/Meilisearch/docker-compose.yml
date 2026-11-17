@@ -1,0 +1,39 @@
+# Meilisearch: typo-tolerant instant search with filters, facets, and hybrid/vector search.
+#   API + mini dashboard: http://localhost:7700 (from other containers: http://meilisearch:7700)
+# .NET client: the Meilisearch NuGet package.
+services:
+  meilisearch:
+    image: getmeili/meilisearch:${MEILI_VERSION:-v1.57.0}
+    container_name: meilisearch
+    restart: unless-stopped
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-bnGWQ1ndZ5DaHAwfUGpyN1Vp536BaGo2}
+      MEILI_ENV: ${MEILI_ENV:-development}
+      MEILI_NO_ANALYTICS: ${MEILI_NO_ANALYTICS:-true}
+      MEILI_DB_PATH: /meili_data/data.ms
+    volumes:
+      - meilisearch_data:/meili_data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:7700/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+      GroupNetwork:
+        ipv4_address: ${MEILI_IP:-172.20.16.30}
+        aliases:
+          - meilisearch
+    ports:
+      - "${MEILI_PORT:-7700}:7700" # API + mini dashboard
+volumes:
+  meilisearch_data:
+    name: meilisearch_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Search/Meilisearch/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

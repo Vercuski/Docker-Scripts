@@ -1,0 +1,49 @@
+# OpenBao: open-source (MPL-2.0) fork of HashiCorp Vault with the same API, CLI (bao) and UI.
+#   API + UI: http://localhost:8202/ui (userpass: admin / Password123)   From other containers: http://openbao:8200
+# Unlike the Vault stack there is no init/unseal step: a static key from .env unseals it on every start, and
+# openbao.hcl initializes it on the first start (admin policy + userpass user, KV v2 engine at secret/).
+services:
+  openbao:
+    image: openbao/openbao:${OPENBAO_VERSION:-2.7.2}
+    container_name: openbao
+    restart: unless-stopped
+    entrypoint:
+      - sh
+      - -c
+      - |
+        umask 077
+        printf '%s' "$$OPENBAO_UNSEAL_KEY" | xxd -r -p > /tmp/openbao-unseal.key
+        [ "$$(wc -c < /tmp/openbao-unseal.key)" = 32 ] || { echo "OPENBAO_UNSEAL_KEY must be 64 hex characters"; exit 1; }
+        exec docker-entrypoint.sh server
+    environment:
+      BAO_ADDR: http://127.0.0.1:8200 # for the bao CLI inside the container
+      BAO_LOG_LEVEL: ${OPENBAO_LOG_LEVEL:-info}
+      OPENBAO_UNSEAL_KEY: ${OPENBAO_UNSEAL_KEY:-d42d9ee9bd1ac01fdbc0fb25a074229212234a6281fd5fd14b1ba3a3f6355a70}
+      OPENBAO_ADMIN_PASSWORD: ${OPENBAO_ADMIN_PASSWORD:-Password123}
+    volumes:
+      - ./openbao.hcl:/openbao/config/openbao.hcl:ro
+      - openbao_data:/openbao/file
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8200/v1/sys/health >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+      GroupNetwork:
+        ipv4_address: ${OPENBAO_IP:-172.20.17.20}
+        aliases:
+          - openbao
+    ports:
+      - "${OPENBAO_PORT:-8202}:8200" # API + web UI
+volumes:
+  openbao_data:
+    name: openbao_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Security/OpenBao/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

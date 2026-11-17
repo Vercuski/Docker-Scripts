@@ -1,0 +1,39 @@
+# OneDev: git server with built-in CI/CD (jobs run as containers on the host Docker daemon), issues, pull requests,
+# package registry and code search, in one container.
+#   Web UI: http://localhost:6610 (admin / Password123)   SSH: ssh://localhost:6611/<project>
+# The initial_* variables skip the setup page on the first start only; change them later in the UI.
+services:
+  onedev:
+    image: 1dev/server:${ONEDEV_VERSION:-17.2.1}
+    container_name: onedev
+    restart: unless-stopped
+    environment:
+      initial_user: ${ONEDEV_ADMIN_USER:-admin}
+      initial_password: ${ONEDEV_ADMIN_PASSWORD:-Password123}
+      initial_email: ${ONEDEV_ADMIN_EMAIL:-admin@example.com}
+      initial_server_url: ${ONEDEV_SERVER_URL:-http://localhost:6610}
+      initial_ssh_root_url: ssh://localhost:${ONEDEV_SSH_PORT:-6611}
+    volumes:
+      - onedev_data:/opt/onedev
+      # CI jobs run as sibling containers on the host Docker daemon
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      GroupNetwork:
+        ipv4_address: ${ONEDEV_IP:-172.20.19.40}
+        aliases:
+          - onedev
+    ports:
+      - "${ONEDEV_HTTP_PORT:-6610}:6610" # Web UI + git over HTTP
+      - "${ONEDEV_SSH_PORT:-6611}:6611" # git over SSH
+volumes:
+  onedev_data:
+    name: onedev_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/SourceControl/OneDev/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

@@ -1,0 +1,33 @@
+# grafana/otel-lgtm: the whole Grafana observability stack (OTel Collector, Prometheus, Tempo, Loki, Pyroscope and
+# Grafana with data sources and dashboards) in one container - the quickest way to see an app's telemetry.
+# Point OTEL_EXPORTER_OTLP_ENDPOINT at http://localhost:24318 (or http://otel-lgtm:4318 from other containers).
+# Grafana: http://localhost:3006 (anonymous admin, local use only). The separate OpenTelemetry/Prometheus/Grafana
+# stacks remain the configurable setup; this one is self-contained.
+services:
+  otel-lgtm:
+    image: grafana/otel-lgtm:${OTEL_LGTM_VERSION:-0.41.0}
+    container_name: otel-lgtm
+    restart: unless-stopped
+    volumes:
+      - otel_lgtm_data:/data
+    networks:
+      GroupNetwork:
+        ipv4_address: ${OTEL_LGTM_IP:-172.20.11.80}
+        aliases:
+          - otel-lgtm
+    ports:
+      - "${OTEL_LGTM_GRAFANA_PORT:-3006}:3000" # Grafana
+      - "${OTEL_LGTM_OTLP_GRPC_PORT:-24317}:4317" # OTLP/gRPC
+      - "${OTEL_LGTM_OTLP_HTTP_PORT:-24318}:4318" # OTLP/HTTP
+volumes:
+  otel_lgtm_data:
+    name: otel_lgtm_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Observability/OtelLgtm/data
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

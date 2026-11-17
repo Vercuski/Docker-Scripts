@@ -1,0 +1,77 @@
+# ZAP: dynamic application security testing (spider, passive/active scans, intercepting proxy).
+#   zap (always on, headless): proxy + REST API http://localhost:8140 (API key in .env; from containers: http://zap:8140)
+#   ZAP listens on the host port number inside the container too: it treats requests for any other host:port
+#   as traffic to proxy, so http://localhost:8140/JSON/... only reaches the API when the numbers match.
+#   zap-ui (optional, profile "ui"): the ZAP desktop app in the browser, http://localhost:8139/zap/
+#     docker compose --profile ui up -d
+# Both share the wrk volume: ZAP's root CA (zap_root_ca.cer/.key, created once and reused) and scan reports.
+# Scan targets on GroupNetwork by their alias, e.g. http://nginx or http://myapi:8080.
+services:
+  zap:
+    image: zaproxy/zap-stable:${ZAP_VERSION:-2.17.0}
+    container_name: zap
+    restart: unless-stopped
+    environment:
+      ZAP_API_KEY: ${ZAP_API_KEY:-local-dev-zap-api-key}
+      ZAP_PORT: ${ZAP_PROXY_PORT:-8140}
+    entrypoint:
+      - sh
+      - -c
+      - |
+        CERT="-certpubdump /zap/wrk/zap_root_ca.cer -certfulldump /zap/wrk/zap_root_ca.key"
+        [ -f /zap/wrk/zap_root_ca.key ] && CERT="-certload /zap/wrk/zap_root_ca.key"
+        exec zap.sh -daemon -host 0.0.0.0 -port $$ZAP_PORT $$CERT \
+          -config api.key=$$ZAP_API_KEY -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true
+    volumes:
+      - zap_wrk:/zap/wrk
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs \"http://localhost:$$ZAP_PORT/JSON/core/view/version/?apikey=$$ZAP_API_KEY\" >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      start_period: 60s
+      retries: 10
+    networks:
+      GroupNetwork:
+        ipv4_address: ${ZAP_IP:-172.20.17.40}
+        aliases:
+          - zap
+    ports:
+      - "${ZAP_PROXY_PORT:-8140}:${ZAP_PROXY_PORT:-8140}" # Proxy + API (same number inside, see above)
+  zap-ui:
+    image: zaproxy/zap-stable:${ZAP_VERSION:-2.17.0}
+    container_name: zap-ui
+    restart: unless-stopped
+    profiles: ["ui"]
+    depends_on:
+      zap:
+        condition: service_healthy # creates the shared root CA first
+    environment:
+      ZAP_API_KEY: ${ZAP_API_KEY:-local-dev-zap-api-key}
+    # Same options as the image's zap-webswing.sh, plus the API key; ZAP itself starts when the page is opened
+    entrypoint:
+      - sh
+      - -c
+      - |
+        export ZAP_WEBSWING_OPTS="-host 0.0.0.0 -port 8090 -config stats.pkg.webswing=1 -certload /zap/wrk/zap_root_ca.key -config api.key=$$ZAP_API_KEY"
+        exec /zap/zap-webswing.sh
+    volumes:
+      - zap_wrk:/zap/wrk
+    networks:
+      GroupNetwork:
+        ipv4_address: ${ZAP_UI_IP:-172.20.17.41}
+        aliases:
+          - zap-ui
+    ports:
+      - "${ZAP_UI_PORT:-8139}:8080" # Desktop UI (Webswing)
+volumes:
+  zap_wrk:
+    name: zap_wrk
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ROOT_VOLUME_DIR:?run CreateVolumes.bat or CreateVolumes.sh first}/docker/volumes/Security/Zap/wrk
+networks:
+  GroupNetwork:
+    driver: bridge
+    external: true

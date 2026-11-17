@@ -52,17 +52,18 @@ Your uncommitted work in progress (Seq, MSSQL, SuperTokens, README) was kept and
 ## Flagged but not changed (your call)
 
 1. ~~**EventStoreDB**~~ *Done 2026-11-16: replaced by `Databases/KurrentDB`.* `20.10.2-buster-slim` is from 2021. The product is now **KurrentDB** (`kurrentplatform/kurrentdb`), with `KURRENTDB_*` env vars. External TCP was removed in v24, so it needs client changes.
-2. **Elastic** `STACK_VERSION=8.7.1` is very old. Bump to the latest 8.x or 9.x.
+2. ~~**Elastic**~~ *Done 2026-11-16: bumped to 9.5.6 (fresh data; see Search/ElasticSearch/ReadMe.md).* `STACK_VERSION=8.7.1` is very old. Bump to the latest 8.x or 9.x.
 3. **ProGet** `24.0.2` is old. The `SSL_CERT_FILE`/`https://*:443` settings should be checked against Inedo's current Docker HTTPS docs, or you could terminate TLS in Nginx Proxy Manager instead.
 4. **PostgreSQL**: if your existing data folder was created by PG 17 or earlier, pin that major version instead of 18, or migrate with `pg_upgrade`.
 5. **SuperTokens** `supertokens-postgresql:9.3` is behind current releases. It also needs a `supertokens` database created in Postgres.
-6. **Kubernetes Dashboard** is archived. Headlamp is the recommended replacement.
+6. ~~**Kubernetes Dashboard**~~ *Done 2026-11-16: Orchestration/Headlamp added.* Kubernetes Dashboard is archived. Headlamp is the recommended replacement.
 7. ~~**Gaia**~~ *Done 2026-11-16: removed; replaced by IaC/Atlantis and IaC/Semaphore.* Gaia (Terraform UI) was unmaintained.
 8. Old Docker volumes with renamed names (`rabbinginx_ui`, `nginix_www`, `nginx`, `haproxy`, `zookeeper_*`, `kafka_secrets`, `node_exporter_*`, `prometheus`) can be removed with `docker volume rm`.
+9. **MongoDB** stack uses `mongo:latest` and `mongo-express:latest`. `latest` is now MongoDB 9.0, which Graylog 7.2 doesn't support (it brings its own 8.0). Pin `MONGO_VERSION` to the major your data folder was created with (a 9.x data folder can't be opened by 8.x).
 
 ## Host port map (after the changes)
 
-80/81/443 NPM · 2113 KurrentDB · 1433 MSSQL · 1521 Oracle · 3000 Grafana · 3306 MySQL · 3307 MariaDB · 3567 SuperTokens · 5000/5001 Registry/UI · 5010 Hangfire · 5050 pgAdmin · 5341/8089 Seq · 5432 Postgres · 5601 Kibana · 5602 OpenSearch Dashboards · 5672/15672/15692 RabbitMQ · 6379 Redis · 7007 Backstage · 7077/8090 Spark · 7473/7474/7687 Neo4j · 8080/26257 CockroachDB · 8081 MediaWiki · 8082 phpMyAdmin · 8083 Apache · 8084 Kafka UI · 8086 InfluxDB · 8087 Adminer · 8088 mongo-express · 8091/8092 ProGet · 8100/8404 HAProxy · 8123/19000 ClickHouse · 8180/8181/8443 Nginx/Nginx UI · 8480/8444 Rancher · 9000 SonarQube · 9010/9443 Portainer · 9042 Cassandra · 9090 Prometheus · 9091/19530 Milvus · 9092 Kafka · 9093 Alertmanager · 9100 node-exporter · 9110/9111 MinIO (Milvus) · 9200 Elasticsearch · 9201/9601 OpenSearch · 27017 MongoDB · 514/udp, 1514/1515, 55000 Wazuh manager · 5603 Wazuh dashboard · 9202 Wazuh indexer · 8093 Flink · 8094 Trino · 8888/4040 JupyterLab · 8290/8445 authentik · 8300/8301 ZITADEL · 9095 Authelia · 4433/4434 Kratos · 4444/4445 Hydra · 4455 Ory UI · 5674/9094/5301 Event Hubs emulator · 4566 Floci · 4567 LocalStack · 8095 Pub/Sub emulator · 8096 Firestore emulator · 9011/9020 Spanner emulator · 8446/8097 Lowkey Vault · 8098/8099 Dependency-Track API/UI · 4954 Trivy server · 8102 DefectDojo · 8103 Dozzle · 5002 zot · 8104 Harbor · 8105/38888 RavenDB · 6380 Garnet · 6381 Valkey · 11211 Memcached · 6333/6334 Qdrant · 5984 CouchDB · 8107-8110/11210 Couchbase · 9043/8106 ScyllaDB CQL/Alternator · 5433 TimescaleDB · 8978 CloudBeaver · 3003 Wiki.js · 6875 BookStack · 3002/5556 Outline/Dex · 8112 Structurizr · 8000 Kroki · 8111 draw.io · 8113/8114 Swagger UI/Redoc · 8115/2525/1143/1110 smtp4dev · 4141 Atlantis · 3004 Semaphore · 4222/8222 NATS · 1883/9002 Mosquitto · 61616/5675/61613/8161 Artemis · 19092/18081/18082/9644/8116 Redpanda · 6650/8117 Pulsar · 8118 Debezium · 8119/8120 Apicurio
+80/81/443 NPM · 2113 KurrentDB · 1433 MSSQL · 1521 Oracle · 3000 Grafana · 3306 MySQL · 3307 MariaDB · 3567 SuperTokens · 5000/5001 Registry/UI · 5010 Hangfire · 5050 pgAdmin · 5341/8089 Seq · 5432 Postgres · 5601 Kibana · 5602 OpenSearch Dashboards · 5672/15672/15692 RabbitMQ · 6379 Redis · 7007 Backstage · 7077/8090 Spark · 7473/7474/7687 Neo4j · 8080/26257 CockroachDB · 8081 MediaWiki · 8082 phpMyAdmin · 8083 Apache · 8084 Kafka UI · 8086 InfluxDB · 8087 Adminer · 8088 mongo-express · 8091/8092 ProGet · 8100/8404 HAProxy · 8123/19000 ClickHouse · 8180/8181/8443 Nginx/Nginx UI · 8480/8444 Rancher · 9000 SonarQube · 9010/9443 Portainer · 9042 Cassandra · 9090 Prometheus · 9091/19530 Milvus · 9092 Kafka · 9093 Alertmanager · 9100 node-exporter · 9110/9111 MinIO (Milvus) · 9200 Elasticsearch · 9201/9601 OpenSearch · 27017 MongoDB · 514/udp, 1514/1515, 55000 Wazuh manager · 5603 Wazuh dashboard · 9202 Wazuh indexer · 8093 Flink · 8094 Trino · 8888/4040 JupyterLab · 8290/8445 authentik · 8300/8301 ZITADEL · 9095 Authelia · 4433/4434 Kratos · 4444/4445 Hydra · 4455 Ory UI · 5674/9094/5301 Event Hubs emulator · 4566 Floci · 4567 LocalStack · 8095 Pub/Sub emulator · 8096 Firestore emulator · 9011/9020 Spanner emulator · 8446/8097 Lowkey Vault · 8098/8099 Dependency-Track API/UI · 4954 Trivy server · 8102 DefectDojo · 8103 Dozzle · 5002 zot · 8104 Harbor · 8105/38888 RavenDB · 6380 Garnet · 6381 Valkey · 11211 Memcached · 6333/6334 Qdrant · 5984 CouchDB · 8107-8110/11210 Couchbase · 9043/8106 ScyllaDB CQL/Alternator · 5433 TimescaleDB · 8978 CloudBeaver · 3003 Wiki.js · 6875 BookStack · 3002/5556 Outline/Dex · 8112 Structurizr · 8000 Kroki · 8111 draw.io · 8113/8114 Swagger UI/Redoc · 8115/2525/1143/1110 smtp4dev · 4141 Atlantis · 3004 Semaphore · 4222/8222 NATS · 1883/9002 Mosquitto · 61616/5675/61613/8161 Artemis · 19092/18081/18082/9644/8116 Redpanda · 6650/8117 Pulsar · 8118 Debezium · 8119/8120 Apicurio · 16686/14317/14318 Jaeger · 4041 Pyroscope · 3005 Uptime Kuma · 8121 cAdvisor · 3006/24317/24318 otel-lgtm · 8122/34317/34318 SigNoz · 6443 K3s API · 8124 Argo CD · 4466 Headlamp · 4646 Nomad · 8125 Nexus · 5555 BaGetter · 4873 Verdaccio · 8126/8127 Traefik · 8128/8134 Caddy · 8129 YARP · 8130/9902 Envoy · 8131/8132/8133 Kong · 7233/8135 Temporal · 8136 Airflow · 4440 Rundeck · 5678 n8n · 7700 Meilisearch · 8137 Typesense · 8983 Solr · 8202 OpenBao · 9003 step-ca · 8140/8139 ZAP proxy+API/UI · 8138 Infisical · 9004/12201/5140/5044 Graylog UI/GELF/Syslog/Beats · 3007/2223 Forgejo · 8141/2224 GitLab · 6610/6611 OneDev · 3008 Metabase · 8142 Superset · 8143 Redash
 
 ## Suggested new stacks
 
@@ -82,8 +83,8 @@ These are ordered by how much they would help a .NET/ASP.NET Core developer.
 | 10 | **Garnet** (Microsoft) or **Valkey** | Cache | Garnet is Microsoft Research's Redis-protocol-compatible cache written in .NET. Valkey is the open-source Redis fork. |
 | 11 | **Qdrant** or the **pgvector** Postgres image | Vector DB | A lighter alternative to the 3-container Milvus stack for Semantic Kernel / RAG work. |
 | 12 | ~~**Debezium + Kafka Connect**~~ *Done 2026-11-16 (Messaging/Debezium)* | Messaging/CDC | Change-data-capture from MSSQL/Postgres into your new KRaft Kafka. |
-| 13 | **Dozzle** + **Uptime Kuma** | Ops | A real-time container log viewer and an uptime/health dashboard for all these stacks. |
-| 14 | **Headlamp** | Orchestration | Replaces the archived Kubernetes Dashboard. |
+| 13 | ~~**Dozzle** + **Uptime Kuma**~~ *Done 2026-11-16* | Ops | A real-time container log viewer and an uptime/health dashboard for all these stacks. |
+| 14 | ~~**Headlamp**~~ *Done 2026-11-16* | Orchestration | Replaces the archived Kubernetes Dashboard. |
 | 15 | **WireMock** | Testing | Stubs HTTP APIs for integration tests. It's also available as a Testcontainers module. |
 | 16 | **Atlantis** or **Terrakube** | IaC | Actively maintained alternatives to Gaia for running Terraform from a UI or PR workflow. |
 
@@ -327,3 +328,115 @@ Changes to existing stacks:
 Changes to existing stacks:
 - **Databases/PostgreSQL**: `wal_level=logical` (plus `max_replication_slots` / `max_wal_senders`) via `command:` and `.env`, for Debezium. Needs one restart.
 - **Messaging/Kafka**: Kafka UI lists the Debezium Connect cluster and uses Apicurio as schema registry.
+
+## New stacks added (2026-11-16): Observability
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| Jaeger 2.23.0 | Observability/Jaeger | 11.40 | 16686, 14317, 14318 | Badger storage on a volume (7-day TTL). Query API is `/api/v3`, so no Grafana Jaeger data source (Tempo covers traces in Grafana). Self-tracing turned off. |
+| Grafana Pyroscope 1.21.1 | Observability/Pyroscope | 11.50 | 4041 | Provisioned in Grafana as data source `pyroscope`. |
+| Uptime Kuma 2.5.11 | Observability/UptimeKuma | 11.60 | 3005 | `UPTIME_KUMA_DB_TYPE=sqlite` skips the database-choice page. |
+| cAdvisor 0.61.0 | Observability/cAdvisor | 11.70 | 8121 | Scraped by Prometheus (job `cadvisor`). Entrypoint picks the containerd socket (`/run/containerd` or dockerd-managed `/var/run/docker/containerd`). |
+| grafana/otel-lgtm 0.41.0 | Observability/OtelLgtm | 11.80 | 3006, 24317, 24318 | All-in-one Collector + Prometheus + Tempo + Loki + Pyroscope + Grafana. |
+| SigNoz v0.150.0 | Observability/SigNoz | 11.90-11.96 | 8122, 34317, 34318 | Generated with SigNoz Foundry (`foundryctl forge`, the old deploy/ Compose files are deprecated) and adapted: metadata in the PostgreSQL stack, pinned images, bind volumes, short aliases. Collector accepts OTLP only after the first admin is created. |
+
+Changes to existing stacks:
+- **Observability/Prometheus**: scrape job `cadvisor`.
+- **Visualization/Grafana**: Pyroscope data source.
+
+## New stacks added (2026-11-16): Orchestration
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| K3s v1.37.2 + Argo CD v3.6.1 | Orchestration/K3s | 12.40/12.41 | 6443, 8124 | Privileged K3s server; `k3s-setup` writes a GroupNetwork kubeconfig, generates CoreDNS zones for `K3S_GROUPNETWORK_HOSTS`, installs Argo CD (plain HTTP NodePort 30080, admin / Password123). Traefik disabled. Needs a cgroup v2 Docker host. |
+| Headlamp v0.46.0 | Orchestration/Headlamp | 12.50 | 4466 | Uses the K3s stack's GroupNetwork kubeconfig. |
+| Nomad 2.1.1 | Orchestration/Nomad | 12.60 | 4646 | Server + client, docker driver via the Docker socket; client fingerprints `lo` so job ports publish on the Docker host's 127.0.0.1. `NOMAD_DATA_DIR` is a fixed Docker-host path (same inside and outside). |
+
+Testing notes: the sandbox could not start pods inside K3s (its runtime may not set `oom_score_adj`), so Argo CD's pods were not seen running; the K3s API, kubeconfigs, Argo CD manifest/patches, CoreDNS zone file (checked in a standalone CoreDNS) and Headlamp against the API were verified. Nomad ran the example job end to end.
+
+## New stacks added (2026-11-16): Packages
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| Sonatype Nexus CE 3.98.1 | Packages/Nexus | 13.20/13.21 | 8125 | `nexus-init`: anonymous read, NuGet API-key / npm / Docker token realms, and (with `NEXUS_ACCEPT_EULA=true`, the owner's choice) accepts the CE EULA + mandatory telemetry, without which uploads return 403. Tested: NuGet upload, v3 search and download through `nuget-group`. |
+| BaGetter 1.6.5 | Packages/BaGetter | 13.30 | 5555 | SQLite + file storage; API key for push; nuget.org mirror. Tested push / wrong-key 401 / search / download. |
+| Verdaccio 7.1.1 | Packages/Verdaccio | 13.40 | 4873 | `@local` scope private; everything else proxied from npmjs.org. Tested adduser, publish, install, anonymous 401. |
+
+Not changed: Packages/Proget still pins `24.0.2` (ProGet 2025 exists) - flagged for a separate upgrade.
+
+## New stacks added (2026-11-16): RP-LB
+
+All five front the Nginx and Apache stacks like HAProxy does. Tested each with round-robin, failover when one backend stops (active health checks), and the reload path in its ReadMe.
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| Traefik v3.7.19 | RP-LB/Traefik | 14.30 | 8126 HTTP, 8127 dashboard | Docker-label provider (`exposedbydefault=false`, socket read-only) + watched `dynamic/` file provider (`/web` route). Insecure dashboard - local only. Tested label routing with a throwaway container. |
+| Caddy 2.11.9 | RP-LB/Caddy | 14.40 | 8128 HTTP, 8134 HTTPS | `local_certs` (no ACME), `auto_https disable_redirects` so the plain-HTTP site isn't redirected, `skip_install_trust`. Root CA lands in the data volume. Also covers the WebServers "Caddy" suggestion. |
+| YARP 2.3.0 | RP-LB/Yarp | 14.50 | 8129 | No stable official image (only `dotnet/nightly/yarp` previews), so a minimal ASP.NET Core 10 host is built from `src/`. Routes in `config/proxy.json` (folder mount + polling watcher; a single-file mount missed edits that replace the file). |
+| Envoy v1.39.6 | RP-LB/Envoy | 14.60 | 8130, 9902 admin | Static `envoy.yaml`, `STRICT_DNS` cluster, HTTP health check. |
+| Kong 3.9.4 | RP-LB/Kong | 14.70 | 8131 proxy, 8132 admin, 8133 Manager | Last OSS image (newer = `kong/kong-gateway` Enterprise free mode). DB-less `kong.yml` with rate-limiting + correlation-id; hot reload via `POST /config` tested. |
+
+Ports 8000/8001 (Kong defaults) are taken by Kroki and `kubectl proxy`; 8443 by authentik, hence the 81xx block.
+
+## New stacks added (2026-11-16): Scheduling
+
+All four keep their state in the PostgreSQL stack (dedicated role + database per tool, created by a `*-db-init` one-shot) and were tested against it, including a second `up` to confirm the setup containers are safe to rerun.
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| Temporal 1.32.2 + UI 2.58.1 | Scheduling/Temporal | 15.20-15.24 | 7233 gRPC, 8135 UI | `auto-setup` image ended at 1.29, so this follows Temporal's current samples-server layout: `temporal-schema` (admin-tools `temporal-sql-tool`, setup + update, fails loudly) and `temporal-namespace-init`. Tested a Schedule firing a workflow, schema version stable on rerun. |
+| Airflow 3.4.0 | Scheduling/Airflow | 15.30-15.35 | 8136 | LocalExecutor (no Celery/Redis), FAB auth manager. `airflow-init` migrates and creates the admin or resets its password. Sample DAG in `dags/`. Tested token auth, manual run of the sample DAG (dynamic task mapping) and task logs on the volume. |
+| Rundeck 6.3.0 | Scheduling/Rundeck | 15.40/15.41 | 4440 | Entrypoint wrapper writes `realm.properties` (admin password) and a static API token file from `.env`; default `admin/admin` rejected. Tested project + cron job import, scheduled execution and output via API v60, persistence across restart. |
+| n8n 2.47.7 | Scheduling/N8n | 15.50-15.53 | 5678 | Latest stable (`latest`/`stable` tags; 3.x git tags aren't published as images). `N8N_LISTEN_ADDRESS=0.0.0.0` (default `::` fails without IPv6), external `n8nio/runners` for Code nodes (internal mode is deprecated), `n8n-init` creates the owner. Tested a scheduled workflow through JavaScript and Python Code nodes. |
+
+## New stacks added (2026-11-16): Search
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| Meilisearch v1.57.0 | Search/Meilisearch | 16.30 | 7700 | Master key in `.env`, `MEILI_ENV=development` (mini dashboard), analytics off. Tested 401 without key, typo search, default API keys, persistence. |
+| Typesense 30.2 | Search/Typesense | 16.40 | 8137 | Default 8108 is taken by Couchbase. Bootstrap API key in `.env`, CORS on. Tested 401 without key, collection + import + typo search, persistence. No healthcheck (the image has no curl/wget). |
+| Apache Solr 10.1.0 | Search/Solr | 16.50 | 8983 | Standalone mode, `solr-precreate` makes the `dev` core once. No auth. Tested JSON update, fuzzy query, admin UI, persistence. |
+
+Changed in existing stacks:
+- **Elastic 8.7.1 -> 9.5.6** (owner chose fresh data; the ReadMe explains the 8.19 step for keeping indices). Fixes needed for 9.x: Beats now require `--strict.perms` (double dash); Logstash refuses root, so it runs as `1000:0` (group 0 reads the es-setup certs) and `CreateVolumes.sh` owns `logstashdata01`; Logstash's removed `cacert` option became `ssl_certificate_authorities`. `LS_MEM_LIMIT` was in `.env` but unused - now Logstash's `mem_limit`. `.env` regrouped under the standard headers (same variable names). Tested the full stack: Kibana available, Filebeat container logs, Metricbeat (incl. Logstash API), Logstash file input -> `logstash-*`.
+- **OpenSearch** `latest` pinned to `3.9.0` (what `latest` resolved to). Ports moved under "Host ports" in `.env`. Tested node + Dashboards 3.9.0.
+
+## New stacks added (2026-11-16): Security
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| OpenBao 2.7.2 | Security/OpenBao | 17.20 | 8202 | No init/unseal routine: `seal "static"` with a 32-byte key from `.env` (written to /tmp by the entrypoint) and declarative `initialize` blocks (admin policy, userpass `admin`, KV v2 at `secret/`). Single-node Raft (OpenBao dropped the file backend). Tested login, KV write/read via API and `bao` CLI, restart comes back unsealed. |
+| step-ca 0.30.2 | Security/StepCa | 17.30 | 9003 | Initialized from `DOCKER_STEPCA_INIT_*` on first start, ACME provisioner on. Tested a JWK-provisioner certificate and a full ACME http-01 order from another GroupNetwork container (cert verifies against the root). |
+| ZAP 2.17.0 | Security/Zap | 17.40/17.41 | 8140 proxy+API, 8139 UI | Webswing only starts ZAP when the page is opened, so the headless daemon is the default service and the browser UI is `--profile ui`. Daemon listens on the host port number inside (ZAP proxies requests whose Host isn't its own). Tested API key enforcement, proxying, spider + passive alerts, HTML report, UI page. Shared root CA in `wrk`. |
+| Infisical v0.167.11 | Security/Infisical | 17.50-17.52 | 8138 | Uses the PostgreSQL and Redis stacks instead of its own. `infisical-init` calls `/api/v1/admin/bootstrap` (admin + org, prints a one-time machine identity token; rerun is a no-op). Tested project creation and secret write/read with that token. |
+
+Changed in existing stacks:
+- **Vault** `latest` pinned to `2.2.2` (what `latest` resolved to); tested init/unseal with the existing `vault.hcl`. ReadMe points to OpenBao as the auto-unsealing alternative.
+
+## New stacks added (2026-11-16): SIEM
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| Graylog Open 7.2.2 + Data Node 7.2.2 + MongoDB 8.0 | SIEM/Graylog | 18.20-18.22 | 9004 UI, 12201 GELF tcp/udp, 5140 syslog tcp/udp, 5044 Beats | `GRAYLOG_SELFSIGNED_STARTUP=true` creates the internal CA and provisions the data node (no preflight wizard). Admin password is plain in `.env`; the entrypoint derives `GRAYLOG_ROOT_PASSWORD_SHA2`. Own MongoDB 8.0 because the shared stack is on 9.x (see flagged item 9). Raw input port 5555 not published (BaGetter). Tested: admin login/401, GELF UDP input created via API, messages searchable, persistence across restart. In the sandbox OpenSearch needed a test-only override (file-handle limit 20000 < 65535); hosts with Docker Desktop/normal Linux limits don't. |
+
+## New stacks added (2026-11-16): SourceControl
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| Forgejo 17.0.1 + runner 13.2.1 | SourceControl/Forgejo | 19.20-19.22 | 3007 HTTP, 2223 SSH | `INSTALL_LOCK`; `forgejo-init` (Forgejo image, same volume, UID 1000) creates `forgejo-admin` or resets its password and writes a runner registration token (`generate-runner-token`; `LOCAL_ROOT_URL=http://forgejo:3000/` so the CLI reaches the server). Runner registers once, then daemon; jobs on GroupNetwork. Tested: API auth/401, repo create, workflow run succeeded (incl. curl to `forgejo:3000`), HTTP clone, restart without re-registration. |
+| GitLab CE 19.5.6 | SourceControl/GitLab | 19.30 | 8141 HTTP (same inside), 2224 SSH | Trimmed Omnibus config (Puma single mode, Sidekiq 10, Prometheus/registry/KAS off), ~3 GB RAM. Root password must pass GitLab's checks: `Dev!GitLab#2026` was rejected as a common combination and GitLab then created no root user, so `.env` has a random one. Tested sign-in, PAT + API project, clone/push, access as `http://gitlab:8141` from GroupNetwork. |
+| OneDev 17.2.1 | SourceControl/OneDev | 19.40 | 6610 HTTP, 6611 SSH | `initial_*` env vars skip the setup page; embedded DB; Docker socket for CI. Tested REST auth/401, project create, push, buildspec job SUCCESSFUL, persistence across restart. |
+
+Changed in existing stacks:
+- **Gitea** `latest` pinned to `28.4.0` and runner `latest` to `6.0.0` (what `latest` resolved to).
+
+## New stacks added (2026-11-16): Visualization
+
+| Stack | Folder | IP | Host ports | Notes |
+|---|---|---|---|---|
+| Metabase v0.65.4.5 | Visualization/Metabase | 20.20-20.22 | 3008 | App DB in the PostgreSQL stack. `metabase-init` (curl image) completes `/api/setup` while a setup token exists. `MB_PASSWORD_COMPLEXITY=weak` because the normal policy rejects `Password123` as too common. Tested login/401, adding the Postgres stack as a database, native query, restart. |
+| Superset 6.1.0 | Visualization/Superset | 20.30-20.32 | 8142 | Built image `superset-drivers` (official image has no drivers): psycopg2, pymssql, pymysql. `superset-init`: db upgrade, create admin or reset password, init. No Celery/Redis. Tested JWT login/401, database connection + SQL Lab query (with CSRF token), SQL Server driver loads, password reset path. |
+| Redash 26.9.0 | Visualization/Redash | 20.40-20.44 | 8143 | PostgreSQL + Redis stacks. `redash-init`: create_tables (empty DB only), db upgrade, create_root once. `REDASH_GUNICORN_BIND=0.0.0.0:5000` (default `[::]` crash-loops without IPv6). One worker for all queues. Tested login, data source, async query through the worker, init rerun. |
+
+Changed in existing stacks:
+- **Grafana** `latest` pinned to `13.3.1` (what `latest` resolved to).

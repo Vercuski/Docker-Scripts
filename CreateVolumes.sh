@@ -108,19 +108,36 @@ mkdir -p "$ROOT/docker/volumes/Messaging/RabbitMQ/data"
 mkdir -p "$ROOT/docker/volumes/Messaging/RabbitMQ/log"
 mkdir -p "$ROOT/docker/volumes/Messaging/Redpanda/data"
 
+mkdir -p "$ROOT/docker/volumes/Observability/Jaeger/badger"
 mkdir -p "$ROOT/docker/volumes/Observability/OpenTelemetry/tempo"
 mkdir -p "$ROOT/docker/volumes/Observability/OpenTelemetry/loki"
 mkdir -p "$ROOT/docker/volumes/Observability/Prometheus/prometheus_data"
+mkdir -p "$ROOT/docker/volumes/Observability/OtelLgtm/data"
 mkdir -p "$ROOT/docker/volumes/Observability/Prometheus/alertmanager"
+mkdir -p "$ROOT/docker/volumes/Observability/Pyroscope/data"
+mkdir -p "$ROOT/docker/volumes/Observability/SigNoz/clickhouse"
+mkdir -p "$ROOT/docker/volumes/Observability/SigNoz/keeper"
+mkdir -p "$ROOT/docker/volumes/Observability/SigNoz/user_scripts"
+mkdir -p "$ROOT/docker/volumes/Observability/UptimeKuma/data"
 
+mkdir -p "$ROOT/docker/volumes/Orchestration/K3s/server"
+mkdir -p "$ROOT/docker/volumes/Orchestration/K3s/kubeconfig"   # also read by the Headlamp stack
 mkdir -p "$ROOT/docker/volumes/Orchestration/Rancher/data"
 mkdir -p "$ROOT/docker/volumes/Orchestration/Portainer/data"
 
+mkdir -p "$ROOT/docker/volumes/Packages/BaGetter/data"
+mkdir -p "$ROOT/docker/volumes/Packages/Nexus/data"
 mkdir -p "$ROOT/docker/volumes/Packages/ProGet/packages"
 mkdir -p "$ROOT/docker/volumes/Packages/ProGet/ssl"
+mkdir -p "$ROOT/docker/volumes/Packages/Verdaccio/storage"
 
+mkdir -p "$ROOT/docker/volumes/RP-LB/Caddy/config"
+mkdir -p "$ROOT/docker/volumes/RP-LB/Caddy/data"
 mkdir -p "$ROOT/docker/volumes/RP-LB/NginxProxyManager/data"
 mkdir -p "$ROOT/docker/volumes/RP-LB/NginxProxyManager/letsencrypt"
+mkdir -p "$ROOT/docker/volumes/Scheduling/Airflow/logs"
+mkdir -p "$ROOT/docker/volumes/Scheduling/N8n/data"
+mkdir -p "$ROOT/docker/volumes/Scheduling/Rundeck/logs"
 
 mkdir -p "$ROOT/docker/volumes/Search/OpenSearch/node1/"
 mkdir -p "$ROOT/docker/volumes/Search/OpenSearch/node2/"
@@ -130,9 +147,18 @@ mkdir -p "$ROOT/docker/volumes/Search/ElasticSearch/kibanadata"
 mkdir -p "$ROOT/docker/volumes/Search/ElasticSearch/metricbeatdata01"
 mkdir -p "$ROOT/docker/volumes/Search/ElasticSearch/filebeatdata01"
 mkdir -p "$ROOT/docker/volumes/Search/ElasticSearch/logstashdata01"
+mkdir -p "$ROOT/docker/volumes/Search/Meilisearch/data"
+mkdir -p "$ROOT/docker/volumes/Search/Solr/data"
+mkdir -p "$ROOT/docker/volumes/Search/Typesense/data"
 
+mkdir -p "$ROOT/docker/volumes/Security/OpenBao/data"
+mkdir -p "$ROOT/docker/volumes/Security/StepCa/data"
 mkdir -p "$ROOT/docker/volumes/Security/Vault/data"
+mkdir -p "$ROOT/docker/volumes/Security/Zap/wrk"
 
+mkdir -p "$ROOT/docker/volumes/SIEM/Graylog/datanode"
+mkdir -p "$ROOT/docker/volumes/SIEM/Graylog/mongodb"
+mkdir -p "$ROOT/docker/volumes/SIEM/Graylog/server"
 mkdir -p "$ROOT/docker/volumes/SIEM/Wazuh/certs"
 mkdir -p "$ROOT/docker/volumes/SIEM/Wazuh/manager/api_configuration"
 mkdir -p "$ROOT/docker/volumes/SIEM/Wazuh/manager/etc"
@@ -151,6 +177,12 @@ mkdir -p "$ROOT/docker/volumes/SIEM/Wazuh/dashboard/custom"
 
 mkdir -p "$ROOT/docker/volumes/SourceControl/Gitea/data"
 mkdir -p "$ROOT/docker/volumes/SourceControl/Gitea/runner"
+mkdir -p "$ROOT/docker/volumes/SourceControl/Forgejo/data"
+mkdir -p "$ROOT/docker/volumes/SourceControl/Forgejo/runner"
+mkdir -p "$ROOT/docker/volumes/SourceControl/GitLab/config"
+mkdir -p "$ROOT/docker/volumes/SourceControl/GitLab/data"
+mkdir -p "$ROOT/docker/volumes/SourceControl/GitLab/logs"
+mkdir -p "$ROOT/docker/volumes/SourceControl/OneDev/data"
 
 mkdir -p "$ROOT/docker/volumes/Visualization/Grafana/storage"
 
@@ -192,11 +224,23 @@ if [ "$(uname -s)" = "Linux" ] && [ "${SKIP_CHOWN:-0}" != "1" ]; then
   own 101:101     Messaging/Redpanda/data                                                        # redpanda
   own 1000:1000   Messaging/Kafka/Kafka/data                                                      # apache/kafka appuser
   own 10001:10001 Observability/OpenTelemetry/tempo Observability/OpenTelemetry/loki
+  own 10001:10001 Observability/Jaeger/badger Observability/Pyroscope/data                    # jaeger, pyroscope
+  own 101:101     Observability/SigNoz/clickhouse Observability/SigNoz/keeper                   # clickhouse
   own 65534:65534 Observability/Prometheus/prometheus_data Observability/Prometheus/alertmanager  # nobody
-  own 1000:0      Search/ElasticSearch/esdata01 Search/ElasticSearch/kibanadata
+  own 200:200     Packages/Nexus/data                                                            # nexus
+  own 10001:65533 Packages/Verdaccio/storage                                                     # verdaccio
+  own 50000:0     Scheduling/Airflow/logs                                                        # airflow
+  own 1000:1000   Scheduling/N8n/data                                                            # n8n (node)
+  own 1000:0      Scheduling/Rundeck/logs                                                        # rundeck
+  own 1000:0      Search/ElasticSearch/esdata01 Search/ElasticSearch/kibanadata Search/ElasticSearch/logstashdata01
+  own 8983:8983   Search/Solr/data                                                               # solr
   own 1000:1000   Search/OpenSearch/node1 Search/OpenSearch/node2
   own 100:1000    Security/Vault/data                                                             # vault
+  own 100:1000    Security/OpenBao/data                                                           # openbao
+  own 1000:1000   Security/StepCa/data Security/Zap/wrk                                           # step, zap
+  own 1000:1000   SourceControl/Forgejo/runner                                                   # forgejo-init writes the token
   own 1000:1000   SIEM/Wazuh/indexer/data SIEM/Wazuh/dashboard/config SIEM/Wazuh/dashboard/custom
+  own 1100:1100   SIEM/Graylog/server                                                            # graylog
   own 472:0       Visualization/Grafana/storage                                                   # grafana
 fi
 

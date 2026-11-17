@@ -1,0 +1,43 @@
+# Verdaccio configuration (mounted read-only). Users are added with `npm adduser` and stored in the storage volume.
+storage: /verdaccio/storage/data
+plugins: /verdaccio/plugins
+
+web:
+  title: Verdaccio (local)
+
+auth:
+  htpasswd:
+    file: /verdaccio/storage/htpasswd
+    # Set to -1 to stop new registrations with `npm adduser`
+    max_users: 1000
+
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+    cache: true
+
+packages:
+  # Scoped packages under @local are private: never fetched from npmjs
+  '@local/*':
+    access: $authenticated
+    publish: $authenticated
+    unpublish: $authenticated
+  '@*/*':
+    access: $all
+    publish: $authenticated
+    unpublish: $authenticated
+    proxy: npmjs
+  '**':
+    access: $all
+    publish: $authenticated
+    unpublish: $authenticated
+    proxy: npmjs
+
+server:
+  keepAliveTimeout: 60
+
+middlewares:
+  audit:
+    enabled: true
+
+log: { type: stdout, format: pretty, level: http }
