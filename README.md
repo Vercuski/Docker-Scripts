@@ -1,3 +1,5 @@
+Check out <a href="https://scott.vercuski.com" target="_blank" rel="noopener noreferrer">https://scott.vercuski.com</a> for more projects and solution/software architecture knowledge.
+
 # Docker-Scripts
 Collection of Docker and Docker Compose scripts
 
